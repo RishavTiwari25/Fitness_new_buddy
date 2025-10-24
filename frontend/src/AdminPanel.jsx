@@ -21,6 +21,8 @@ export default function AdminPanel({ token }) {
   const [gyms, setGyms] = useState([])
   const [selectedGym, setSelectedGym] = useState(null)
   const [equipment, setEquipment] = useState([])
+  const [occupancy, setOccupancy] = useState(null)
+  const [present, setPresent] = useState([])
   const [name, setName] = useState('')
   const [location, setLocation] = useState('')
   const [eqName, setEqName] = useState('')
@@ -62,6 +64,9 @@ export default function AdminPanel({ token }) {
     const res = await fetch(`${API_BASE}/api/gyms/${gymId}/equipment`, { headers: { Authorization: 'Bearer ' + token } })
     const data = await res.json()
     setEquipment(data)
+    // also load occupancy and presence list
+    loadOccupancy(gymId)
+    loadPresence(gymId)
   }
 
   async function addEquipment(e) {
@@ -75,6 +80,7 @@ export default function AdminPanel({ token }) {
     if (res.ok) {
       setEquipment(prev => [...prev, data])
       setEqName(''); setEqNotes(''); setEqQuantity(1)
+      loadOccupancy(selectedGym)
     } else alert(data.error || 'Failed')
   }
 
@@ -82,7 +88,10 @@ export default function AdminPanel({ token }) {
     if (!confirm('Delete equipment?')) return
   const res = await fetch(`${API_BASE}/api/equipment/${id}`, { method: 'DELETE', headers: { Authorization: 'Bearer ' + token } })
     const data = await res.json()
-    if (res.ok) setEquipment(prev => prev.filter(e => e.id !== id))
+    if (res.ok) {
+      setEquipment(prev => prev.filter(e => e.id !== id))
+      loadOccupancy(selectedGym)
+    }
     else alert(data.error || 'Failed')
   }
 
@@ -102,8 +111,40 @@ export default function AdminPanel({ token }) {
     if (res.ok) {
       setEquipment(prev => prev.map(p => p.id === data.id ? data : p))
       setEditing(null); setEqName(''); setEqNotes(''); setEqQuantity(1)
+      loadOccupancy(selectedGym)
     } else alert(data.error || 'Failed')
   }
+
+  async function loadOccupancy(gymId) {
+    if (!gymId) return
+    try {
+      const res = await fetch(`${API_BASE}/api/gyms/${gymId}/occupancy`, { headers: { Authorization: 'Bearer ' + token } })
+      const data = await res.json()
+      if (res.ok) setOccupancy(data.count)
+    } catch (_) {}
+  }
+
+  async function loadPresence(gymId) {
+    if (!gymId) return
+    try {
+      const res = await fetch(`${API_BASE}/api/gyms/${gymId}/presence`, { headers: { Authorization: 'Bearer ' + token } })
+      const data = await res.json()
+      if (res.ok && data && Array.isArray(data.members)) setPresent(data.members)
+      else setPresent([])
+    } catch (_) { setPresent([]) }
+  }
+
+  useEffect(() => {
+    if (selectedGym) {
+      loadOccupancy(selectedGym)
+      loadPresence(selectedGym)
+      const t = setInterval(() => {
+        loadOccupancy(selectedGym)
+        loadPresence(selectedGym)
+      }, 5000)
+      return () => clearInterval(t)
+    }
+  }, [selectedGym])
 
   return (
     <div>
@@ -133,6 +174,19 @@ export default function AdminPanel({ token }) {
         <section>
           <h4>Equipment for gym #{selectedGym}</h4>
           <GymQRCode gymId={selectedGym} />
+          <div style={{ margin: '10px 0' }}>
+            <strong>Currently checked in:</strong> {occupancy ?? '—'}
+            <div style={{ marginTop: 6 }}>
+              {present.length === 0 && <div style={{ color: '#666' }}>No members inside.</div>}
+              {present.map(m => (
+                <div key={m.presence_id} style={{ fontSize: 14, padding: '4px 0', borderBottom: '1px solid #eee' }}>
+                  <div><strong>{m.name || m.email}</strong></div>
+                  <div style={{ color: '#777' }}>{m.email}</div>
+                  <div style={{ fontSize: 12, color: '#999' }}>since {m.checkin_at}</div>
+                </div>
+              ))}
+            </div>
+          </div>
           <div>
             {equipment.map(eq => <EquipmentRow key={eq.id} eq={eq} onEdit={startEdit} onDelete={deleteEquipment} />)}
             {equipment.length === 0 && <p>No equipment.</p>}

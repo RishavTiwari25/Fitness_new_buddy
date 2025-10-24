@@ -161,3 +161,25 @@ router.get('/gyms/:gymId/occupancy', verifyToken, (req, res) => {
     });
   });
 });
+
+// List of currently checked-in members for a gym (owners only)
+router.get('/gyms/:gymId/presence', verifyToken, requireRole('owner'), (req, res) => {
+  const gymId = parseInt(req.params.gymId, 10);
+  db.get('SELECT * FROM gyms WHERE id = ?', [gymId], (err, gym) => {
+    if (err) return res.status(500).json({ error: 'DB error' });
+    if (!gym) return res.status(404).json({ error: 'Gym not found' });
+    if (gym.owner_id !== req.user.id) return res.status(403).json({ error: 'Not the gym owner' });
+
+    const sql = `
+      SELECT p.id as presence_id, p.checkin_at, u.id as user_id, u.name, u.email
+      FROM presence p
+      JOIN users u ON u.id = p.user_id
+      WHERE p.gym_id = ? AND p.active = 1
+      ORDER BY p.checkin_at ASC
+    `;
+    db.all(sql, [gymId], (err2, rows) => {
+      if (err2) return res.status(500).json({ error: 'DB error' });
+      res.json({ gym_id: gymId, members: rows });
+    });
+  });
+});
