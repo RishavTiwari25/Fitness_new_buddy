@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { API_BASE } from './api'
 import Profile from './Profile'
 import AdminPanel from './AdminPanel'
 
@@ -20,7 +21,7 @@ export default function Dashboard({ token, onLogout }) {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('http://localhost:4000/api/profile', {
+        const res = await fetch(`${API_BASE}/api/profile`, {
           headers: { Authorization: 'Bearer ' + token }
         })
         const data = await res.json()

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { API_BASE } from './api'
 
 export default function Signup({ onSignup }) {
   const [name, setName] = useState('')
@@ -11,7 +12,7 @@ export default function Signup({ onSignup }) {
     e.preventDefault()
     setError(null)
     try {
-      const res = await fetch('http://localhost:4000/api/signup', {
+      const res = await fetch(`${API_BASE}/api/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role })

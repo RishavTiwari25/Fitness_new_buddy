@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { API_BASE } from './api'
 
 function EquipmentRow({ eq, onEdit, onDelete }) {
   return (
@@ -27,7 +28,7 @@ export default function AdminPanel({ token }) {
   const [editing, setEditing] = useState(null)
 
   async function loadGyms() {
-    const res = await fetch('http://localhost:4000/api/gyms', { headers: { Authorization: 'Bearer ' + token } })
+    const res = await fetch(`${API_BASE}/api/gyms`, { headers: { Authorization: 'Bearer ' + token } })
     const data = await res.json()
     setGyms(data)
   }
@@ -36,7 +37,7 @@ export default function AdminPanel({ token }) {
 
   async function createGym(e) {
     e.preventDefault()
-    const res = await fetch('http://localhost:4000/api/gyms', {
+    const res = await fetch(`${API_BASE}/api/gyms`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({ name, location })
     })
@@ -57,7 +58,7 @@ export default function AdminPanel({ token }) {
   async function loadEquipment(gymId) {
     setEquipment([])
     setSelectedGym(gymId)
-    const res = await fetch(`http://localhost:4000/api/gyms/${gymId}/equipment`, { headers: { Authorization: 'Bearer ' + token } })
+    const res = await fetch(`${API_BASE}/api/gyms/${gymId}/equipment`, { headers: { Authorization: 'Bearer ' + token } })
     const data = await res.json()
     setEquipment(data)
   }
@@ -65,7 +66,7 @@ export default function AdminPanel({ token }) {
   async function addEquipment(e) {
     e.preventDefault()
     if (!selectedGym) return alert('Select a gym first')
-    const res = await fetch(`http://localhost:4000/api/gyms/${selectedGym}/equipment`, {
+    const res = await fetch(`${API_BASE}/api/gyms/${selectedGym}/equipment`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({ name: eqName, notes: eqNotes, quantity: Number(eqQuantity) })
     })
@@ -78,7 +79,7 @@ export default function AdminPanel({ token }) {
 
   async function deleteEquipment(id) {
     if (!confirm('Delete equipment?')) return
-    const res = await fetch(`http://localhost:4000/api/equipment/${id}`, { method: 'DELETE', headers: { Authorization: 'Bearer ' + token } })
+  const res = await fetch(`${API_BASE}/api/equipment/${id}`, { method: 'DELETE', headers: { Authorization: 'Bearer ' + token } })
     const data = await res.json()
     if (res.ok) setEquipment(prev => prev.filter(e => e.id !== id))
     else alert(data.error || 'Failed')
@@ -92,7 +93,7 @@ export default function AdminPanel({ token }) {
   async function saveEdit(e) {
     e.preventDefault()
     if (!editing) return
-    const res = await fetch(`http://localhost:4000/api/equipment/${editing}`, {
+    const res = await fetch(`${API_BASE}/api/equipment/${editing}`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({ name: eqName, notes: eqNotes, quantity: Number(eqQuantity) })
     })

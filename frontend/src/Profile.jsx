@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { API_BASE } from './api'
 
 export default function Profile({ token, profile, onUpdate }) {
   const [name, setName] = useState(profile ? profile.name : '')
@@ -14,7 +15,7 @@ export default function Profile({ token, profile, onUpdate }) {
   useEffect(() => {
     async function loadGyms() {
       try {
-        const res = await fetch('http://localhost:4000/api/gyms', { headers: { Authorization: 'Bearer ' + token } })
+        const res = await fetch(`${API_BASE}/api/gyms`, { headers: { Authorization: 'Bearer ' + token } })
         const data = await res.json()
         setGyms(data)
       } catch (e) {
@@ -28,7 +29,7 @@ export default function Profile({ token, profile, onUpdate }) {
     e.preventDefault();
     setMsg(null)
     try {
-      const res = await fetch('http://localhost:4000/api/profile', {
+      const res = await fetch(`${API_BASE}/api/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
         body: JSON.stringify({ name, gym_id: gymId })
