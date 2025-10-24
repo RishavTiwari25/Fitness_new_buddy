@@ -10,6 +10,7 @@ export default function MemberHome({ token, defaultGymId }) {
   const [gyms, setGyms] = useState([])
   const [count, setCount] = useState(null)
   const [status, setStatus] = useState('')
+  const [statusType, setStatusType] = useState('info') // 'success' | 'error' | 'info'
   const [scanning, setScanning] = useState(false)
   const scannerRef = useRef(null)
 
@@ -21,6 +22,9 @@ export default function MemberHome({ token, defaultGymId }) {
       if (res.ok) {
         setCount(data.count)
         setGymName(data.gym_name)
+        setStatus('Occupancy updated')
+        setStatusType('info')
+        clearStatusSoon()
       }
     } catch (_) {}
   }
@@ -52,11 +56,15 @@ export default function MemberHome({ token, defaultGymId }) {
     const data = await res.json()
     if (res.ok) {
       setStatus(data.action === 'checkin' ? 'Checked in' : 'Checked out')
+      setStatusType('success')
       setGymId(id)
       setCount(data.count)
       fetchOccupancy(id)
+      clearStatusSoon()
     } else {
       setStatus(data.error || 'Failed')
+      setStatusType('error')
+      clearStatusSoon()
     }
   }
 
@@ -88,7 +96,9 @@ export default function MemberHome({ token, defaultGymId }) {
       })
     } catch (e) {
       setStatus('Camera error: ' + (e?.message || e))
+      setStatusType('error')
       setScanning(false)
+      clearStatusSoon()
     }
   }
 
@@ -99,6 +109,14 @@ export default function MemberHome({ token, defaultGymId }) {
     setScanning(false)
   }
 
+  function clearStatusSoon() {
+    setTimeout(() => setStatus(''), 2500)
+  }
+
+  function refreshNow() {
+    fetchOccupancy(gymId)
+  }
+
   return (
     <div>
       <h3>Member Home</h3>
@@ -107,7 +125,9 @@ export default function MemberHome({ token, defaultGymId }) {
       </div>
       <div id="qr-reader" style={{ width: 320, height: scanning ? 320 : 0, overflow: 'hidden', border: scanning ? '1px solid #ccc' : 'none' }} />
 
-      {status && <p>{status}</p>}
+      {status && (
+        <p style={{ color: statusType === 'success' ? 'green' : statusType === 'error' ? 'crimson' : '#333' }}>{status}</p>
+      )}
 
       {/* Manual fallback if camera/https not available */}
       <div style={{ marginTop: 12 }}>
@@ -122,6 +142,7 @@ export default function MemberHome({ token, defaultGymId }) {
       {gymId && (
         <div style={{ marginTop: 12 }}>
           <strong>People currently at {gymName || `Gym #${gymId}`}:</strong> {count ?? '—'}
+          <button style={{ marginLeft: 8 }} onClick={refreshNow}>Refresh now</button>
         </div>
       )}
 
