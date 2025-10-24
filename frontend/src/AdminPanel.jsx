@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { API_BASE } from './api'
+import GymQRCode from './GymQRCode'
 
 function EquipmentRow({ eq, onEdit, onDelete }) {
   return (
@@ -131,6 +132,7 @@ export default function AdminPanel({ token }) {
       {selectedGym && (
         <section>
           <h4>Equipment for gym #{selectedGym}</h4>
+          <GymQRCode gymId={selectedGym} />
           <div>
             {equipment.map(eq => <EquipmentRow key={eq.id} eq={eq} onEdit={startEdit} onDelete={deleteEquipment} />)}
             {equipment.length === 0 && <p>No equipment.</p>}

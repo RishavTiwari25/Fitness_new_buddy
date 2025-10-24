@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || 'please_change_this_secret';
+const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production'
+  ? (() => { throw new Error('JWT_SECRET is required in production'); })()
+  : 'dev_insecure_secret_change_me');
 
 function verifyToken(req, res, next) {
   const auth = req.headers.authorization;

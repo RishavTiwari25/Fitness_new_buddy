@@ -100,3 +100,64 @@ router.delete('/equipment/:id', verifyToken, requireRole('owner'), (req, res) =>
 });
 
 module.exports = router;
+// Additional presence/occupancy endpoints
+
+// Toggle check-in/out for a member at a gym
+router.post('/gyms/:gymId/checkin', verifyToken, requireRole('member'), (req, res) => {
+  const gymId = parseInt(req.params.gymId, 10);
+  const userId = req.user.id;
+
+  db.get('SELECT * FROM gyms WHERE id = ?', [gymId], (err, gym) => {
+    if (err) return res.status(500).json({ error: 'DB error' });
+    if (!gym) return res.status(404).json({ error: 'Gym not found' });
+
+    // See if user is currently checked in anywhere
+    db.get('SELECT * FROM presence WHERE user_id = ? AND active = 1', [userId], (err2, activeRow) => {
+      if (err2) return res.status(500).json({ error: 'DB error' });
+
+      const finish = () => {
+        db.get('SELECT COUNT(*) AS count FROM presence WHERE gym_id = ? AND active = 1', [gymId], (err3, c) => {
+          if (err3) return res.status(500).json({ error: 'DB error' });
+          res.json({ gym_id: gymId, action: req._action, count: c.count });
+        });
+      };
+
+      if (activeRow && activeRow.gym_id === gymId) {
+        // Checkout from the same gym
+        db.run('UPDATE presence SET active = 0, checkout_at = datetime("now") WHERE id = ?', [activeRow.id], function (err4) {
+          if (err4) return res.status(500).json({ error: 'Failed to checkout' });
+          req._action = 'checkout';
+          finish();
+        });
+      } else {
+        const endOther = (cb) => {
+          if (activeRow) {
+            db.run('UPDATE presence SET active = 0, checkout_at = datetime("now") WHERE id = ?', [activeRow.id], cb);
+          } else cb();
+        };
+
+        endOther((err5) => {
+          if (err5) return res.status(500).json({ error: 'DB error' });
+          db.run('INSERT INTO presence (gym_id, user_id, checkin_at, active) VALUES (?, ?, datetime("now"), 1)', [gymId, userId], function (err6) {
+            if (err6) return res.status(500).json({ error: 'Failed to checkin' });
+            req._action = 'checkin';
+            finish();
+          });
+        });
+      }
+    });
+  });
+});
+
+// Get current occupancy for a gym
+router.get('/gyms/:gymId/occupancy', verifyToken, (req, res) => {
+  const gymId = parseInt(req.params.gymId, 10);
+  db.get('SELECT * FROM gyms WHERE id = ?', [gymId], (err, gym) => {
+    if (err) return res.status(500).json({ error: 'DB error' });
+    if (!gym) return res.status(404).json({ error: 'Gym not found' });
+    db.get('SELECT COUNT(*) AS count FROM presence WHERE gym_id = ? AND active = 1', [gymId], (err2, c) => {
+      if (err2) return res.status(500).json({ error: 'DB error' });
+      res.json({ gym_id: gymId, gym_name: gym.name, count: c.count });
+    });
+  });
+});

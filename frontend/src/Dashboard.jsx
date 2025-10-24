@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { API_BASE } from './api'
 import Profile from './Profile'
 import AdminPanel from './AdminPanel'
+import MemberHome from './MemberHome'
 
 function parseJwt(token) {
   try {
@@ -41,17 +42,19 @@ export default function Dashboard({ token, onLogout }) {
         <div>
           <button onClick={() => setView('profile')}>Profile</button>
           {payload.role === 'owner' && <button onClick={() => setView('admin')} style={{ marginLeft: 8 }}>Admin</button>}
+          {payload.role === 'member' && <button onClick={() => setView('member')} style={{ marginLeft: 8 }}>Member</button>}
           <button onClick={onLogout} style={{ marginLeft: 8 }}>Logout</button>
         </div>
       </div>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {view === 'profile' && <Profile token={token} profile={profile} onUpdate={setProfile} />}
-      {view === 'admin' && payload.role === 'owner' && <AdminPanel token={token} />}
+  {view === 'profile' && <Profile token={token} profile={profile} onUpdate={setProfile} />}
+  {view === 'admin' && payload.role === 'owner' && <AdminPanel token={token} />}
+  {view === 'member' && payload.role === 'member' && <MemberHome token={token} defaultGymId={profile?.gym_id} />}
 
       <hr />
-      <p>Use the Profile page to set your username. Gym Owners can register gyms and manage equipment in the Admin section.</p>
+      <p>Use the Profile page to set your username. Gym Owners can register gyms and manage equipment in the Admin section. Members can scan the gym QR to check-in/out and see live occupancy.</p>
     </div>
   )
 }
