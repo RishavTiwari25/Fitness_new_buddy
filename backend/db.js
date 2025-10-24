@@ -52,6 +52,17 @@ db.serialize(() => {
     FOREIGN KEY(gym_id) REFERENCES gyms(id) ON DELETE CASCADE,
     FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
   )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS equipment_booking (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    equipment_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    started_at TEXT DEFAULT (datetime('now')),
+    ended_at TEXT,
+    active INTEGER DEFAULT 1,
+    FOREIGN KEY(equipment_id) REFERENCES equipment(id) ON DELETE CASCADE,
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+  )`);
 });
 
 module.exports = db;

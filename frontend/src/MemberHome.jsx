@@ -12,6 +12,13 @@ export default function MemberHome({ token, defaultGymId }) {
   const [status, setStatus] = useState('')
   const [scanning, setScanning] = useState(false)
   const scannerRef = useRef(null)
+  const [equipment, setEquipment] = useState([])
+  const [myBookings, setMyBookings] = useState([])
+
+  function parseJwt(tk) {
+    try { return JSON.parse(atob(tk.split('.')[1])) } catch { return {} }
+  }
+  const me = parseJwt(token)
 
   async function fetchOccupancy(id) {
     if (!id) return
@@ -27,6 +34,9 @@ export default function MemberHome({ token, defaultGymId }) {
 
   useEffect(() => {
     fetchOccupancy(gymId)
+    if (gymId) {
+      loadEquipmentStatus(gymId)
+    }
     const t = setInterval(() => fetchOccupancy(gymId), 5000)
     return () => clearInterval(t)
   }, [gymId])
@@ -41,6 +51,7 @@ export default function MemberHome({ token, defaultGymId }) {
       } catch (_) {}
     }
     loadGyms()
+    loadMyBookings()
   }, [token])
 
   async function toggleCheckIn(id) {
@@ -55,6 +66,8 @@ export default function MemberHome({ token, defaultGymId }) {
       setGymId(id)
       setCount(data.count)
       fetchOccupancy(id)
+      // Refresh equipment status when toggling presence
+      loadEquipmentStatus(id)
     } else {
       setStatus(data.error || 'Failed')
     }
@@ -99,6 +112,47 @@ export default function MemberHome({ token, defaultGymId }) {
     setScanning(false)
   }
 
+  async function loadEquipmentStatus(id) {
+    if (!id) return
+    try {
+      const res = await fetch(`${API_BASE}/api/gyms/${id}/equipment-status`, { headers: { Authorization: 'Bearer ' + token } })
+      const data = await res.json()
+      if (res.ok && Array.isArray(data)) setEquipment(data)
+    } catch (_) {}
+  }
+
+  async function loadMyBookings() {
+    try {
+      const res = await fetch(`${API_BASE}/api/me/bookings`, { headers: { Authorization: 'Bearer ' + token } })
+      const data = await res.json()
+      if (res.ok && Array.isArray(data)) setMyBookings(data)
+    } catch (_) {}
+  }
+
+  async function bookEquipment(equipmentId) {
+    const res = await fetch(`${API_BASE}/api/equipment/${equipmentId}/book`, { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+    const data = await res.json()
+    if (res.ok) {
+      setStatus('Booked successfully')
+      loadEquipmentStatus(gymId)
+      loadMyBookings()
+    } else {
+      setStatus(data.error || 'Failed to book')
+    }
+  }
+
+  async function releaseEquipment(equipmentId) {
+    const res = await fetch(`${API_BASE}/api/equipment/${equipmentId}/release`, { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+    const data = await res.json()
+    if (res.ok) {
+      setStatus('Released booking')
+      loadEquipmentStatus(gymId)
+      loadMyBookings()
+    } else {
+      setStatus(data.error || 'Failed to release')
+    }
+  }
+
   return (
     <div>
       <h3>Member Home</h3>
@@ -127,6 +181,51 @@ export default function MemberHome({ token, defaultGymId }) {
 
       {!gymId && (
         <p style={{ color: '#555' }}>Scan a gym QR to see and update occupancy.</p>
+      )}
+
+      {gymId && (
+        <div style={{ marginTop: 16 }}>
+          <h4>Equipment at this gym</h4>
+          <div>
+            {equipment.map(eq => {
+              const bookedBySomeone = !!eq.booking_id
+              const bookedByMe = bookedBySomeone && eq.booking_user_id === me.id
+              const iHaveBooking = myBookings && myBookings.length > 0
+              return (
+                <div key={eq.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #eee' }}>
+                  <div>
+                    <strong>{eq.name}</strong> {eq.quantity ? `x${eq.quantity}` : ''}
+                    <div style={{ fontSize: 12, color: bookedBySomeone ? '#b00' : '#090' }}>
+                      {bookedBySomeone
+                        ? `Booked by ${bookedByMe ? 'you' : (eq.booking_user_name || eq.booking_user_email)} since ${eq.booking_started_at}`
+                        : 'Available'}
+                    </div>
+                  </div>
+                  <div>
+                    {!bookedBySomeone && !iHaveBooking && (
+                      <button onClick={() => bookEquipment(eq.id)}>Book</button>
+                    )}
+                    {bookedByMe && (
+                      <button onClick={() => releaseEquipment(eq.id)}>Release</button>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+            {equipment.length === 0 && <div style={{ color: '#666' }}>No equipment listed for this gym.</div>}
+          </div>
+
+          {myBookings.length > 0 && (
+            <div style={{ marginTop: 10, fontSize: 14 }}>
+              <strong>Your active booking:</strong>
+              {myBookings.map(b => (
+                <div key={b.id}>
+                  {b.equipment_name} at {b.gym_name} since {b.started_at}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </div>
   )

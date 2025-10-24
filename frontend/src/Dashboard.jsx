@@ -26,7 +26,14 @@ export default function Dashboard({ token, onLogout }) {
           headers: { Authorization: 'Bearer ' + token }
         })
         const data = await res.json()
-        if (!res.ok) throw new Error(data.error || 'Failed to fetch')
+        if (!res.ok) {
+          // If token is invalid/expired, force logout to fix refresh error states
+          if (res.status === 401) {
+            onLogout?.()
+            return
+          }
+          throw new Error(data.error || 'Failed to fetch')
+        }
         setProfile(data)
       } catch (err) {
         setError(err.message)
@@ -54,7 +61,7 @@ export default function Dashboard({ token, onLogout }) {
   {view === 'member' && payload.role === 'member' && <MemberHome token={token} defaultGymId={profile?.gym_id} />}
 
       <hr />
-      <p>Use the Profile page to set your username. Gym Owners can register gyms and manage equipment in the Admin section. Members can scan the gym QR to check-in/out and see live occupancy.</p>
+      <p>Use the Profile page to set your username. Gym Owners can register gyms and manage equipment in the Admin section. Members can scan the gym QR to check-in/out, see live occupancy, and book available equipment.</p>
     </div>
   )
 }

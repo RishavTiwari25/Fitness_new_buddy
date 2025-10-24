@@ -42,6 +42,29 @@ router.get('/gyms/:gymId/equipment', verifyToken, (req, res) => {
   });
 });
 
+// Equipment with current booking status for a gym
+router.get('/gyms/:gymId/equipment-status', verifyToken, (req, res) => {
+  const gymId = parseInt(req.params.gymId, 10);
+  const sql = `
+    SELECT 
+      e.*, 
+      b.id AS booking_id,
+      b.user_id AS booking_user_id,
+      b.started_at AS booking_started_at,
+      u.name AS booking_user_name,
+      u.email AS booking_user_email
+    FROM equipment e
+    LEFT JOIN equipment_booking b ON b.equipment_id = e.id AND b.active = 1
+    LEFT JOIN users u ON u.id = b.user_id
+    WHERE e.gym_id = ?
+    ORDER BY e.name ASC
+  `;
+  db.all(sql, [gymId], (err, rows) => {
+    if (err) return res.status(500).json({ error: 'DB error' });
+    res.json(rows);
+  });
+});
+
 // Add equipment to a gym - only the gym owner
 router.post('/gyms/:gymId/equipment', verifyToken, requireRole('owner'), (req, res) => {
   const gymId = req.params.gymId;
@@ -101,6 +124,93 @@ router.delete('/equipment/:id', verifyToken, requireRole('owner'), (req, res) =>
 
 module.exports = router;
 // Additional presence/occupancy endpoints
+
+// Book an equipment (members/trainers). Requires being checked in to that gym.
+router.post('/equipment/:equipmentId/book', verifyToken, (req, res) => {
+  const equipmentId = parseInt(req.params.equipmentId, 10);
+  const userId = req.user.id;
+  if (!['member', 'trainer'].includes(req.user.role)) {
+    return res.status(403).json({ error: 'Only members or trainers can book equipment' });
+  }
+
+  const fetchEquipment = `SELECT e.*, g.owner_id FROM equipment e JOIN gyms g ON e.gym_id = g.id WHERE e.id = ?`;
+  db.get(fetchEquipment, [equipmentId], (err, eq) => {
+    if (err) return res.status(500).json({ error: 'DB error' });
+    if (!eq) return res.status(404).json({ error: 'Equipment not found' });
+
+    // Must be checked in to this gym to book
+    db.get('SELECT * FROM presence WHERE user_id = ? AND gym_id = ? AND active = 1', [userId, eq.gym_id], (err2, pres) => {
+      if (err2) return res.status(500).json({ error: 'DB error' });
+      if (!pres) return res.status(400).json({ error: 'You must be checked in to this gym to book equipment' });
+
+      // Equipment not already booked
+      db.get('SELECT * FROM equipment_booking WHERE equipment_id = ? AND active = 1', [equipmentId], (err3, activeEq) => {
+        if (err3) return res.status(500).json({ error: 'DB error' });
+        if (activeEq) return res.status(400).json({ error: 'This equipment is already booked' });
+
+        // User does not have another active booking in this gym
+        const sqlUserActive = `
+          SELECT b.* FROM equipment_booking b
+          JOIN equipment e2 ON e2.id = b.equipment_id
+          WHERE b.user_id = ? AND b.active = 1 AND e2.gym_id = ?
+        `;
+        db.get(sqlUserActive, [userId, eq.gym_id], (err4, userActive) => {
+          if (err4) return res.status(500).json({ error: 'DB error' });
+          if (userActive) return res.status(400).json({ error: 'You already have an active booking in this gym' });
+
+          db.run('INSERT INTO equipment_booking (equipment_id, user_id, started_at, active) VALUES (?, ?, datetime("now"), 1)', [equipmentId, userId], function (err5) {
+            if (err5) return res.status(500).json({ error: 'Failed to create booking' });
+            db.get('SELECT * FROM equipment_booking WHERE id = ?', [this.lastID], (err6, row) => {
+              if (err6) return res.status(500).json({ error: 'DB error' });
+              res.json(row);
+            });
+          });
+        });
+      });
+    });
+  });
+});
+
+// Release an equipment booking. Only the booking user or the gym owner can release.
+router.post('/equipment/:equipmentId/release', verifyToken, (req, res) => {
+  const equipmentId = parseInt(req.params.equipmentId, 10);
+  const userId = req.user.id;
+  const sql = `
+    SELECT b.*, e.gym_id, g.owner_id FROM equipment_booking b
+    JOIN equipment e ON e.id = b.equipment_id
+    JOIN gyms g ON g.id = e.gym_id
+    WHERE b.equipment_id = ? AND b.active = 1
+  `;
+  db.get(sql, [equipmentId], (err, row) => {
+    if (err) return res.status(500).json({ error: 'DB error' });
+    if (!row) return res.status(400).json({ error: 'No active booking found for this equipment' });
+    const isOwner = req.user.role === 'owner' && row.owner_id === userId;
+    const isBooker = row.user_id === userId;
+    if (!isOwner && !isBooker) return res.status(403).json({ error: 'Not allowed to release this booking' });
+
+    db.run('UPDATE equipment_booking SET active = 0, ended_at = datetime("now") WHERE id = ?', [row.id], function (err2) {
+      if (err2) return res.status(500).json({ error: 'Failed to release booking' });
+      res.json({ success: true });
+    });
+  });
+});
+
+// Get current user's active booking(s)
+router.get('/me/bookings', verifyToken, (req, res) => {
+  const userId = req.user.id;
+  const sql = `
+    SELECT b.*, e.name AS equipment_name, e.gym_id, g.name AS gym_name
+    FROM equipment_booking b
+    JOIN equipment e ON e.id = b.equipment_id
+    JOIN gyms g ON g.id = e.gym_id
+    WHERE b.user_id = ? AND b.active = 1
+    ORDER BY b.started_at DESC
+  `;
+  db.all(sql, [userId], (err, rows) => {
+    if (err) return res.status(500).json({ error: 'DB error' });
+    res.json(rows);
+  });
+});
 
 // Toggle check-in/out for a member at a gym
 router.post('/gyms/:gymId/checkin', verifyToken, requireRole('member'), (req, res) => {
