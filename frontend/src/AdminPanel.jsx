@@ -23,6 +23,11 @@ export default function AdminPanel({ token }) {
   const [equipment, setEquipment] = useState([])
   const [occupancy, setOccupancy] = useState(null)
   const [present, setPresent] = useState([])
+  const [bookings, setBookings] = useState([])
+  const [memberships, setMemberships] = useState([])
+  const [saveMsg, setSaveMsg] = useState('')
+  const [openPaymentsFor, setOpenPaymentsFor] = useState({})
+  const [paymentsCache, setPaymentsCache] = useState({})
   const [name, setName] = useState('')
   const [location, setLocation] = useState('')
   const [eqName, setEqName] = useState('')
@@ -67,6 +72,8 @@ export default function AdminPanel({ token }) {
     // also load occupancy and presence list
     loadOccupancy(gymId)
     loadPresence(gymId)
+    loadBookings(gymId)
+    loadMemberships(gymId)
   }
 
   async function addEquipment(e) {
@@ -134,17 +141,65 @@ export default function AdminPanel({ token }) {
     } catch (_) { setPresent([]) }
   }
 
+  async function loadBookings(gymId) {
+    if (!gymId) return
+    try {
+      const res = await fetch(`${API_BASE}/api/gyms/${gymId}/bookings`, { headers: { Authorization: 'Bearer ' + token } })
+      const data = await res.json()
+      if (res.ok && data && Array.isArray(data.bookings)) setBookings(data.bookings)
+      else setBookings([])
+    } catch (_) { setBookings([]) }
+  }
+
   useEffect(() => {
     if (selectedGym) {
       loadOccupancy(selectedGym)
       loadPresence(selectedGym)
+      loadBookings(selectedGym)
+      loadMemberships(selectedGym)
       const t = setInterval(() => {
         loadOccupancy(selectedGym)
         loadPresence(selectedGym)
+        loadBookings(selectedGym)
       }, 5000)
       return () => clearInterval(t)
     }
   }, [selectedGym])
+
+  async function loadMemberships(gymId){
+    try {
+      const r = await fetch(`${API_BASE}/api/owner/memberships?gymId=${gymId}`, { headers: { Authorization: 'Bearer ' + token } })
+      const j = await r.json(); if (r.ok) setMemberships(j)
+    } catch {}
+  }
+
+  async function saveMembership(user_id, monthly_fee, next_due_date){
+    setSaveMsg('')
+    const r = await fetch(`${API_BASE}/api/owner/memberships/upsert`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ user_id, monthly_fee: Number(monthly_fee), next_due_date }) })
+    const j = await r.json(); if (r.ok) { setSaveMsg('Saved'); loadMemberships(selectedGym) } else { setSaveMsg(j.error || 'Failed to save') }
+  }
+
+  async function remind(user_id){
+    const r = await fetch(`${API_BASE}/api/owner/memberships/${user_id}/remind`, { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+    if (r.ok) setSaveMsg('Reminder sent (in-app)')
+  }
+
+  async function recordPayment(user_id, amount){
+    const r = await fetch(`${API_BASE}/api/owner/payments/record`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ user_id, amount: Number(amount), method: 'cash' }) })
+    const j = await r.json(); if (r.ok) { setSaveMsg('Payment recorded'); loadMemberships(selectedGym) } else setSaveMsg(j.error || 'Failed to record payment')
+  }
+
+  async function toggleViewPayments(user_id){
+    setOpenPaymentsFor(prev => ({ ...prev, [user_id]: !prev[user_id] }))
+    // lazy-load payments if not in cache
+    if (!paymentsCache[user_id]) {
+      try {
+        const r = await fetch(`${API_BASE}/api/owner/payments?userId=${user_id}`, { headers: { Authorization: 'Bearer ' + token } })
+        const j = await r.json()
+        if (Array.isArray(j)) setPaymentsCache(prev => ({ ...prev, [user_id]: j }))
+      } catch {}
+    }
+  }
 
   return (
     <div>
@@ -201,6 +256,88 @@ export default function AdminPanel({ token }) {
               {editing && <button type="button" onClick={() => { setEditing(null); setEqName(''); setEqNotes(''); setEqQuantity(1) }} style={{ marginLeft: 8 }}>Cancel</button>}
             </div>
           </form>
+        </section>
+      )}
+
+      {selectedGym && (
+        <section style={{ marginTop: 16 }}>
+          <h4>Active equipment bookings</h4>
+          <div>
+            {bookings.length === 0 && <div style={{ color: '#666' }}>No active bookings.</div>}
+            {bookings.map(b => (
+              <div key={b.booking_id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #eee' }}>
+                <div>
+                  <strong>{b.equipment_name}</strong>
+                  <div style={{ fontSize: 12 }}>by {b.user_name || b.user_email} since {b.started_at}</div>
+                </div>
+                <div>
+                  <button onClick={async () => {
+                    const res = await fetch(`${API_BASE}/api/equipment/${b.equipment_id}/release`, { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+                    const data = await res.json()
+                    if (res.ok) {
+                      loadBookings(selectedGym)
+                    } else {
+                      alert(data.error || 'Failed to release')
+                    }
+                  }}>Force release</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {selectedGym && (
+        <section style={{ marginTop: 16 }}>
+          <h4>Memberships & Payments</h4>
+          {saveMsg && <div style={{ marginBottom: 6 }}>{saveMsg}</div>}
+          <div>
+            {memberships.length === 0 && <div style={{ color: '#666' }}>No members in this gym yet.</div>}
+            {memberships.map(m => (
+              <div key={m.user_id}>
+                <div style={{ display:'grid', gridTemplateColumns: '1fr 140px 160px 1fr', gap: 8, padding: '6px 0', borderBottom: '1px solid #eee' }}>
+                  <div>
+                    <div><strong>{m.name || m.email}</strong></div>
+                    <div style={{ fontSize: 12, color: '#777' }}>{m.email}</div>
+                    {m.last_payment_at && <div style={{ fontSize: 12, color: '#555' }}>Last payment: {m.last_payment_at}</div>}
+                  </div>
+                  <div>
+                    <input type="number" placeholder="Monthly fee" defaultValue={m.monthly_fee || ''} onBlur={e => m._fee = e.target.value} />
+                  </div>
+                  <div>
+                    <input type="date" defaultValue={m.next_due_date || ''} onBlur={e => m._due = e.target.value} />
+                  </div>
+                  <div>
+                    <button onClick={() => saveMembership(
+                      m.user_id,
+                      (m._fee ?? m.monthly_fee ?? 0),
+                      (m._due ?? (m.next_due_date || null))
+                    )}>Save</button>
+                    <button onClick={() => remind(m.user_id)} style={{ marginLeft: 6 }}>Remind</button>
+                    <button onClick={() => { const amt = prompt('Amount paid', String(m.monthly_fee || '')); if (amt) recordPayment(m.user_id, amt) }} style={{ marginLeft: 6 }}>Record Payment</button>
+                    <button onClick={() => toggleViewPayments(m.user_id)} style={{ marginLeft: 6 }}>{openPaymentsFor[m.user_id] ? 'Hide Payments' : 'View Payments'}</button>
+                  </div>
+                </div>
+                {openPaymentsFor[m.user_id] && (
+                  <div style={{ padding: '6px 0 12px 0', borderBottom: '1px solid #f0f0f0', marginLeft: 8 }}>
+                    <div style={{ fontSize: 12, color: '#333', marginBottom: 4 }}>Recent payments:</div>
+                    {(!paymentsCache[m.user_id] || paymentsCache[m.user_id].length === 0) && (
+                      <div style={{ fontSize: 12, color: '#777' }}>No payments.</div>
+                    )}
+                    {paymentsCache[m.user_id] && paymentsCache[m.user_id].length > 0 && (
+                      <ul style={{ margin: 0, paddingLeft: 16 }}>
+                        {paymentsCache[m.user_id].map(p => (
+                          <li key={p.id} style={{ fontSize: 13 }}>
+                            ₹{p.amount} — {p.method || '—'} on {p.created_at}{p.txn_ref ? ` (ref: ${p.txn_ref})` : ''}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </section>
       )}
     </div>

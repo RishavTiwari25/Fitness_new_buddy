@@ -51,7 +51,7 @@ router.post('/login', (req, res) => {
 // Protected profile route (GET)
 router.get('/profile', verifyToken, (req, res) => {
   const userId = req.user.id;
-  db.get('SELECT id, name, email, role, gym_id FROM users WHERE id = ?', [userId], (err, row) => {
+  db.get('SELECT id, name, email, role, gym_id, avatar_url, bio, COALESCE(allow_calorie_share,0) as allow_calorie_share FROM users WHERE id = ?', [userId], (err, row) => {
     if (err) return res.status(500).json({ error: 'Database error' });
     if (!row) return res.status(404).json({ error: 'User not found' });
     res.json(row);
@@ -61,12 +61,12 @@ router.get('/profile', verifyToken, (req, res) => {
 // Update profile (PUT) - allow changing name and for members selecting gym
 router.put('/profile', verifyToken, (req, res) => {
   const userId = req.user.id;
-  const { name, gym_id } = req.body;
+  const { name, gym_id, bio, allow_calorie_share } = req.body;
 
   // Only members can set gym_id here; owners/trainers shouldn't set it this way
-  db.run('UPDATE users SET name = ?, gym_id = ? WHERE id = ?', [name || null, gym_id || null, userId], function (err) {
+  db.run('UPDATE users SET name = ?, gym_id = ?, bio = COALESCE(?, bio), allow_calorie_share = COALESCE(?, allow_calorie_share, 0) WHERE id = ?', [name || null, gym_id || null, bio ?? null, (allow_calorie_share ? 1 : 0), userId], function (err) {
     if (err) return res.status(500).json({ error: 'Failed to update profile' });
-    db.get('SELECT id, name, email, role, gym_id FROM users WHERE id = ?', [userId], (err2, row) => {
+    db.get('SELECT id, name, email, role, gym_id, avatar_url, bio, COALESCE(allow_calorie_share,0) as allow_calorie_share FROM users WHERE id = ?', [userId], (err2, row) => {
       if (err2) return res.status(500).json({ error: 'Database error' });
       res.json(row);
     });

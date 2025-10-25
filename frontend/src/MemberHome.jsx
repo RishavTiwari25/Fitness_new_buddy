@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { API_BASE } from './api'
+import EquipmentSlots from './EquipmentSlots'
 
 // We'll dynamically import html5-qrcode when the user starts scanning.
 let Html5QrcodeCtor
@@ -14,6 +15,9 @@ export default function MemberHome({ token, defaultGymId }) {
   const scannerRef = useRef(null)
   const [equipment, setEquipment] = useState([])
   const [myBookings, setMyBookings] = useState([])
+  const [showSlotsFor, setShowSlotsFor] = useState(null)
+  const [showAlt, setShowAlt] = useState(null)
+  const [alts, setAlts] = useState([])
 
   function parseJwt(tk) {
     try { return JSON.parse(atob(tk.split('.')[1])) } catch { return {} }
@@ -208,6 +212,7 @@ export default function MemberHome({ token, defaultGymId }) {
                     {bookedByMe && (
                       <button onClick={() => releaseEquipment(eq.id)}>Release</button>
                     )}
+                    <button style={{ marginLeft: 6 }} onClick={() => setShowSlotsFor(eq)}>View Time Slots</button>
                   </div>
                 </div>
               )
@@ -225,6 +230,17 @@ export default function MemberHome({ token, defaultGymId }) {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {showSlotsFor && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowSlotsFor(null)}>
+          <div style={{ background: '#fff', padding: 16, width: 600, maxHeight: '80vh', overflow: 'auto' }} onClick={e => e.stopPropagation()}>
+            <h3>{showSlotsFor.name}</h3>
+            <p style={{ color: '#666' }}>Book a 15-minute time slot, join waitlist when full, or take an idle slot after start.</p>
+            <EquipmentSlots token={token} equipment={showSlotsFor} onBooked={() => { loadMyBookings(); }} />
+            <div style={{ textAlign: 'right', marginTop: 10 }}><button onClick={() => setShowSlotsFor(null)}>Close</button></div>
+          </div>
         </div>
       )}
     </div>

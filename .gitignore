@@ -1,0 +1,23 @@
+# Node
+backend/node_modules/
+frontend/node_modules/
+npm-debug.log*
+
+# Builds & uploads
+frontend/dist/
+backend/uploads/
+
+# Environment & secrets
+.env
+**/.env
+backend/.env
+frontend/.env
+
+# SQLite databases
+*.sqlite
+*.sqlite3
+
+# Editor
+.vscode/
+*.swp
+*.tmp

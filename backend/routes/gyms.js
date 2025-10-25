@@ -236,13 +236,34 @@ router.post('/gyms/:gymId/checkin', verifyToken, requireRole('member'), (req, re
         // Checkout from the same gym
         db.run('UPDATE presence SET active = 0, checkout_at = datetime("now") WHERE id = ?', [activeRow.id], function (err4) {
           if (err4) return res.status(500).json({ error: 'Failed to checkout' });
-          req._action = 'checkout';
-          finish();
+          // Auto-release any active bookings by this user in this gym
+          const releaseSql = `
+            UPDATE equipment_booking
+            SET active = 0, ended_at = datetime('now')
+            WHERE user_id = ? AND active = 1 AND equipment_id IN (
+              SELECT id FROM equipment WHERE gym_id = ?
+            )
+          `;
+          db.run(releaseSql, [userId, gymId], function () {
+            req._action = 'checkout';
+            finish();
+          });
         });
       } else {
         const endOther = (cb) => {
           if (activeRow) {
-            db.run('UPDATE presence SET active = 0, checkout_at = datetime("now") WHERE id = ?', [activeRow.id], cb);
+            db.run('UPDATE presence SET active = 0, checkout_at = datetime("now") WHERE id = ?', [activeRow.id], (errEnd) => {
+              if (errEnd) return cb(errEnd);
+              // Also auto-release any active bookings in the previous gym
+              const releasePrevSql = `
+                UPDATE equipment_booking
+                SET active = 0, ended_at = datetime('now')
+                WHERE user_id = ? AND active = 1 AND equipment_id IN (
+                  SELECT id FROM equipment WHERE gym_id = ?
+                )
+              `;
+              db.run(releasePrevSql, [userId, activeRow.gym_id], (errRel) => cb(errRel));
+            });
           } else cb();
         };
 
@@ -290,6 +311,31 @@ router.get('/gyms/:gymId/presence', verifyToken, requireRole('owner'), (req, res
     db.all(sql, [gymId], (err2, rows) => {
       if (err2) return res.status(500).json({ error: 'DB error' });
       res.json({ gym_id: gymId, members: rows });
+    });
+  });
+});
+
+// List active bookings for a gym (owners only)
+router.get('/gyms/:gymId/bookings', verifyToken, requireRole('owner'), (req, res) => {
+  const gymId = parseInt(req.params.gymId, 10);
+  db.get('SELECT * FROM gyms WHERE id = ?', [gymId], (err, gym) => {
+    if (err) return res.status(500).json({ error: 'DB error' });
+    if (!gym) return res.status(404).json({ error: 'Gym not found' });
+    if (gym.owner_id !== req.user.id) return res.status(403).json({ error: 'Not the gym owner' });
+
+    const sql = `
+      SELECT b.id as booking_id, b.started_at, b.user_id, b.equipment_id,
+             u.name as user_name, u.email as user_email,
+             e.name as equipment_name
+      FROM equipment_booking b
+      JOIN equipment e ON e.id = b.equipment_id
+      JOIN users u ON u.id = b.user_id
+      WHERE b.active = 1 AND e.gym_id = ?
+      ORDER BY b.started_at ASC
+    `;
+    db.all(sql, [gymId], (err2, rows) => {
+      if (err2) return res.status(500).json({ error: 'DB error' });
+      res.json({ gym_id: gymId, bookings: rows });
     });
   });
 });
