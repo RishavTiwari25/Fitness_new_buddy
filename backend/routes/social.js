@@ -6,7 +6,7 @@ const { verifyToken } = require('../middleware/auth');
 const router = express.Router();
 
 // Ensure we preserve the original file extension so browsers can render the image type correctly
-const uploadsDir = path.join(__dirname, '..', 'uploads');
+const uploadsDir = process.env.UPLOADS_DIR || path.join(__dirname, '..', 'uploads');
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadsDir),
   filename: (_req, file, cb) => {

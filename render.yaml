@@ -13,6 +13,8 @@ services:
         value: 0.0.0.0
       - key: DB_FILE
         value: /opt/render/project/src/backend/data/db.sqlite
+      - key: UPLOADS_DIR
+        value: /opt/render/project/src/backend/data/uploads
     disk:
       name: data
       mountPath: /opt/render/project/src/backend/data

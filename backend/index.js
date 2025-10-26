@@ -29,8 +29,9 @@ app.use('/api', notificationsRouter);
 
 app.get('/health', (req, res) => res.send('Fitness Buddy backend running'));
 
-// Serve uploaded images statically
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve uploaded images statically (allow override via env for hosted platforms)
+const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(UPLOADS_DIR));
 
 // Serve frontend build (single-server mode)
 const distDir = path.resolve(__dirname, '..', 'frontend', 'dist');
