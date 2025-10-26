@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const multer = require('multer');
 const db = require('../db');
 const { verifyToken } = require('../middleware/auth');
@@ -7,6 +8,7 @@ const router = express.Router();
 
 // Ensure we preserve the original file extension so browsers can render the image type correctly
 const uploadsDir = process.env.UPLOADS_DIR || path.join(__dirname, '..', 'uploads');
+try { fs.mkdirSync(uploadsDir, { recursive: true }); } catch (_) {}
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadsDir),
   filename: (_req, file, cb) => {

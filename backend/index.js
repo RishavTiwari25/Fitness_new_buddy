@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const authRouter = require('./routes/auth');
 const gymsRouter = require('./routes/gyms');
 const dietRouter = require('./routes/diet');
@@ -31,15 +32,18 @@ app.get('/health', (req, res) => res.send('Fitness Buddy backend running'));
 
 // Serve uploaded images statically (allow override via env for hosted platforms)
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
+try { fs.mkdirSync(UPLOADS_DIR, { recursive: true }); } catch (_) {}
 app.use('/uploads', express.static(UPLOADS_DIR));
 
-// Serve frontend build (single-server mode)
+// Serve frontend build (single-server mode) only if dist exists
 const distDir = path.resolve(__dirname, '..', 'frontend', 'dist');
-app.use(express.static(distDir));
-// SPA fallback for non-API routes
-app.get(/^\/(?!api).*/, (req, res) => {
-	res.sendFile(path.join(distDir, 'index.html'));
-});
+if (fs.existsSync(distDir)) {
+	app.use(express.static(distDir));
+	// SPA fallback for non-API routes
+	app.get(/^\/(?!api).*/, (req, res) => {
+		res.sendFile(path.join(distDir, 'index.html'));
+	});
+}
 
 const PORT = process.env.PORT || 4000;
 // Bind to 0.0.0.0 by default so platforms like Render can accept external traffic

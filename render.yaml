@@ -2,7 +2,6 @@ services:
   - type: web
     name: fitness-buddy-backend
     env: node
-    plan: free
     rootDir: backend
     buildCommand: npm install
     startCommand: node index.js
@@ -12,10 +11,6 @@ services:
       - key: HOST
         value: 0.0.0.0
       - key: DB_FILE
-        value: /opt/render/project/src/backend/data/db.sqlite
+        value: /tmp/db.sqlite
       - key: UPLOADS_DIR
-        value: /opt/render/project/src/backend/data/uploads
-    disk:
-      name: data
-      mountPath: /opt/render/project/src/backend/data
-      sizeGB: 1
+        value: /tmp/uploads
