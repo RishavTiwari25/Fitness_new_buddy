@@ -189,171 +189,8 @@ export default function Feed({ token }) {
           </div>
         </div>
 
-        {/* Main Feed */}
+        {/* Center - Feed Posts */}
         <div style={{ flex: 1, maxWidth: '700px' }}>
-          {/* Create Post Card */}
-          <form 
-            onSubmit={submitPost} 
-            style={{
-              backgroundColor: '#27272a',
-              borderRadius: '20px',
-              padding: '24px',
-              marginBottom: '24px',
-              border: '1px solid #3f3f46'
-            }}
-          >
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '700',
-              color: '#fafafa',
-              marginBottom: '16px'
-            }}>
-              Create Post
-            </h3>
-            
-            <textarea 
-              rows={3} 
-              placeholder="Share your progress, achievements, or fitness journey..." 
-              value={text} 
-              onChange={e => setText(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                backgroundColor: '#18181b',
-                color: '#fafafa',
-                border: '2px solid #3f3f46',
-                borderRadius: '12px',
-                fontSize: '15px',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-                resize: 'vertical',
-                fontFamily: 'inherit',
-                lineHeight: '1.5',
-                marginBottom: '12px'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#D0FD3E'}
-              onBlur={(e) => e.target.style.borderColor = '#3f3f46'}
-            />
-
-            {/* Image Preview */}
-            {imagePreview && (
-              <div style={{
-                position: 'relative',
-                marginBottom: '12px',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                border: '2px solid #3f3f46'
-              }}>
-                <img 
-                  src={imagePreview} 
-                  alt="Preview" 
-                  style={{ 
-                    width: '100%', 
-                    maxHeight: '300px',
-                    objectFit: 'cover'
-                  }} 
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setImage(null)
-                    setImagePreview(null)
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: '8px',
-                    right: '8px',
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(0,0,0,0.7)',
-                    border: 'none',
-                    color: '#fafafa',
-                    fontSize: '18px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-            )}
-            
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              {/* Image Upload Button */}
-              <label style={{
-                padding: '10px 16px',
-                backgroundColor: '#3f3f46',
-                color: '#fafafa',
-                border: 'none',
-                borderRadius: '10px',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#52525b'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3f3f46'}
-              >
-                📷 Add Photo
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={handleImageSelect}
-                  style={{ display: 'none' }} 
-                />
-              </label>
-
-              {/* Post Button */}
-              <button
-                type="submit"
-                style={{
-                  flex: 1,
-                  padding: '10px 16px',
-                  backgroundColor: '#D0FD3E',
-                  color: '#18181b',
-                  border: 'none',
-                  borderRadius: '9999px',
-                  fontSize: '14px',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#c4ed38'
-                  e.target.style.transform = 'translateY(-1px)'
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#D0FD3E'
-                  e.target.style.transform = 'translateY(0)'
-                }}
-              >
-                📝 Post
-              </button>
-            </div>
-
-            {msg && (
-              <div style={{
-                marginTop: '12px',
-                padding: '10px 14px',
-                backgroundColor: msg.includes('✓') ? '#d1fae5' : '#fee2e2',
-                color: msg.includes('✓') ? '#065f46' : '#991b1b',
-                borderRadius: '8px',
-                fontSize: '13px',
-                fontWeight: '600',
-                textAlign: 'center'
-              }}>
-                {msg}
-              </div>
-            )}
-          </form>
-
-          {/* Feed Posts */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {feed.map(p => (
               <div 
@@ -521,6 +358,166 @@ export default function Feed({ token }) {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Right Sidebar - Create Post */}
+        <div style={{ width: '360px', position: 'sticky', top: '24px' }}>
+          <form 
+            onSubmit={submitPost} 
+            style={{
+              backgroundColor: '#27272a',
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid #3f3f46'
+            }}
+          >
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '700',
+              color: '#fafafa',
+              marginBottom: '16px'
+            }}>
+              Create Post
+            </h3>
+
+            <textarea 
+              rows={4} 
+              placeholder="Share your progress, achievements, or fitness journey..." 
+              value={text} 
+              onChange={e => setText(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                backgroundColor: '#18181b',
+                color: '#fafafa',
+                border: '2px solid #3f3f46',
+                borderRadius: '12px',
+                fontSize: '15px',
+                outline: 'none',
+                transition: 'border-color 0.2s',
+                resize: 'vertical',
+                fontFamily: 'inherit',
+                lineHeight: '1.5',
+                marginBottom: '12px'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#D0FD3E'}
+              onBlur={(e) => e.target.style.borderColor = '#3f3f46'}
+            />
+
+            {imagePreview && (
+              <div style={{
+                position: 'relative',
+                marginBottom: '12px',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                border: '2px solid #3f3f46'
+              }}>
+                <img 
+                  src={imagePreview} 
+                  alt="Preview" 
+                  style={{ 
+                    width: '100%', 
+                    maxHeight: '220px',
+                    objectFit: 'cover'
+                  }} 
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImage(null)
+                    setImagePreview(null)
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    border: 'none',
+                    color: '#fafafa',
+                    fontSize: '18px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <label style={{
+                padding: '10px 16px',
+                backgroundColor: '#3f3f46',
+                color: '#fafafa',
+                border: 'none',
+                borderRadius: '10px',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#52525b'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3f3f46'}
+              >
+                📷 Add Photo
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleImageSelect}
+                  style={{ display: 'none' }} 
+                />
+              </label>
+
+              <button
+                type="submit"
+                style={{
+                  flex: 1,
+                  padding: '10px 16px',
+                  backgroundColor: '#D0FD3E',
+                  color: '#18181b',
+                  border: 'none',
+                  borderRadius: '9999px',
+                  fontSize: '14px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#c4ed38'
+                  e.target.style.transform = 'translateY(-1px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#D0FD3E'
+                  e.target.style.transform = 'translateY(0)'
+                }}
+              >
+                📝 Post
+              </button>
+            </div>
+
+            {msg && (
+              <div style={{
+                marginTop: '12px',
+                padding: '10px 14px',
+                backgroundColor: msg.includes('✓') ? '#d1fae5' : '#fee2e2',
+                color: msg.includes('✓') ? '#065f46' : '#991b1b',
+                borderRadius: '8px',
+                fontSize: '13px',
+                fontWeight: '600',
+                textAlign: 'center'
+              }}>
+                {msg}
+              </div>
+            )}
+          </form>
         </div>
       </div>
     </div>

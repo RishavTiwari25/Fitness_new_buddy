@@ -12,6 +12,7 @@ import HomeWorkout from './HomeWorkout'
 import TrainerDashboard from './TrainerDashboard'
 import MyPayments from './MyPayments'
 import ContactFooter from './ContactFooter'
+import NotificationsBell from './NotificationsBell'
 import BrowseEquipment from './BrowseEquipment'
 
 function parseJwt(token) {
@@ -186,6 +187,7 @@ export default function Dashboard({ token, onLogout }) {
           <button style={navButtonStyle(view === 'feed')} onClick={() => setView('feed')}>Feed</button>
           <button style={navButtonStyle(view === 'rewards')} onClick={() => setView('rewards')}>Rewards</button>
           <button style={navButtonStyle(view === 'homeWorkout')} onClick={() => setView('homeWorkout')}>Workout</button>
+          <NotificationsBell token={token} />
           <button style={{ ...navButtonStyle(false), backgroundColor: '#ef4444', border: 'none' }} onClick={onLogout}>Logout</button>
         </div>
       </div>

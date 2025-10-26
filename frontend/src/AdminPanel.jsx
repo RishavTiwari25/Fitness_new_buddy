@@ -202,144 +202,181 @@ export default function AdminPanel({ token }) {
   }
 
   return (
-    <div>
-      <h3>Gym Owner Admin</h3>
-      <section style={{ marginBottom: 16 }}>
-        <h4>Create a Gym</h4>
-        <form onSubmit={createGym}>
-          <div><input placeholder="Gym name" value={name} onChange={e => setName(e.target.value)} /></div>
-          <div style={{ marginTop: 6 }}><input placeholder="Location" value={location} onChange={e => setLocation(e.target.value)} /></div>
-          <div style={{ marginTop: 6 }}><button type="submit" style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: '9999px', padding: '12px 24px', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Create Gym</button></div>
-        </form>
-      </section>
+    <div style={{ minHeight: '100vh', backgroundColor: '#18181b', padding: '24px' }}>
+      <h2 style={{ fontSize: 28, fontWeight: 800, color: '#fafafa', marginBottom: 16 }}>Gym Owner Admin</h2>
 
-      <section style={{ marginBottom: 16 }}>
-        <h4>Your Gyms</h4>
-        <div>
-          {gyms.map(g => (
-            <div key={g.id} style={{ padding: 6 }}>
-              <button onClick={() => loadEquipment(g.id)}>{g.name} {g.location ? `(${g.location})` : ''}</button>
-            </div>
-          ))}
-          {gyms.length === 0 && <p>No gyms yet.</p>}
-        </div>
-      </section>
+      <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+        {/* Left column: Create + Gyms */}
+        <div style={{ width: 340, position: 'sticky', top: 24 }}>
+          <div style={{ backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 16, marginBottom: 16 }}>
+            <h4 style={{ color: '#fafafa', marginBottom: 10 }}>Create a Gym</h4>
+            <form onSubmit={createGym}>
+              <div>
+                <input placeholder="Gym name" value={name} onChange={e => setName(e.target.value)} style={{ width: '100%', padding: '10px 12px', background: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10 }} />
+              </div>
+              <div style={{ marginTop: 8 }}>
+                <input placeholder="Location" value={location} onChange={e => setLocation(e.target.value)} style={{ width: '100%', padding: '10px 12px', background: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10 }} />
+              </div>
+              <div style={{ marginTop: 10 }}>
+                <button type="submit" style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: 9999, padding: '10px 16px', border: 'none', cursor: 'pointer', fontWeight: 700, width: '100%' }}>Create Gym</button>
+              </div>
+            </form>
+          </div>
 
-      {selectedGym && (
-        <section>
-          <h4>Equipment for gym #{selectedGym}</h4>
-          <GymQRCode gymId={selectedGym} />
-          <div style={{ margin: '10px 0' }}>
-            <strong>Currently checked in:</strong> {occupancy ?? '—'}
-            <div style={{ marginTop: 6 }}>
-              {present.length === 0 && <div style={{ color: '#666' }}>No members inside.</div>}
-              {present.map(m => (
-                <div key={m.presence_id} style={{ fontSize: 14, padding: '4px 0', borderBottom: '1px solid #eee' }}>
-                  <div><strong>{m.name || m.email}</strong></div>
-                  <div style={{ color: '#777' }}>{m.email}</div>
-                  <div style={{ fontSize: 12, color: '#999' }}>since {m.checkin_at}</div>
+          <div style={{ backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 16 }}>
+            <h4 style={{ color: '#fafafa', marginBottom: 10 }}>Your Gyms</h4>
+            <div>
+              {gyms.map(g => (
+                <div key={g.id} style={{ padding: 6 }}>
+                  <button onClick={() => loadEquipment(g.id)} style={{ padding: '8px 12px', borderRadius: 9999, border: '1px solid #3f3f46', background: selectedGym === g.id ? '#D0FD3E' : '#3f3f46', color: selectedGym === g.id ? '#18181b' : '#fafafa', fontWeight: 700, cursor: 'pointer' }}>
+                    {g.name} {g.location ? `(${g.location})` : ''}
+                  </button>
                 </div>
               ))}
+              {gyms.length === 0 && <p style={{ color: '#a1a1aa' }}>No gyms yet.</p>}
             </div>
           </div>
-          <div>
-            {equipment.map(eq => <EquipmentRow key={eq.id} eq={eq} onEdit={startEdit} onDelete={deleteEquipment} />)}
-            {equipment.length === 0 && <p>No equipment.</p>}
-          </div>
+        </div>
 
-          <form onSubmit={editing ? saveEdit : addEquipment} style={{ marginTop: 12 }}>
-            <div><input placeholder="Equipment name" value={eqName} onChange={e => setEqName(e.target.value)} /></div>
-            <div style={{ marginTop: 6 }}><input placeholder="Notes" value={eqNotes} onChange={e => setEqNotes(e.target.value)} /></div>
-            <div style={{ marginTop: 6 }}><input type="number" min={1} value={eqQuantity} onChange={e => setEqQuantity(e.target.value)} /></div>
-            <div style={{ marginTop: 6 }}>
-              <button type="submit" style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: '9999px', padding: '12px 24px', border: 'none', cursor: 'pointer', fontWeight: 600 }}>{editing ? 'Save' : 'Add Equipment'}</button>
-              {editing && <button type="button" onClick={() => { setEditing(null); setEqName(''); setEqNotes(''); setEqQuantity(1) }} style={{ marginLeft: 8, backgroundColor: '#3f3f46', color: '#fafafa', borderRadius: '9999px', padding: '12px 24px', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Cancel</button>}
+        {/* Right content */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {!selectedGym && (
+            <div style={{ background: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 24, color: '#a1a1aa' }}>
+              Select a gym from the left to see equipment, bookings, and memberships.
             </div>
-          </form>
-        </section>
-      )}
+          )}
 
-      {selectedGym && (
-        <section style={{ marginTop: 16 }}>
-          <h4>Active equipment bookings</h4>
-          <div>
-            {bookings.length === 0 && <div style={{ color: '#666' }}>No active bookings.</div>}
-            {bookings.map(b => (
-              <div key={b.booking_id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #eee' }}>
-                <div>
-                  <strong>{b.equipment_name}</strong>
-                  <div style={{ fontSize: 12 }}>by {b.user_name || b.user_email} since {b.started_at}</div>
+          {selectedGym && (
+            <>
+              {/* Section: Overview */}
+              <div style={{ backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <h3 style={{ color: '#fafafa', margin: 0 }}>Overview — Gym #{selectedGym}</h3>
+                  <span style={{ background: '#3f3f46', color: '#fafafa', padding: '6px 10px', borderRadius: 9999, fontSize: 12, fontWeight: 700 }}>Checked in: {occupancy ?? '—'}</span>
                 </div>
-                <div>
-                  <button onClick={async () => {
-                    const res = await fetch(`${API_BASE}/api/equipment/${b.equipment_id}/release`, { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
-                    const data = await res.json()
-                    if (res.ok) {
-                      loadBookings(selectedGym)
-                    } else {
-                      alert(data.error || 'Failed to release')
-                    }
-                  }}>Force release</button>
+                <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                  <div style={{ border: '1px dashed #3f3f46', borderRadius: 12, padding: 12 }}>
+                    <div style={{ color: '#a1a1aa', marginBottom: 6 }}>QR for this gym</div>
+                    <GymQRCode gymId={selectedGym} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 260 }}>
+                    <div style={{ color: '#a1a1aa', marginBottom: 6 }}>Currently inside</div>
+                    <div style={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 12, padding: 12, maxHeight: 220, overflow: 'auto' }}>
+                      {present.length === 0 && <div style={{ color: '#666' }}>No members inside.</div>}
+                      {present.map(m => (
+                        <div key={m.presence_id} style={{ fontSize: 14, padding: '6px 0', borderBottom: '1px solid #2e2e31' }}>
+                          <div><strong style={{ color: '#fafafa' }}>{m.name || m.email}</strong></div>
+                          <div style={{ color: '#a1a1aa' }}>{m.email}</div>
+                          <div style={{ fontSize: 12, color: '#9ca3af' }}>since {m.checkin_at}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
-      )}
 
-      {selectedGym && (
-        <section style={{ marginTop: 16 }}>
-          <h4>Memberships & Payments</h4>
-          {saveMsg && <div style={{ marginBottom: 6 }}>{saveMsg}</div>}
-          <div>
-            {memberships.length === 0 && <div style={{ color: '#666' }}>No members in this gym yet.</div>}
-            {memberships.map(m => (
-              <div key={m.user_id}>
-                <div style={{ display:'grid', gridTemplateColumns: '1fr 140px 160px 1fr', gap: 8, padding: '6px 0', borderBottom: '1px solid #eee' }}>
-                  <div>
-                    <div><strong>{m.name || m.email}</strong></div>
-                    <div style={{ fontSize: 12, color: '#777' }}>{m.email}</div>
-                    {m.last_payment_at && <div style={{ fontSize: 12, color: '#555' }}>Last payment: {m.last_payment_at}</div>}
-                  </div>
-                  <div>
-                    <input type="number" placeholder="Monthly fee" defaultValue={m.monthly_fee || ''} onBlur={e => m._fee = e.target.value} />
-                  </div>
-                  <div>
-                    <input type="date" defaultValue={m.next_due_date || ''} onBlur={e => m._due = e.target.value} />
-                  </div>
-                  <div>
-                    <button onClick={() => saveMembership(
-                      m.user_id,
-                      (m._fee ?? m.monthly_fee ?? 0),
-                      (m._due ?? (m.next_due_date || null))
-                    )}>Save</button>
-                    <button onClick={() => remind(m.user_id)} style={{ marginLeft: 6 }}>Remind</button>
-                    <button onClick={() => { const amt = prompt('Amount paid', String(m.monthly_fee || '')); if (amt) recordPayment(m.user_id, amt) }} style={{ marginLeft: 6 }}>Record Payment</button>
-                    <button onClick={() => toggleViewPayments(m.user_id)} style={{ marginLeft: 6 }}>{openPaymentsFor[m.user_id] ? 'Hide Payments' : 'View Payments'}</button>
-                  </div>
+              {/* Section: Equipment */}
+              <div style={{ backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 16 }}>
+                <h3 style={{ color: '#fafafa', marginTop: 0 }}>Equipment</h3>
+                <div>
+                  {equipment.map(eq => <EquipmentRow key={eq.id} eq={eq} onEdit={startEdit} onDelete={deleteEquipment} />)}
+                  {equipment.length === 0 && <p style={{ color: '#a1a1aa' }}>No equipment.</p>}
                 </div>
-                {openPaymentsFor[m.user_id] && (
-                  <div style={{ padding: '6px 0 12px 0', borderBottom: '1px solid #f0f0f0', marginLeft: 8 }}>
-                    <div style={{ fontSize: 12, color: '#333', marginBottom: 4 }}>Recent payments:</div>
-                    {(!paymentsCache[m.user_id] || paymentsCache[m.user_id].length === 0) && (
-                      <div style={{ fontSize: 12, color: '#777' }}>No payments.</div>
-                    )}
-                    {paymentsCache[m.user_id] && paymentsCache[m.user_id].length > 0 && (
-                      <ul style={{ margin: 0, paddingLeft: 16 }}>
-                        {paymentsCache[m.user_id].map(p => (
-                          <li key={p.id} style={{ fontSize: 13 }}>
-                            ₹{p.amount} — {p.method || '—'} on {p.created_at}{p.txn_ref ? ` (ref: ${p.txn_ref})` : ''}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+
+                <form onSubmit={editing ? saveEdit : addEquipment} style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1fr 120px', gap: 8 }}>
+                  <input placeholder="Equipment name" value={eqName} onChange={e => setEqName(e.target.value)} style={{ padding: '10px 12px', background: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10 }} />
+                  <input placeholder="Notes" value={eqNotes} onChange={e => setEqNotes(e.target.value)} style={{ padding: '10px 12px', background: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10 }} />
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input type="number" min={1} value={eqQuantity} onChange={e => setEqQuantity(e.target.value)} style={{ width: 80, padding: '10px 12px', background: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10 }} />
+                    <button type="submit" style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: 9999, padding: '10px 16px', border: 'none', cursor: 'pointer', fontWeight: 700 }}>{editing ? 'Save' : 'Add'}</button>
+                    {editing && <button type="button" onClick={() => { setEditing(null); setEqName(''); setEqNotes(''); setEqQuantity(1) }} style={{ backgroundColor: '#3f3f46', color: '#fafafa', borderRadius: 9999, padding: '10px 16px', border: 'none', cursor: 'pointer', fontWeight: 700 }}>Cancel</button>}
                   </div>
-                )}
+                </form>
               </div>
-            ))}
-          </div>
-        </section>
-      )}
+
+              {/* Section: Active Bookings */}
+              <div style={{ backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 16 }}>
+                <h3 style={{ color: '#fafafa', marginTop: 0 }}>Active Equipment Bookings</h3>
+                <div>
+                  {bookings.length === 0 && <div style={{ color: '#666' }}>No active bookings.</div>}
+                  {bookings.map(b => (
+                    <div key={b.booking_id} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #2e2e31' }}>
+                      <div>
+                        <strong style={{ color: '#fafafa' }}>{b.equipment_name}</strong>
+                        <div style={{ fontSize: 12, color: '#a1a1aa' }}>by {b.user_name || b.user_email} since {b.started_at}</div>
+                      </div>
+                      <div>
+                        <button onClick={async () => {
+                          const res = await fetch(`${API_BASE}/api/equipment/${b.equipment_id}/release`, { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+                          const data = await res.json()
+                          if (res.ok) {
+                            loadBookings(selectedGym)
+                          } else {
+                            alert(data.error || 'Failed to release')
+                          }
+                        }} style={{ background: '#3f3f46', color: '#fafafa', border: 'none', borderRadius: 9999, padding: '8px 12px', cursor: 'pointer' }}>Force release</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Section: Memberships & Payments */}
+              <div style={{ backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 16 }}>
+                <h3 style={{ color: '#fafafa', marginTop: 0 }}>Memberships & Payments</h3>
+                {saveMsg && <div style={{ marginBottom: 6, color: '#a1a1aa' }}>{saveMsg}</div>}
+                <div>
+                  {memberships.length === 0 && <div style={{ color: '#666' }}>No members in this gym yet.</div>}
+                  {memberships.map(m => (
+                    <div key={m.user_id}>
+                      <div style={{ display:'grid', gridTemplateColumns: '1fr 140px 160px 1fr', gap: 8, padding: '10px 0', borderBottom: '1px solid #2e2e31' }}>
+                        <div>
+                          <div><strong style={{ color: '#fafafa' }}>{m.name || m.email}</strong></div>
+                          <div style={{ fontSize: 12, color: '#a1a1aa' }}>{m.email}</div>
+                          {m.last_payment_at && <div style={{ fontSize: 12, color: '#9ca3af' }}>Last payment: {m.last_payment_at}</div>}
+                        </div>
+                        <div>
+                          <input type="number" placeholder="Monthly fee" defaultValue={m.monthly_fee || ''} onBlur={e => m._fee = e.target.value} style={{ width: '100%', padding: '10px 12px', background: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10 }} />
+                        </div>
+                        <div>
+                          <input type="date" defaultValue={m.next_due_date || ''} onBlur={e => m._due = e.target.value} style={{ width: '100%', padding: '10px 12px', background: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10 }} />
+                        </div>
+                        <div>
+                          <button onClick={() => saveMembership(
+                            m.user_id,
+                            (m._fee ?? m.monthly_fee ?? 0),
+                            (m._due ?? (m.next_due_date || null))
+                          )} style={{ background: '#D0FD3E', color: '#18181b', border: 'none', borderRadius: 9999, padding: '8px 12px', cursor: 'pointer', fontWeight: 700 }}>Save</button>
+                          <button onClick={() => remind(m.user_id)} style={{ marginLeft: 6, background: '#3f3f46', color: '#fafafa', border: 'none', borderRadius: 9999, padding: '8px 12px', cursor: 'pointer' }}>Remind</button>
+                          <button onClick={() => { const amt = prompt('Amount paid', String(m.monthly_fee || '')); if (amt) recordPayment(m.user_id, amt) }} style={{ marginLeft: 6, background: '#3f3f46', color: '#fafafa', border: 'none', borderRadius: 9999, padding: '8px 12px', cursor: 'pointer' }}>Record Payment</button>
+                          <button onClick={() => toggleViewPayments(m.user_id)} style={{ marginLeft: 6, background: '#3f3f46', color: '#fafafa', border: 'none', borderRadius: 9999, padding: '8px 12px', cursor: 'pointer' }}>{openPaymentsFor[m.user_id] ? 'Hide Payments' : 'View Payments'}</button>
+                        </div>
+                      </div>
+                      {openPaymentsFor[m.user_id] && (
+                        <div style={{ padding: '6px 0 12px 0', borderBottom: '1px solid #2e2e31', marginLeft: 8 }}>
+                          <div style={{ fontSize: 12, color: '#a1a1aa', marginBottom: 4 }}>Recent payments:</div>
+                          {(!paymentsCache[m.user_id] || paymentsCache[m.user_id].length === 0) && (
+                            <div style={{ fontSize: 12, color: '#777' }}>No payments.</div>
+                          )}
+                          {paymentsCache[m.user_id] && paymentsCache[m.user_id].length > 0 && (
+                            <ul style={{ margin: 0, paddingLeft: 16 }}>
+                              {paymentsCache[m.user_id].map(p => (
+                                <li key={p.id} style={{ fontSize: 13, color: '#fafafa' }}>
+                                  ₹{p.amount} — {p.method || '—'} on {p.created_at}{p.txn_ref ? ` (ref: ${p.txn_ref})` : ''}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

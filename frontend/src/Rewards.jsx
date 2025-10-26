@@ -63,66 +63,126 @@ export default function Rewards({ token }) {
 
   return (
     <div>
-      <h3>Rewards & Points</h3>
-      <div style={{ marginBottom: 10 }}>Your points: <strong>{points}</strong></div>
-      <button onClick={claimDaily}>Claim Daily Points</button>
-      {msg && <div style={{ marginTop: 8 }}>{msg}</div>}
+      <div className="card" style={{ padding: 20, marginTop: 12, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'space-between' }}>
+        <div>
+          <h3 style={{ fontSize: 20, marginBottom: 6 }}>Rewards & Points</h3>
+          <div className="text-secondary" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 13 }}>Your points</span>
+            <span style={{
+              background: 'rgba(208, 253, 62, 0.12)',
+              color: 'var(--accent-lime)',
+              border: '1px solid var(--accent-lime)',
+              padding: '6px 10px',
+              borderRadius: 9999,
+              fontWeight: 700
+            }}>{points}</span>
+          </div>
+        </div>
+        <button className="btn-primary rounded-full" onClick={claimDaily}>Claim Daily Points</button>
+      </div>
+      {msg && (
+        <div className="card" style={{
+          padding: 12,
+          marginBottom: 16,
+          background: 'rgba(208, 253, 62, 0.08)',
+          border: '1px solid var(--accent-lime)',
+          color: 'var(--accent-lime)',
+          fontWeight: 600
+        }}>{msg}</div>
+      )}
 
-      <div style={{ display: 'flex', gap: 24, marginTop: 16, alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
         <div style={{ flex: 1 }}>
-          <h4>Available Rewards</h4>
-          {available.length === 0 && <div style={{ color: '#666' }}>No rewards available for your gym yet.</div>}
-          <ul>
-            {available.map(r => (
-              <li key={r.id} style={{ marginBottom: 8 }}>
-                <strong>{r.name}</strong> - {r.cost_points} pts{r.description ? ` — ${r.description}` : ''}
-                <div>
-                  <button disabled={points < r.cost_points} onClick={() => redeem(r.id)}>
-                    Redeem ({points < r.cost_points ? 'Not enough points' : 'Redeem now'})
-                  </button>
+          <h4 style={{ marginBottom: 10 }}>Available Rewards</h4>
+          {available.length === 0 && <div className="text-secondary">No rewards available for your gym yet.</div>}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
+            {available.map(r => {
+              const disabled = points < r.cost_points
+              return (
+                <div key={r.id} className="card" style={{ padding: 16, background: 'var(--bg-secondary)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <div style={{ fontWeight: 700, fontSize: 16 }}>{r.name}</div>
+                    <span style={{
+                      background: 'var(--bg-card)',
+                      border: '1px solid var(--border-color)',
+                      padding: '6px 10px',
+                      borderRadius: 9999,
+                      fontSize: 12
+                    }}>{r.cost_points} pts</span>
+                  </div>
+                  {r.description && <div className="text-secondary" style={{ fontSize: 13, marginBottom: 12 }}>{r.description}</div>}
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      className={`rounded-full ${disabled ? 'btn-secondary' : 'btn-primary'}`}
+                      disabled={disabled}
+                      onClick={() => redeem(r.id)}
+                      style={{ padding: '10px 16px', fontWeight: 700, opacity: disabled ? 0.6 : 1, cursor: disabled ? 'not-allowed' : 'pointer' }}
+                    >
+                      {disabled ? 'Not enough points' : 'Redeem now'}
+                    </button>
+                  </div>
                 </div>
-              </li>
-            ))}
-          </ul>
+              )
+            })}
+          </div>
         </div>
 
         {isOwner && (
-          <div style={{ width: 320 }}>
-            <h4>Owner: Create Reward</h4>
-            <form onSubmit={createReward}>
-              <div>
-                <label>Gym</label><br />
-                <select value={form.gym_id} onChange={e => setForm(f => ({ ...f, gym_id: e.target.value }))}>
-                  <option value="">-- select your gym --</option>
-                  {gyms.map(g => (
-                    <option key={g.id} value={g.id}>{g.name}{g.location ? ` (${g.location})` : ''} [#{g.id}]</option>
-                  ))}
-                </select>
-              </div>
-              <div style={{ marginTop: 8 }}>
-                <label>Name</label><br />
-                <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
-              </div>
-              <div style={{ marginTop: 8 }}>
-                <label>Cost (points)</label><br />
-                <input value={form.cost_points} onChange={e => setForm(f => ({ ...f, cost_points: e.target.value }))} />
-              </div>
-              <div style={{ marginTop: 8 }}>
-                <label>Description</label><br />
-                <input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
-              </div>
-              <div style={{ marginTop: 8 }}>
-                <button type="submit" disabled={!form.gym_id || !form.name || !form.cost_points} style={{ backgroundColor: !form.gym_id || !form.name || !form.cost_points ? '#52525b' : '#D0FD3E', color: !form.gym_id || !form.name || !form.cost_points ? '#a1a1aa' : '#18181b', borderRadius: '9999px', padding: '12px 24px', border: 'none', cursor: !form.gym_id || !form.name || !form.cost_points ? 'not-allowed' : 'pointer', fontWeight: 600 }}>Create</button>
-              </div>
-            </form>
+          <div style={{ width: 360 }}>
+            <h4 style={{ marginBottom: 10 }}>Owner: Create Reward</h4>
+            <div className="card" style={{ padding: 16 }}>
+              <form onSubmit={createReward}>
+                <div style={{ marginBottom: 10 }}>
+                  <label className="text-secondary" style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>Gym</label>
+                  <select value={form.gym_id} onChange={e => setForm(f => ({ ...f, gym_id: e.target.value }))} style={{ width: '100%' }}>
+                    <option value="">-- select your gym --</option>
+                    {gyms.map(g => (
+                      <option key={g.id} value={g.id}>{g.name}{g.location ? ` (${g.location})` : ''} [#{g.id}]</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ marginBottom: 10 }}>
+                  <label className="text-secondary" style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>Name</label>
+                  <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={{ width: '100%' }} />
+                </div>
+                <div style={{ marginBottom: 10 }}>
+                  <label className="text-secondary" style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>Cost (points)</label>
+                  <input value={form.cost_points} onChange={e => setForm(f => ({ ...f, cost_points: e.target.value }))} style={{ width: '100%' }} />
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <label className="text-secondary" style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>Description</label>
+                  <input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} style={{ width: '100%' }} />
+                </div>
+                <div>
+                  <button
+                    type="submit"
+                    className={`btn-primary rounded-full`}
+                    disabled={!form.gym_id || !form.name || !form.cost_points}
+                    style={{
+                      opacity: !form.gym_id || !form.name || !form.cost_points ? 0.6 : 1,
+                      cursor: !form.gym_id || !form.name || !form.cost_points ? 'not-allowed' : 'pointer'
+                    }}
+                  >
+                    Create
+                  </button>
+                </div>
+              </form>
+            </div>
+
             <div style={{ marginTop: 12 }}>
-              <h5>My Rewards</h5>
-              {myRewards.length === 0 && <div style={{ color: '#666' }}>No rewards yet.</div>}
-              <ul>
+              <h5 style={{ marginBottom: 6 }}>My Rewards</h5>
+              {myRewards.length === 0 && <div className="text-secondary">No rewards yet.</div>}
+              <div style={{ display: 'grid', gap: 8 }}>
                 {myRewards.map(r => (
-                  <li key={r.id}><strong>{r.name}</strong> - {r.cost_points} pts{r.description ? ` — ${r.description}` : ''}</li>
+                  <div key={r.id} className="card" style={{ padding: 12, background: 'var(--bg-secondary)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ fontWeight: 600 }}>{r.name}{r.description ? ` — ${r.description}` : ''}</div>
+                      <span style={{ fontSize: 12, background: 'var(--bg-card)', border: '1px solid var(--border-color)', padding: '4px 8px', borderRadius: 9999 }}>{r.cost_points} pts</span>
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
         )}

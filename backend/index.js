@@ -9,6 +9,7 @@ const advancedBookingRouter = require('./routes/advancedBooking');
 const socialRouter = require('./routes/social');
 const engagementRouter = require('./routes/engagement');
 const managementRouter = require('./routes/management');
+const notificationsRouter = require('./routes/notifications');
 const db = require('./db');
 
 require('dotenv').config();
@@ -24,6 +25,7 @@ app.use('/api', advancedBookingRouter);
 app.use('/api', socialRouter);
 app.use('/api', engagementRouter);
 app.use('/api', managementRouter);
+app.use('/api', notificationsRouter);
 
 app.get('/health', (req, res) => res.send('Fitness Buddy backend running'));
 
