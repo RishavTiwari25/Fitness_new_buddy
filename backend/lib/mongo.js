@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 let client;
 let db;
@@ -47,3 +47,11 @@ async function health() {
 }
 
 module.exports = { isEnabled, connect, getDb, collection, health };
+// Helpers
+function toObjectId(id) {
+  if (id instanceof ObjectId) return id;
+  try { return new ObjectId(String(id)); } catch (_) { return null; }
+}
+
+module.exports.toObjectId = toObjectId;
+module.exports.ObjectId = ObjectId;
