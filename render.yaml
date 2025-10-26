@@ -7,7 +7,7 @@ services:
     startCommand: node index.js
     envVars:
       - key: NODE_VERSION
-        value: 18
+        value: 20
       - key: HOST
         value: 0.0.0.0
       - key: DB_FILE
