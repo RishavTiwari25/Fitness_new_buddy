@@ -41,7 +41,8 @@ app.get(/^\/(?!api).*/, (req, res) => {
 });
 
 const PORT = process.env.PORT || 4000;
-const HOST = process.env.HOST || '127.0.0.1';
+// Bind to 0.0.0.0 by default so platforms like Render can accept external traffic
+const HOST = process.env.HOST || '0.0.0.0';
 app.listen(PORT, HOST, () => console.log(`Backend running on http://${HOST}:${PORT}`));
 
 // nodemon: harmless change to trigger restart when needed
