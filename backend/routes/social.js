@@ -2,32 +2,60 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
 const db = require('../db');
 const { verifyToken } = require('../middleware/auth');
 const router = express.Router();
 
-// Ensure we preserve the original file extension so browsers can render the image type correctly
+// Optional Cloudinary uploads (if CLOUDINARY_URL is set). Falls back to disk.
+const useCloudinary = !!process.env.CLOUDINARY_URL;
+if (useCloudinary) {
+  // CLOUDINARY_URL is auto-parsed by SDK; secure URLs enabled
+  cloudinary.config({ secure: true });
+}
+
+// Ensure uploads dir exists for disk storage fallback
 const uploadsDir = process.env.UPLOADS_DIR || path.join(__dirname, '..', 'uploads');
 try { fs.mkdirSync(uploadsDir, { recursive: true }); } catch (_) {}
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadsDir),
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname || '') || '.bin';
-    const name = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2) + ext.toLowerCase();
-    cb(null, name);
-  }
-});
+
+const storage = useCloudinary
+  ? multer.memoryStorage()
+  : multer.diskStorage({
+      destination: (_req, _file, cb) => cb(null, uploadsDir),
+      filename: (_req, file, cb) => {
+        const ext = path.extname(file.originalname || '') || '.bin';
+        const name = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2) + ext.toLowerCase();
+        cb(null, name);
+      }
+    });
 const upload = multer({ storage });
 
 // Upload avatar
-router.post('/profile/avatar', verifyToken, upload.single('avatar'), (req, res) => {
+router.post('/profile/avatar', verifyToken, upload.single('avatar'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   const userId = req.user.id;
-  const relPath = '/uploads/' + path.basename(req.file.path);
-  db.run(`UPDATE users SET avatar_url = ? WHERE id = ?`, [relPath, userId], function (err) {
-    if (err) return res.status(500).json({ error: 'Failed to save avatar' });
-    res.json({ avatar_url: relPath });
-  });
+  try {
+    let url;
+    if (useCloudinary) {
+      url = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream({ folder: 'fitness-buddy/avatars' }, (err, result) => {
+          if (err) return reject(err);
+          resolve(result.secure_url);
+        });
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
+    } else {
+      const relPath = '/uploads/' + path.basename(req.file.path);
+      url = relPath;
+    }
+    db.run(`UPDATE users SET avatar_url = ? WHERE id = ?`, [url, userId], function (err) {
+      if (err) return res.status(500).json({ error: 'Failed to save avatar' });
+      res.json({ avatar_url: url });
+    });
+  } catch (e) {
+    res.status(500).json({ error: 'Avatar upload failed' });
+  }
 });
 
 // List members of my gym with follow status
@@ -88,14 +116,31 @@ router.post('/me/followers/:userId/remove', verifyToken, (req, res) => {
 });
 
 // Create a post (image optional)
-router.post('/posts', verifyToken, upload.single('image'), (req, res) => {
+router.post('/posts', verifyToken, upload.single('image'), async (req, res) => {
   const userId = req.user.id;
   const text = (req.body && req.body.text) ? String(req.body.text).slice(0, 500) : '';
-  const imagePath = req.file ? ('/uploads/' + path.basename(req.file.path)) : null;
-  db.run(`INSERT INTO posts (user_id, image_path, text) VALUES (?, ?, ?)`, [userId, imagePath, text], function (err) {
-    if (err) return res.status(500).json({ error: 'Failed to create post' });
-    res.json({ id: this.lastID, user_id: userId, image_path: imagePath, text });
-  });
+  try {
+    let imageUrl = null;
+    if (req.file) {
+      if (useCloudinary) {
+        imageUrl = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream({ folder: 'fitness-buddy/posts' }, (err, result) => {
+            if (err) return reject(err);
+            resolve(result.secure_url);
+          });
+          streamifier.createReadStream(req.file.buffer).pipe(stream);
+        });
+      } else {
+        imageUrl = '/uploads/' + path.basename(req.file.path);
+      }
+    }
+    db.run(`INSERT INTO posts (user_id, image_path, text) VALUES (?, ?, ?)`, [userId, imageUrl, text], function (err) {
+      if (err) return res.status(500).json({ error: 'Failed to create post' });
+      res.json({ id: this.lastID, user_id: userId, image_path: imageUrl, text });
+    });
+  } catch (e) {
+    res.status(500).json({ error: 'Post upload failed' });
+  }
 });
 
 // Feed for current user: own posts + followed users
