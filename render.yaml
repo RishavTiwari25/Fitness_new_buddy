@@ -14,3 +14,9 @@ services:
         value: /tmp/db.sqlite
       - key: UPLOADS_DIR
         value: /tmp/uploads
+      - key: MONGODB_URI
+        value: to-set-in-dashboard
+      - key: JWT_SECRET
+        value: to-set-in-dashboard
+      - key: CLOUDINARY_URL
+        value: optional-set-in-dashboard
