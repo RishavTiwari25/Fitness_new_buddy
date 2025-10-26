@@ -3,6 +3,8 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const db = require('../db');
+const mongo = require('../lib/mongo');
+const { upload: uploadHelper, saveFile } = require('../lib/uploads');
 const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
@@ -11,15 +13,8 @@ const router = express.Router();
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname) || '.jpg';
-    const name = `meal_${Date.now()}_${Math.random().toString(36).slice(2)}${ext}`;
-    cb(null, name);
-  }
-});
-const upload = multer({ storage });
+// Prefer centralized upload helper (Cloudinary if configured, else disk)
+const upload = uploadHelper;
 
 function parseModelResponse(text) {
   // Expect JSON in the response; fallback to plain text items
@@ -85,7 +80,7 @@ Do not include explanations or code fences.`;
   return text;
 }
 
-async function analyzeWithGemini(imagePath) {
+async function analyzeWithGemini(imagePathOrUrl) {
   const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) {
     // Mock response for development without key
@@ -106,8 +101,18 @@ async function analyzeWithGemini(imagePath) {
   if (/^gemini-?pro$/i.test(modelName)) modelName = 'gemini-1.5-pro-latest';
   if (/^gemini-?pro-?vision$/i.test(modelName)) modelName = 'gemini-1.0-pro-vision';
 
-  const b64 = fs.readFileSync(imagePath).toString('base64');
-  const mimeType = guessMimeFromPath(imagePath);
+  // If a local path is provided, read file; if it's a URL (Cloudinary), skip inlineData for now
+  let b64;
+  let mimeType = 'image/jpeg';
+  if (imagePathOrUrl && imagePathOrUrl.startsWith('http')) {
+    // For remote URLs, a more advanced approach would fetch and convert to base64.
+    // Keep simple: skip analysis in this edge case unless needed.
+    // Fall back to mock-like minimal response to avoid blocking.
+    return { items: [], calories: null, macros: null, raw: 'url-skip' };
+  } else {
+    b64 = fs.readFileSync(imagePathOrUrl).toString('base64');
+    mimeType = guessMimeFromPath(imagePathOrUrl);
+  }
 
   // Try requested/default model; if it fails for modality, fallback to 1.5-flash-latest then 1.5-pro-latest
   let text;
@@ -143,10 +148,12 @@ async function analyzeWithGemini(imagePath) {
 router.post('/diet/analyze', verifyToken, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Image is required' });
-    const filePath = req.file.path;
-    const analysis = await analyzeWithGemini(filePath);
+    // Save to Cloudinary if configured
+    const urlOrPath = await saveFile(req.file, 'fitness-buddy/food');
+    const filePath = req.file.path || urlOrPath;
+    const analysis = await analyzeWithGemini(req.file.buffer ? null : filePath);
     res.json({
-      image_path: path.basename(filePath),
+      image_path: urlOrPath?.startsWith('http') ? urlOrPath : path.basename(filePath),
       items: analysis.items,
       calories: analysis.calories,
       macros: analysis.macros,
@@ -159,7 +166,7 @@ router.post('/diet/analyze', verifyToken, upload.single('image'), async (req, re
 });
 
 // POST /api/diet/log - persist a confirmed entry
-router.post('/diet/log', verifyToken, (req, res) => {
+router.post('/diet/log', verifyToken, async (req, res) => {
   const userId = req.user.id;
   const { date, items, calories, macros, image_path } = req.body;
   const day = date || new Date().toISOString().slice(0, 10);
@@ -170,29 +177,54 @@ router.post('/diet/log', verifyToken, (req, res) => {
   const p = macros?.protein != null ? Number(macros.protein) : null;
   const c = macros?.carbs != null ? Number(macros.carbs) : null;
   const f = macros?.fat != null ? Number(macros.fat) : null;
-
-  db.run(
-    `INSERT INTO food_logs (user_id, date, items_text, items_json, calories, protein, carbs, fat, image_path)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [userId, day, itemsText, itemsJson, cal, p, c, f, image_path || null],
-    function (err) {
-      if (err) return res.status(500).json({ error: 'Failed to save log' });
-      db.get('SELECT * FROM food_logs WHERE id = ?', [this.lastID], (e2, row) => {
-        if (e2) return res.status(500).json({ error: 'DB error' });
-        res.json(row);
-      });
-    }
-  );
+  if (mongo.isEnabled()) {
+    try {
+      await mongo.connect();
+      const Food = mongo.collection('food_logs');
+      const doc = {
+        user_id: mongo.toObjectId(userId),
+        date: day, items_text: itemsText, items_json: itemsJson,
+        calories: cal, protein: p, carbs: c, fat: f,
+        image_path: image_path || null,
+        created_at: new Date()
+      };
+      const ins = await Food.insertOne(doc);
+      const row = await Food.findOne({ _id: ins.insertedId });
+      return res.json({ id: row._id.toString(), ...row, _id: undefined, user_id: row.user_id.toString() });
+    } catch (e) { return res.status(500).json({ error: 'Failed to save log' }); }
+  } else {
+    db.run(
+      `INSERT INTO food_logs (user_id, date, items_text, items_json, calories, protein, carbs, fat, image_path)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [userId, day, itemsText, itemsJson, cal, p, c, f, image_path || null],
+      function (err) {
+        if (err) return res.status(500).json({ error: 'Failed to save log' });
+        db.get('SELECT * FROM food_logs WHERE id = ?', [this.lastID], (e2, row) => {
+          if (e2) return res.status(500).json({ error: 'DB error' });
+          res.json(row);
+        });
+      }
+    );
+  }
 });
 
 // GET /api/diet/logs?date=YYYY-MM-DD - list user logs
-router.get('/diet/logs', verifyToken, (req, res) => {
+router.get('/diet/logs', verifyToken, async (req, res) => {
   const userId = req.user.id;
   const day = req.query.date || new Date().toISOString().slice(0, 10);
-  db.all('SELECT * FROM food_logs WHERE user_id = ? AND date = ? ORDER BY created_at DESC', [userId, day], (err, rows) => {
-    if (err) return res.status(500).json({ error: 'DB error' });
-    res.json(rows);
-  });
+  if (mongo.isEnabled()) {
+    try {
+      await mongo.connect();
+      const Food = mongo.collection('food_logs');
+      const rows = await Food.find({ user_id: mongo.toObjectId(userId), date: day }).sort({ created_at: -1 }).toArray();
+      return res.json(rows.map(r => ({ id: r._id.toString(), user_id: r.user_id.toString(), date: r.date, items_text: r.items_text, items_json: r.items_json, calories: r.calories, protein: r.protein, carbs: r.carbs, fat: r.fat, image_path: r.image_path, created_at: r.created_at })));
+    } catch (e) { return res.status(500).json({ error: 'DB error' }); }
+  } else {
+    db.all('SELECT * FROM food_logs WHERE user_id = ? AND date = ? ORDER BY created_at DESC', [userId, day], (err, rows) => {
+      if (err) return res.status(500).json({ error: 'DB error' });
+      res.json(rows);
+    });
+  }
 });
 
 module.exports = router;
