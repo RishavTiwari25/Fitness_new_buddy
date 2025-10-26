@@ -74,6 +74,17 @@ router.post('/unfollow/:userId', verifyToken, (req, res) => {
   });
 });
 
+// Remove a follower (block): remove row where they follow me
+router.post('/me/followers/:userId/remove', verifyToken, (req, res) => {
+  const me = req.user.id;
+  const followerId = parseInt(req.params.userId, 10);
+  if (!followerId) return res.status(400).json({ error: 'Invalid user' });
+  db.run(`DELETE FROM follows WHERE follower_id = ? AND followee_id = ?`, [followerId, me], function (err) {
+    if (err) return res.status(500).json({ error: 'Failed to remove follower' });
+    res.json({ success: true });
+  });
+});
+
 // Create a post (image optional)
 router.post('/posts', verifyToken, upload.single('image'), (req, res) => {
   const userId = req.user.id;

@@ -9,8 +9,8 @@ export default function Profile({ token, profile, onUpdate }) {
   const [avatarUrl, setAvatarUrl] = useState(profile ? profile.avatar_url : '')
   const [streaks, setStreaks] = useState({ gym_streak: null, diet_streak: null })
   const [points, setPoints] = useState(0)
-  const [followers, setFollowers] = useState({ count: 0, list: [] })
-  const [following, setFollowing] = useState({ count: 0, list: [] })
+  const [followers, setFollowers] = useState({ count: 0, list: [], open: false })
+  const [following, setFollowing] = useState({ count: 0, list: [], open: false })
   const [gyms, setGyms] = useState([])
   const [msg, setMsg] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
@@ -49,13 +49,32 @@ export default function Profile({ token, profile, onUpdate }) {
         if (pointsRes.ok) setPoints(pointsData.points || 0)
 
         // Load followers/following
-        const followersRes = await fetch(`${API_BASE}/api/me/followers`, { headers: { Authorization: 'Bearer ' + token } })
+  const followersRes = await fetch(`${API_BASE}/api/me/followers`, { headers: { Authorization: 'Bearer ' + token } })
         const followersData = await followersRes.json()
-        if (followersRes.ok) setFollowers({ count: followersData.length, list: followersData })
+  if (followersRes.ok) setFollowers(prev => ({ ...prev, count: followersData.length, list: followersData }))
 
-        const followingRes = await fetch(`${API_BASE}/api/me/following`, { headers: { Authorization: 'Bearer ' + token } })
+  const followingRes = await fetch(`${API_BASE}/api/me/following`, { headers: { Authorization: 'Bearer ' + token } })
         const followingData = await followingRes.json()
-        if (followingRes.ok) setFollowing({ count: followingData.length, list: followingData })
+  if (followingRes.ok) setFollowing(prev => ({ ...prev, count: followingData.length, list: followingData }))
+  async function refreshSocial() {
+    try {
+      const fr = await fetch(`${API_BASE}/api/me/followers`, { headers: { Authorization: 'Bearer ' + token } })
+      const fl = await fetch(`${API_BASE}/api/me/following`, { headers: { Authorization: 'Bearer ' + token } })
+      const frJ = await fr.json(); const flJ = await fl.json();
+      if (fr.ok) setFollowers(prev => ({ ...prev, count: frJ.length, list: frJ }))
+      if (fl.ok) setFollowing(prev => ({ ...prev, count: flJ.length, list: flJ }))
+    } catch {}
+  }
+
+  async function removeFollower(userId) {
+    await fetch(`${API_BASE}/api/me/followers/${userId}/remove`, { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+    refreshSocial()
+  }
+
+  async function unfollowUser(userId) {
+    await fetch(`${API_BASE}/api/unfollow/${userId}`, { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+    refreshSocial()
+  }
       } catch (e) {
         console.error('Failed to load profile data:', e)
       }
@@ -594,7 +613,7 @@ export default function Profile({ token, profile, onUpdate }) {
               fontWeight: '800',
               color: '#fafafa',
               marginBottom: '4px'
-            }}>
+            }} onClick={() => setFollowers(prev => ({ ...prev, open: !prev.open }))}>
               {followers.count}
             </div>
             <div style={{
@@ -606,6 +625,18 @@ export default function Profile({ token, profile, onUpdate }) {
             }}>
               Followers
             </div>
+            {followers.open && (
+              <div style={{ textAlign: 'left', marginTop: 12, maxHeight: 220, overflow: 'auto', display: 'grid', gap: 8 }}>
+                {followers.list.map(u => (
+                  <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#0f0f10', border: '1px solid #3f3f46', borderRadius: 12, padding: 10 }}>
+                    <img src={u.avatar_url || 'https://via.placeholder.com/32'} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                    <div style={{ flex: 1, color: '#fafafa', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name || `User #${u.id}`}</div>
+                    <button onClick={() => removeFollower(u.id)} className="btn-secondary rounded-full" style={{ padding: '6px 10px' }}>Remove</button>
+                  </div>
+                ))}
+                {followers.list.length === 0 && <div className="text-secondary">No followers yet.</div>}
+              </div>
+            )}
           </div>
 
           {/* Following */}
@@ -622,7 +653,7 @@ export default function Profile({ token, profile, onUpdate }) {
               fontWeight: '800',
               color: '#fafafa',
               marginBottom: '4px'
-            }}>
+            }} onClick={() => setFollowing(prev => ({ ...prev, open: !prev.open }))}>
               {following.count}
             </div>
             <div style={{
@@ -634,6 +665,18 @@ export default function Profile({ token, profile, onUpdate }) {
             }}>
               Following
             </div>
+            {following.open && (
+              <div style={{ textAlign: 'left', marginTop: 12, maxHeight: 220, overflow: 'auto', display: 'grid', gap: 8 }}>
+                {following.list.map(u => (
+                  <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#0f0f10', border: '1px solid #3f3f46', borderRadius: 12, padding: 10 }}>
+                    <img src={u.avatar_url || 'https://via.placeholder.com/32'} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                    <div style={{ flex: 1, color: '#fafafa', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name || `User #${u.id}`}</div>
+                    <button onClick={() => unfollowUser(u.id)} className="btn-secondary rounded-full" style={{ padding: '6px 10px' }}>Unfollow</button>
+                  </div>
+                ))}
+                {following.list.length === 0 && <div className="text-secondary">You aren’t following anyone yet.</div>}
+              </div>
+            )}
           </div>
 
           {/* Experience (for trainers) */}
