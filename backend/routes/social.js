@@ -127,6 +127,38 @@ router.post('/posts/:id/unlike', verifyToken, (req, res) => {
   });
 });
 
+// Followers list for current user
+router.get('/me/followers', verifyToken, (req, res) => {
+  const userId = req.user.id;
+  const sql = `
+    SELECT u.id, COALESCE(u.name, 'User #' || u.id) AS name, u.avatar_url
+    FROM follows f
+    JOIN users u ON u.id = f.follower_id
+    WHERE f.followee_id = ?
+    ORDER BY u.name COLLATE NOCASE ASC
+  `;
+  db.all(sql, [userId], (err, rows) => {
+    if (err) return res.status(500).json({ error: 'DB error' });
+    res.json(rows || []);
+  });
+});
+
+// Following list for current user
+router.get('/me/following', verifyToken, (req, res) => {
+  const userId = req.user.id;
+  const sql = `
+    SELECT u.id, COALESCE(u.name, 'User #' || u.id) AS name, u.avatar_url
+    FROM follows f
+    JOIN users u ON u.id = f.followee_id
+    WHERE f.follower_id = ?
+    ORDER BY u.name COLLATE NOCASE ASC
+  `;
+  db.all(sql, [userId], (err, rows) => {
+    if (err) return res.status(500).json({ error: 'DB error' });
+    res.json(rows || []);
+  });
+});
+
 // Compute simple streak: consecutive days with presence or food log, counting back from today
 router.get('/me/streak', verifyToken, (req, res) => {
   const userId = req.user.id;
