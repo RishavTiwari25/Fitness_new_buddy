@@ -12,6 +12,7 @@ const engagementRouter = require('./routes/engagement');
 const managementRouter = require('./routes/management');
 const notificationsRouter = require('./routes/notifications');
 const db = require('./db');
+const mongo = require('./lib/mongo');
 
 require('dotenv').config();
 const app = express();
@@ -29,6 +30,16 @@ app.use('/api', managementRouter);
 app.use('/api', notificationsRouter);
 
 app.get('/health', (req, res) => res.send('Fitness Buddy backend running'));
+
+// Simple DB status endpoint: reports Mongo status if configured
+app.get('/api/db-status', async (req, res) => {
+	try {
+		const m = await mongo.health();
+		res.json({ sqlite: true, mongo: m });
+	} catch (e) {
+		res.json({ sqlite: true, mongo: { enabled: !!process.env.MONGODB_URI, connected: false, error: e.message } });
+	}
+});
 
 // Serve uploaded images statically (allow override via env for hosted platforms)
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
@@ -48,6 +59,19 @@ if (fs.existsSync(distDir)) {
 const PORT = process.env.PORT || 4000;
 // Bind to 0.0.0.0 by default so platforms like Render can accept external traffic
 const HOST = process.env.HOST || '0.0.0.0';
+
+// If MongoDB is configured, attempt to connect on startup (non-blocking for SQLite fallback)
+(async () => {
+	if (process.env.MONGODB_URI) {
+		try {
+			await mongo.connect();
+			console.log('[mongo] Connected');
+		} catch (e) {
+			console.warn('[mongo] Connection failed:', e.message);
+		}
+	}
+})();
+
 app.listen(PORT, HOST, () => console.log(`Backend running on http://${HOST}:${PORT}`));
 
 // nodemon: harmless change to trigger restart when needed
