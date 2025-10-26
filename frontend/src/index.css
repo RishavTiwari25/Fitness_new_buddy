@@ -1,0 +1,168 @@
+/* Fitness Buddy - Global Dark Theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Dark Theme Colors */
+  --bg-primary: #18181b;        /* zinc-900 */
+  --bg-secondary: #27272a;      /* zinc-800 */
+  --bg-card: #3f3f46;           /* zinc-700 */
+  --accent-lime: #D0FD3E;       /* lime-400 vibrant */
+  --text-primary: #fafafa;      /* zinc-50 */
+  --text-secondary: #a1a1aa;    /* zinc-400 */
+  --border-color: #52525b;      /* zinc-600 */
+  --border-light: #3f3f46;      /* zinc-700 */
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.125rem; }
+
+p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Button Base Styles */
+button {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Primary Button (Lime Accent) */
+button.btn-primary {
+  background-color: var(--accent-lime);
+  color: #000;
+  font-weight: 700;
+}
+
+button.btn-primary:hover {
+  background-color: #bef334;
+}
+
+/* Secondary Button (Dark) */
+button.btn-secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+button.btn-secondary:hover {
+  background-color: var(--bg-card);
+}
+
+/* Input Styles */
+input, textarea, select {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-lime);
+  box-shadow: 0 0 0 3px rgba(208, 253, 62, 0.1);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Card Styles */
+.card {
+  background-color: var(--bg-secondary);
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid var(--border-light);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--border-color);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-card);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-color);
+}
+
+/* Link Styles */
+a {
+  color: var(--accent-lime);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #bef334;
+}
+
+/* Utility Classes */
+.text-lime { color: var(--accent-lime); }
+.text-secondary { color: var(--text-secondary); }
+.bg-dark { background-color: var(--bg-primary); }
+.bg-card { background-color: var(--bg-secondary); }
+.rounded-xl { border-radius: 20px; }
+.rounded-full { border-radius: 9999px; }

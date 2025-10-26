@@ -158,91 +158,130 @@ export default function MemberHome({ token, defaultGymId }) {
   }
 
   return (
-    <div>
-      <h3>Member Home</h3>
-      <div style={{ marginBottom: 8 }}>
-        <button onClick={scanning ? stopScan : startScan}>{scanning ? 'Stop Scanner' : 'Check-in / Check-out (Scan QR)'}</button>
-      </div>
-      <div id="qr-reader" style={{ width: 320, height: scanning ? 320 : 0, overflow: 'hidden', border: scanning ? '1px solid #ccc' : 'none' }} />
-
-      {status && <p>{status}</p>}
-
-      {/* Manual fallback if camera/https not available */}
-      <div style={{ marginTop: 12 }}>
-        <div style={{ marginBottom: 6 }}>Or select a gym to toggle check-in/out:</div>
-        <select value={gymId || ''} onChange={e => setGymId(e.target.value ? parseInt(e.target.value, 10) : null)}>
-          <option value="">-- Select Gym --</option>
-          {gyms.map(g => <option key={g.id} value={g.id}>{g.name}{g.location ? ` (${g.location})` : ''}</option>)}
-        </select>
-        <button style={{ marginLeft: 8 }} onClick={() => toggleCheckIn(gymId)} disabled={!gymId}>Toggle Check-in</button>
-      </div>
-
-      {gymId && (
-        <div style={{ marginTop: 12 }}>
-          <strong>People currently at {gymName || `Gym #${gymId}`}:</strong> {count ?? '—'}
-        </div>
-      )}
-
-      {!gymId && (
-        <p style={{ color: '#555' }}>Scan a gym QR to see and update occupancy.</p>
-      )}
-
-      {gymId && (
-        <div style={{ marginTop: 16 }}>
-          <h4>Equipment at this gym</h4>
+    <div style={{ backgroundColor: '#09090b', minHeight: '100vh', padding: '24px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div>
-            {equipment.map(eq => {
-              const bookedBySomeone = !!eq.booking_id
-              const bookedByMe = bookedBySomeone && eq.booking_user_id === me.id
-              const iHaveBooking = myBookings && myBookings.length > 0
-              return (
-                <div key={eq.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #eee' }}>
-                  <div>
-                    <strong>{eq.name}</strong> {eq.quantity ? `x${eq.quantity}` : ''}
-                    <div style={{ fontSize: 12, color: bookedBySomeone ? '#b00' : '#090' }}>
-                      {bookedBySomeone
-                        ? `Booked by ${bookedByMe ? 'you' : (eq.booking_user_name || eq.booking_user_email)} since ${eq.booking_started_at}`
-                        : 'Available'}
+            <h1 style={{ color: '#fafafa', fontSize: 28, fontWeight: 800, margin: 0 }}>👤 Member Home</h1>
+            <div style={{ color: '#a1a1aa', fontSize: 14 }}>Scan to check in, or choose a gym and manage equipment</div>
+          </div>
+          <div>
+            <button
+              onClick={scanning ? stopScan : startScan}
+              style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: '9999px', padding: '12px 18px', border: 'none', cursor: 'pointer', fontWeight: 700 }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c4ed38'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#D0FD3E'}
+            >
+              {scanning ? 'Stop Scanner' : 'Check-in / Check-out (Scan QR)'}
+            </button>
+          </div>
+        </div>
+
+        {/* Scanner */}
+        <div id="qr-reader" style={{ width: 360, height: scanning ? 360 : 0, overflow: 'hidden', border: scanning ? '1px solid #3f3f46' : 'none', borderRadius: 12 }} />
+
+        {/* Status */}
+        {status && (
+          <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 12, backgroundColor: status.toLowerCase().includes('fail') || status.toLowerCase().includes('error') ? '#991b1b' : '#064e3b', color: '#e5e7eb', fontWeight: 700, display: 'inline-block' }}>
+            {status}
+          </div>
+        )}
+
+        {/* Manual Check-in Card */}
+        <div style={{ marginTop: 16, backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 16 }}>
+          <div style={{ color: '#d4d4d8', fontWeight: 700, marginBottom: 8 }}>Or select a gym to toggle check-in/out:</div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            <select
+              value={gymId || ''}
+              onChange={e => setGymId(e.target.value ? parseInt(e.target.value, 10) : null)}
+              style={{ backgroundColor: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10, padding: '10px 12px', minWidth: 220 }}
+            >
+              <option value="">-- Select Gym --</option>
+              {gyms.map(g => <option key={g.id} value={g.id}>{g.name}{g.location ? ` (${g.location})` : ''}</option>)}
+            </select>
+            <button
+              style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: '9999px', padding: '10px 16px', border: 'none', cursor: 'pointer', fontWeight: 700 }}
+              onClick={() => toggleCheckIn(gymId)}
+              disabled={!gymId}
+            >
+              Toggle Check-in
+            </button>
+          </div>
+        </div>
+
+        {/* Occupancy */}
+        {gymId && (
+          <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ backgroundColor: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', padding: '8px 12px', borderRadius: 9999, fontWeight: 700 }}>
+              🏋️ People currently at {gymName || `Gym #${gymId}`}: {count ?? '—'}
+            </div>
+          </div>
+        )}
+
+        {!gymId && (
+          <p style={{ color: '#a1a1aa', marginTop: 12 }}>Scan a gym QR or choose a gym to get started.</p>
+        )}
+
+        {/* Equipment List */}
+        {gymId && (
+          <div style={{ marginTop: 18 }}>
+            <h2 style={{ color: '#fafafa', fontSize: 18, fontWeight: 800, margin: '6px 0 12px' }}>🧰 Equipment at this gym</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {equipment.map(eq => {
+                const activeCount = Number(eq.active_count || 0)
+                const qty = Number(eq.quantity || 1)
+                const available = Math.max(0, qty - activeCount)
+                const bookedByMe = !!eq.booked_by_me
+                const iHaveBooking = myBookings && myBookings.length > 0
+                return (
+                  <div key={eq.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: 14, padding: '12px 14px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ color: '#fafafa', fontWeight: 700, fontSize: 16 }}>{eq.name} {qty ? `x${qty}` : ''}</div>
+                      <div style={{ fontSize: 12, color: available > 0 ? '#22c55e' : '#f87171', fontWeight: 700 }}>
+                        {available > 0 ? `Available (${available}/${qty})` : 'Fully booked'}
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {available > 0 && !iHaveBooking && !bookedByMe && (
+                        <button onClick={() => bookEquipment(eq.id)} style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: 9999, padding: '8px 14px', border: 'none', cursor: 'pointer', fontWeight: 700 }}>Book</button>
+                      )}
+                      {bookedByMe && (
+                        <button onClick={() => releaseEquipment(eq.id)} style={{ backgroundColor: '#3f3f46', color: '#fafafa', borderRadius: 9999, padding: '8px 14px', border: 'none', cursor: 'pointer', fontWeight: 700 }}>Release</button>
+                      )}
+                      <button style={{ backgroundColor: '#3f3f46', color: '#fafafa', borderRadius: 9999, padding: '8px 14px', border: 'none', cursor: 'pointer', fontWeight: 700 }} onClick={() => setShowSlotsFor(eq)}>View Time Slots</button>
                     </div>
                   </div>
-                  <div>
-                    {!bookedBySomeone && !iHaveBooking && (
-                      <button onClick={() => bookEquipment(eq.id)}>Book</button>
-                    )}
-                    {bookedByMe && (
-                      <button onClick={() => releaseEquipment(eq.id)}>Release</button>
-                    )}
-                    <button style={{ marginLeft: 6 }} onClick={() => setShowSlotsFor(eq)}>View Time Slots</button>
-                  </div>
-                </div>
-              )
-            })}
-            {equipment.length === 0 && <div style={{ color: '#666' }}>No equipment listed for this gym.</div>}
-          </div>
-
-          {myBookings.length > 0 && (
-            <div style={{ marginTop: 10, fontSize: 14 }}>
-              <strong>Your active booking:</strong>
-              {myBookings.map(b => (
-                <div key={b.id}>
-                  {b.equipment_name} at {b.gym_name} since {b.started_at}
-                </div>
-              ))}
+                )
+              })}
+              {equipment.length === 0 && <div style={{ color: '#a1a1aa' }}>No equipment listed for this gym.</div>}
             </div>
-          )}
-        </div>
-      )}
 
-      {showSlotsFor && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowSlotsFor(null)}>
-          <div style={{ background: '#fff', padding: 16, width: 600, maxHeight: '80vh', overflow: 'auto' }} onClick={e => e.stopPropagation()}>
-            <h3>{showSlotsFor.name}</h3>
-            <p style={{ color: '#666' }}>Book a 15-minute time slot, join waitlist when full, or take an idle slot after start.</p>
-            <EquipmentSlots token={token} equipment={showSlotsFor} onBooked={() => { loadMyBookings(); }} />
-            <div style={{ textAlign: 'right', marginTop: 10 }}><button onClick={() => setShowSlotsFor(null)}>Close</button></div>
+            {myBookings.length > 0 && (
+              <div style={{ marginTop: 12, backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 12, padding: 12, color: '#fafafa' }}>
+                <div style={{ fontWeight: 800, marginBottom: 6 }}>Your active booking:</div>
+                {myBookings.map(b => (
+                  <div key={b.id} style={{ fontSize: 14 }}>• {b.equipment_name} at {b.gym_name} since {b.started_at}</div>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Slots Modal */}
+        {showSlotsFor && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }} onClick={() => setShowSlotsFor(null)}>
+            <div style={{ background: '#27272a', border: '1px solid #3f3f46', color: '#fafafa', padding: 16, width: 640, maxHeight: '80vh', overflow: 'auto', borderRadius: 16 }} onClick={e => e.stopPropagation()}>
+              <h3 style={{ marginTop: 0, fontWeight: 800 }}>{showSlotsFor.name}</h3>
+              <p style={{ color: '#a1a1aa' }}>Book a 15-minute time slot, join waitlist when full, or take an idle slot after start.</p>
+              <EquipmentSlots token={token} equipment={showSlotsFor} onBooked={() => { loadMyBookings(); }} />
+              <div style={{ textAlign: 'right', marginTop: 10 }}>
+                <button onClick={() => setShowSlotsFor(null)} style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: '9999px', padding: '12px 24px', border: 'none', cursor: 'pointer', fontWeight: 700 }}>Close</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

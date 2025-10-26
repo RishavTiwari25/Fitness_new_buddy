@@ -45,23 +45,37 @@ router.get('/gyms/:gymId/equipment', verifyToken, (req, res) => {
 // Equipment with current booking status for a gym
 router.get('/gyms/:gymId/equipment-status', verifyToken, (req, res) => {
   const gymId = parseInt(req.params.gymId, 10);
+  // For each equipment, return active booking count and whether current user booked it
   const sql = `
     SELECT 
-      e.*, 
-      b.id AS booking_id,
-      b.user_id AS booking_user_id,
-      b.started_at AS booking_started_at,
-      u.name AS booking_user_name,
-      u.email AS booking_user_email
+      e.id,
+      e.gym_id,
+      e.name,
+      e.notes,
+      e.quantity,
+      -- total active bookings for this equipment
+      (
+        SELECT COUNT(1) FROM equipment_booking b 
+        WHERE b.equipment_id = e.id AND b.active = 1
+      ) AS active_count,
+      -- whether current user has an active booking on this equipment
+      (
+        SELECT COUNT(1) FROM equipment_booking b2 
+        WHERE b2.equipment_id = e.id AND b2.active = 1 AND b2.user_id = ?
+      ) AS booked_by_me
     FROM equipment e
-    LEFT JOIN equipment_booking b ON b.equipment_id = e.id AND b.active = 1
-    LEFT JOIN users u ON u.id = b.user_id
     WHERE e.gym_id = ?
     ORDER BY e.name ASC
   `;
-  db.all(sql, [gymId], (err, rows) => {
+  db.all(sql, [req.user.id, gymId], (err, rows) => {
     if (err) return res.status(500).json({ error: 'DB error' });
-    res.json(rows);
+    // Normalize booleans
+    const mapped = rows.map(r => ({
+      ...r,
+      active_count: Number(r.active_count || 0),
+      booked_by_me: Number(r.booked_by_me || 0) > 0
+    }));
+    res.json(mapped);
   });
 });
 
@@ -143,10 +157,13 @@ router.post('/equipment/:equipmentId/book', verifyToken, (req, res) => {
       if (err2) return res.status(500).json({ error: 'DB error' });
       if (!pres) return res.status(400).json({ error: 'You must be checked in to this gym to book equipment' });
 
-      // Equipment not already booked
-      db.get('SELECT * FROM equipment_booking WHERE equipment_id = ? AND active = 1', [equipmentId], (err3, activeEq) => {
+      // Check current active bookings vs quantity
+      db.get('SELECT COUNT(1) AS cnt FROM equipment_booking WHERE equipment_id = ? AND active = 1', [equipmentId], (err3, cntRow) => {
         if (err3) return res.status(500).json({ error: 'DB error' });
-        if (activeEq) return res.status(400).json({ error: 'This equipment is already booked' });
+        const activeCount = cntRow ? Number(cntRow.cnt || 0) : 0;
+        if (activeCount >= (eq.quantity || 1)) {
+          return res.status(400).json({ error: 'All units are currently booked' });
+        }
 
         // User does not have another active booking in this gym
         const sqlUserActive = `
@@ -175,22 +192,31 @@ router.post('/equipment/:equipmentId/book', verifyToken, (req, res) => {
 router.post('/equipment/:equipmentId/release', verifyToken, (req, res) => {
   const equipmentId = parseInt(req.params.equipmentId, 10);
   const userId = req.user.id;
-  const sql = `
+  const baseJoin = `
     SELECT b.*, e.gym_id, g.owner_id FROM equipment_booking b
     JOIN equipment e ON e.id = b.equipment_id
     JOIN gyms g ON g.id = e.gym_id
     WHERE b.equipment_id = ? AND b.active = 1
   `;
-  db.get(sql, [equipmentId], (err, row) => {
+  // Prefer releasing the booking of the current user if exists
+  db.get(baseJoin + ' AND b.user_id = ? ORDER BY b.started_at ASC', [equipmentId, userId], (err, mine) => {
     if (err) return res.status(500).json({ error: 'DB error' });
-    if (!row) return res.status(400).json({ error: 'No active booking found for this equipment' });
-    const isOwner = req.user.role === 'owner' && row.owner_id === userId;
-    const isBooker = row.user_id === userId;
-    if (!isOwner && !isBooker) return res.status(403).json({ error: 'Not allowed to release this booking' });
-
-    db.run('UPDATE equipment_booking SET active = 0, ended_at = datetime("now") WHERE id = ?', [row.id], function (err2) {
-      if (err2) return res.status(500).json({ error: 'Failed to release booking' });
-      res.json({ success: true });
+    if (mine) {
+      return db.run('UPDATE equipment_booking SET active = 0, ended_at = datetime("now") WHERE id = ?', [mine.id], function (err2) {
+        if (err2) return res.status(500).json({ error: 'Failed to release booking' });
+        return res.json({ success: true });
+      });
+    }
+    // If not user's booking, allow owner to release any active booking
+    db.get(baseJoin + ' ORDER BY b.started_at ASC', [equipmentId], (err2, row) => {
+      if (err2) return res.status(500).json({ error: 'DB error' });
+      if (!row) return res.status(400).json({ error: 'No active booking found for this equipment' });
+      const isOwner = req.user.role === 'owner' && row.owner_id === userId;
+      if (!isOwner) return res.status(403).json({ error: 'Not allowed to release this booking' });
+      db.run('UPDATE equipment_booking SET active = 0, ended_at = datetime("now") WHERE id = ?', [row.id], function (err3) {
+        if (err3) return res.status(500).json({ error: 'Failed to release booking' });
+        res.json({ success: true });
+      });
     });
   });
 });

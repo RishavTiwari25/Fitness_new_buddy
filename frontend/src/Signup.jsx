@@ -27,30 +27,139 @@ export default function Signup({ onSignup }) {
 
   return (
     <form onSubmit={submit}>
-      <div>
-        <label>Name (optional)</label><br />
-        <input value={name} onChange={e => setName(e.target.value)} />
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ 
+          display: 'block', 
+          color: '#fafafa', 
+          fontWeight: '600', 
+          marginBottom: '8px',
+          fontSize: '14px'
+        }}>Name <span style={{ color: '#a1a1aa', fontWeight: '400' }}>(optional)</span></label>
+        <input 
+          type="text"
+          value={name} 
+          onChange={e => setName(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '14px 16px',
+            backgroundColor: '#18181b',
+            border: '1px solid #3f3f46',
+            borderRadius: '12px',
+            color: '#fafafa',
+            fontSize: '15px'
+          }}
+          placeholder="Your name"
+        />
       </div>
-      <div>
-        <label>Role</label><br />
-        <select value={role} onChange={e => setRole(e.target.value)}>
-          <option value="member">Member</option>
-          <option value="trainer">Trainer</option>
-          <option value="owner">Gym Owner</option>
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ 
+          display: 'block', 
+          color: '#fafafa', 
+          fontWeight: '600', 
+          marginBottom: '8px',
+          fontSize: '14px'
+        }}>I am a...</label>
+        <select 
+          value={role} 
+          onChange={e => setRole(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '14px 16px',
+            backgroundColor: '#18181b',
+            border: '1px solid #3f3f46',
+            borderRadius: '12px',
+            color: '#fafafa',
+            fontSize: '15px',
+            cursor: 'pointer'
+          }}
+        >
+          <option value="member">Gym Member 💪</option>
+          <option value="trainer">Personal Trainer 🏋️</option>
+          <option value="owner">Gym Owner 🏢</option>
         </select>
       </div>
-      <div>
-        <label>Email</label><br />
-        <input value={email} onChange={e => setEmail(e.target.value)} />
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ 
+          display: 'block', 
+          color: '#fafafa', 
+          fontWeight: '600', 
+          marginBottom: '8px',
+          fontSize: '14px'
+        }}>Email</label>
+        <input 
+          type="email"
+          value={email} 
+          onChange={e => setEmail(e.target.value)}
+          required
+          style={{
+            width: '100%',
+            padding: '14px 16px',
+            backgroundColor: '#18181b',
+            border: '1px solid #3f3f46',
+            borderRadius: '12px',
+            color: '#fafafa',
+            fontSize: '15px'
+          }}
+          placeholder="your.email@example.com"
+        />
       </div>
-      <div>
-        <label>Password</label><br />
-        <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+      <div style={{ marginBottom: '24px' }}>
+        <label style={{ 
+          display: 'block', 
+          color: '#fafafa', 
+          fontWeight: '600', 
+          marginBottom: '8px',
+          fontSize: '14px'
+        }}>Password</label>
+        <input 
+          type="password" 
+          value={password} 
+          onChange={e => setPassword(e.target.value)}
+          required
+          style={{
+            width: '100%',
+            padding: '14px 16px',
+            backgroundColor: '#18181b',
+            border: '1px solid #3f3f46',
+            borderRadius: '12px',
+            color: '#fafafa',
+            fontSize: '15px'
+          }}
+          placeholder="••••••••"
+        />
       </div>
-      <div style={{ marginTop: 8 }}>
-        <button type="submit">Signup</button>
-      </div>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <button 
+        type="submit"
+        style={{
+          width: '100%',
+          padding: '16px',
+          backgroundColor: '#D0FD3E',
+          color: '#18181b',
+          border: 'none',
+          borderRadius: '9999px',
+          fontSize: '16px',
+          fontWeight: '700',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseOver={e => e.target.style.backgroundColor = '#bef334'}
+        onMouseOut={e => e.target.style.backgroundColor = '#D0FD3E'}
+      >
+        Create Account
+      </button>
+      {error && (
+        <div style={{ 
+          marginTop: '16px',
+          padding: '12px',
+          backgroundColor: '#7f1d1d',
+          border: '1px solid #991b1b',
+          borderRadius: '8px',
+          color: '#fca5a5',
+          fontSize: '14px'
+        }}>
+          {error}
+        </div>
+      )}
     </form>
   )
 }

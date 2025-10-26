@@ -6,6 +6,9 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
   const [data, setData] = useState(null)
   const [now, setNow] = useState(Date.now())
   const [haveActive, setHaveActive] = useState(false)
+  const [showAlternatives, setShowAlternatives] = useState(false)
+  const [alternatives, setAlternatives] = useState([])
+  const [loadingAlts, setLoadingAlts] = useState(false)
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30000)
@@ -17,6 +20,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
     const json = await res.json()
     if (res.ok) setData(json); else setStatus(json.error || 'Failed to load')
   }
+  
   useEffect(() => {
     load()
     // Also load whether user already has an active upcoming booking
@@ -30,43 +34,577 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
     setStatus('')
     const res = await fetch(`${API_BASE}/api/book`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ equipmentId: equipment.id, slotTime }) })
     const json = await res.json()
-    if (res.ok) { setStatus(json.message || 'Booked'); onBooked?.(); load() } else setStatus(json.error || 'Failed')
+    if (res.ok) { 
+      setStatus(json.message || 'Booked')
+      onBooked?.()
+      load()
+    } else {
+      setStatus(json.error || 'Failed')
+    }
   }
 
   async function takeIdle(slotTime) {
     setStatus('')
     const res = await fetch(`${API_BASE}/api/book/take-idle-slot`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ equipmentId: equipment.id, slotTime }) })
     const json = await res.json()
-    if (res.ok) { setStatus('Took idle slot'); onBooked?.(); load() } else setStatus(json.error || 'Failed')
+    if (res.ok) { 
+      setStatus('Took idle slot')
+      onBooked?.()
+      load()
+    } else {
+      setStatus(json.error || 'Failed')
+    }
+  }
+
+  async function loadAlternatives() {
+    setLoadingAlts(true)
+    // Get target muscle from equipment name (simple heuristic)
+    let muscle = 'Chest'
+    const name = equipment.name.toLowerCase()
+    if (name.includes('leg') || name.includes('squat')) muscle = 'Legs'
+    else if (name.includes('back') || name.includes('row')) muscle = 'Back'
+    else if (name.includes('shoulder')) muscle = 'Shoulders'
+    else if (name.includes('arm') || name.includes('curl')) muscle = 'Arms'
+    else if (name.includes('core') || name.includes('ab')) muscle = 'Core'
+
+    try {
+      const res = await fetch(`${API_BASE}/api/exercises/alternatives?targetMuscle=${encodeURIComponent(muscle)}`, {
+        headers: { Authorization: 'Bearer ' + token }
+      })
+      const data = await res.json()
+      if (res.ok && Array.isArray(data)) {
+        setAlternatives(data)
+        setShowAlternatives(true)
+      } else {
+        setStatus('No alternatives found')
+      }
+    } catch (err) {
+      setStatus('Failed to load alternatives')
+    } finally {
+      setLoadingAlts(false)
+    }
   }
 
   if (!equipment) return null
   const slots = data?.slots || []
 
   return (
-    <div>
-      <h4>{equipment.name} — Time Slots</h4>
-      {status && <div style={{ color: status.includes('Failed') || status.includes('error') ? 'red' : '#333' }}>{status}</div>}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 8 }}>
+    <div style={{ position: 'relative' }}>
+      {/* Status Message */}
+      {status && (
+        <div style={{
+          padding: '12px 16px',
+          marginBottom: '16px',
+          backgroundColor: status.includes('Failed') || status.includes('error') || status.includes('already') 
+            ? '#fee2e2' 
+            : '#d1fae5',
+          color: status.includes('Failed') || status.includes('error') || status.includes('already')
+            ? '#991b1b'
+            : '#065f46',
+          borderRadius: '12px',
+          fontSize: '14px',
+          fontWeight: '600',
+          border: status.includes('Failed') || status.includes('error') || status.includes('already')
+            ? '1px solid #fecaca'
+            : '1px solid #a7f3d0'
+        }}>
+          {status}
+        </div>
+      )}
+
+      {/* Header with Alternatives Button */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '16px'
+      }}>
+        <h4 style={{
+          color: '#fafafa',
+          fontSize: '18px',
+          fontWeight: '700',
+          margin: 0
+        }}>
+          Available Time Slots
+        </h4>
+        <button
+          onClick={loadAlternatives}
+          disabled={loadingAlts}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#3f3f46',
+            color: '#D0FD3E',
+            border: '1px solid #D0FD3E',
+            borderRadius: '8px',
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: loadingAlts ? 'wait' : 'pointer',
+            transition: 'all 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+          onMouseEnter={(e) => {
+            if (!loadingAlts) {
+              e.target.style.backgroundColor = '#52525b'
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = '#3f3f46'
+          }}
+        >
+          {loadingAlts ? '⏳ Loading...' : '🔄 View Alternatives'}
+        </button>
+      </div>
+
+      {/* Slots Grid */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+        gap: '12px' 
+      }}>
         {slots.map(s => {
           const t = new Date(s.slotTime)
           const label = t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
           const full = s.count >= 2
           const started = now >= t.getTime() + 5*60000
+          const oneLeft = s.count === 1
+
           return (
-            <div key={s.slotTime} style={{ border: '1px solid #eee', padding: 8 }}>
-              <div><strong>{label}</strong></div>
-              <div style={{ fontSize: 12, color: full ? '#b00' : '#090' }}>{s.count}/2 booked</div>
-              <div style={{ marginTop: 6 }}>
-                {!full && !haveActive && <button onClick={() => book(s.slotTime)}>{s.count === 0 ? 'Book' : 'Book (1 spot left)'}</button>}
-                {!full && haveActive && <span style={{ color: '#666', fontSize: 12 }}>You already have a slot</span>}
-                {full && started && <button onClick={() => takeIdle(s.slotTime)} style={{ marginLeft: 6 }}>Take Idle Slot</button>}
-                {full && !started && <span style={{ color: '#666', fontSize: 12 }}>Full</span>}
+            <div 
+              key={s.slotTime} 
+              style={{ 
+                backgroundColor: '#27272a',
+                border: '1px solid #3f3f46',
+                borderRadius: '12px',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                transition: 'border-color 0.2s'
+              }}
+            >
+              {/* Time Label */}
+              <div style={{
+                fontSize: '16px',
+                fontWeight: '700',
+                color: '#fafafa'
+              }}>
+                {label}
+              </div>
+
+              {/* Capacity Status */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: full ? '#dc2626' : oneLeft ? '#f59e0b' : '#22c55e'
+                }} />
+                <span style={{
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  color: full ? '#fca5a5' : oneLeft ? '#fcd34d' : '#86efac'
+                }}>
+                  {s.count}/2 booked
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ marginTop: 'auto' }}>
+                {/* User already has a slot */}
+                {haveActive && (
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#a1a1aa',
+                    fontStyle: 'italic',
+                    textAlign: 'center',
+                    padding: '8px'
+                  }}>
+                    You already have a booking
+                  </div>
+                )}
+
+                {/* Slot available - Primary (full availability) */}
+                {!full && !haveActive && s.count === 0 && (
+                  <button
+                    onClick={() => book(s.slotTime)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 16px',
+                      backgroundColor: '#D0FD3E',
+                      color: '#18181b',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#c4ed38'
+                      e.target.style.transform = 'translateY(-1px)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = '#D0FD3E'
+                      e.target.style.transform = 'translateY(0)'
+                    }}
+                  >
+                    🔖 Book
+                  </button>
+                )}
+
+                {/* Slot available - Secondary (1 spot left) */}
+                {!full && !haveActive && s.count === 1 && (
+                  <button
+                    onClick={() => book(s.slotTime)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 16px',
+                      backgroundColor: '#3f3f46',
+                      color: '#fafafa',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#52525b'
+                      e.target.style.transform = 'translateY(-1px)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = '#3f3f46'
+                      e.target.style.transform = 'translateY(0)'
+                    }}
+                  >
+                    ⚠️ Book (1 spot left)
+                  </button>
+                )}
+
+                {/* Slot full - Join Waitlist */}
+                {full && !started && !haveActive && (
+                  <button
+                    onClick={() => book(s.slotTime)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 16px',
+                      backgroundColor: 'transparent',
+                      color: '#D0FD3E',
+                      border: '2px solid #D0FD3E',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = 'rgba(208, 253, 62, 0.1)'
+                      e.target.style.transform = 'translateY(-1px)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'transparent'
+                      e.target.style.transform = 'translateY(0)'
+                    }}
+                  >
+                    ➕ Join Waitlist
+                  </button>
+                )}
+
+                {/* Slot full and started - Take Idle */}
+                {full && started && !haveActive && (
+                  <button
+                    onClick={() => takeIdle(s.slotTime)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 16px',
+                      backgroundColor: '#3f3f46',
+                      color: '#fafafa',
+                      border: '1px solid #52525b',
+                      borderRadius: '8px',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#52525b'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = '#3f3f46'
+                    }}
+                  >
+                    ⚡ Take Idle Slot
+                  </button>
+                )}
+
+                {/* Slot full and not started */}
+                {full && !started && haveActive && (
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#dc2626',
+                    fontWeight: '600',
+                    textAlign: 'center',
+                    padding: '8px'
+                  }}>
+                    🔴 Full
+                  </div>
+                )}
               </div>
             </div>
           )
         })}
       </div>
+
+      {/* No Slots Message */}
+      {slots.length === 0 && (
+        <div style={{
+          textAlign: 'center',
+          padding: '40px 20px',
+          backgroundColor: '#27272a',
+          borderRadius: '12px',
+          border: '1px solid #3f3f46'
+        }}>
+          <div style={{ fontSize: '32px', marginBottom: '12px' }}>📅</div>
+          <div style={{ color: '#a1a1aa', fontSize: '14px' }}>
+            No upcoming time slots available
+          </div>
+        </div>
+      )}
+
+      {/* Alternative Exercises Modal */}
+      {showAlternatives && (
+        <>
+          {/* Backdrop */}
+          <div
+            onClick={() => setShowAlternatives(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              zIndex: 999,
+              animation: 'fadeIn 0.3s ease-out'
+            }}
+          />
+
+          {/* Modal */}
+          <div
+            style={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              maxHeight: '80vh',
+              backgroundColor: '#27272a',
+              borderTopLeftRadius: '24px',
+              borderTopRightRadius: '24px',
+              zIndex: 1000,
+              animation: 'slideUp 0.3s ease-out',
+              boxShadow: '0 -4px 24px rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{
+              padding: '24px',
+              borderBottom: '1px solid #3f3f46',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <div>
+                <h3 style={{
+                  fontSize: '24px',
+                  fontWeight: '800',
+                  color: '#D0FD3E',
+                  margin: '0 0 4px 0'
+                }}>
+                  Alternative Exercises
+                </h3>
+                <p style={{
+                  fontSize: '14px',
+                  color: '#a1a1aa',
+                  margin: 0
+                }}>
+                  Try these exercises while {equipment.name} is busy
+                </p>
+              </div>
+              <button
+                onClick={() => setShowAlternatives(false)}
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  backgroundColor: '#3f3f46',
+                  border: 'none',
+                  color: '#fafafa',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#52525b'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#3f3f46'}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Content (Scrollable) */}
+            <div style={{
+              flex: 1,
+              overflowY: 'auto',
+              padding: '24px'
+            }}>
+              {alternatives.length === 0 ? (
+                <div style={{
+                  textAlign: 'center',
+                  padding: '40px 20px',
+                  color: '#a1a1aa'
+                }}>
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>🤷</div>
+                  <div>No alternative exercises found</div>
+                </div>
+              ) : (
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                  gap: '16px'
+                }}>
+                  {alternatives.map(alt => (
+                    <div
+                      key={alt.id}
+                      style={{
+                        backgroundColor: '#18181b',
+                        borderRadius: '12px',
+                        padding: '20px',
+                        border: '1px solid #3f3f46',
+                        transition: 'border-color 0.2s, transform 0.2s',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#D0FD3E'
+                        e.currentTarget.style.transform = 'translateY(-2px)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#3f3f46'
+                        e.currentTarget.style.transform = 'translateY(0)'
+                      }}
+                    >
+                      {/* Exercise Icon */}
+                      <div style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '12px',
+                        backgroundColor: '#3f3f46',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '24px',
+                        marginBottom: '12px'
+                      }}>
+                        💪
+                      </div>
+
+                      {/* Exercise Name */}
+                      <h4 style={{
+                        fontSize: '16px',
+                        fontWeight: '700',
+                        color: '#fafafa',
+                        marginBottom: '8px',
+                        lineHeight: '1.3'
+                      }}>
+                        {alt.exercise_name}
+                      </h4>
+
+                      {/* Target Muscle Tag */}
+                      <div style={{
+                        display: 'inline-block',
+                        padding: '4px 12px',
+                        backgroundColor: '#D0FD3E',
+                        color: '#18181b',
+                        borderRadius: '12px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        marginBottom: '12px'
+                      }}>
+                        {alt.target_muscle}
+                      </div>
+
+                      {/* Equipment Needed */}
+                      {alt.equipment_needed && (
+                        <div style={{
+                          fontSize: '13px',
+                          color: '#a1a1aa',
+                          marginBottom: '8px'
+                        }}>
+                          Equipment: <span style={{ color: '#d4d4d8' }}>{alt.equipment_needed}</span>
+                        </div>
+                      )}
+
+                      {/* Instructions Preview */}
+                      {alt.instructions && (
+                        <p style={{
+                          fontSize: '13px',
+                          color: '#a1a1aa',
+                          lineHeight: '1.5',
+                          margin: 0
+                        }}>
+                          {alt.instructions.length > 100 
+                            ? alt.instructions.substring(0, 100) + '...' 
+                            : alt.instructions}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* CSS Animations */}
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes slideUp {
+              from { 
+                transform: translateY(100%);
+                opacity: 0;
+              }
+              to { 
+                transform: translateY(0);
+                opacity: 1;
+              }
+            }
+          `}</style>
+        </>
+      )}
     </div>
   )
 }

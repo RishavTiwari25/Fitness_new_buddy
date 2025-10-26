@@ -112,7 +112,7 @@ export default function Rewards({ token }) {
                 <input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
               </div>
               <div style={{ marginTop: 8 }}>
-                <button type="submit" disabled={!form.gym_id || !form.name || !form.cost_points}>Create</button>
+                <button type="submit" disabled={!form.gym_id || !form.name || !form.cost_points} style={{ backgroundColor: !form.gym_id || !form.name || !form.cost_points ? '#52525b' : '#D0FD3E', color: !form.gym_id || !form.name || !form.cost_points ? '#a1a1aa' : '#18181b', borderRadius: '9999px', padding: '12px 24px', border: 'none', cursor: !form.gym_id || !form.name || !form.cost_points ? 'not-allowed' : 'pointer', fontWeight: 600 }}>Create</button>
               </div>
             </form>
             <div style={{ marginTop: 12 }}>

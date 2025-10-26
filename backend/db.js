@@ -296,4 +296,25 @@ db.serialize(() => {
   )`);
 });
 
+// Seed a demo gym and a few equipment items if the database is empty
+// This helps first-time users (members) see a gym in the Member page without
+// needing an owner account to create one.
+try {
+  db.get('SELECT COUNT(*) AS c FROM gyms', (err, row) => {
+    if (!err && row && row.c === 0) {
+      db.run('INSERT INTO gyms (owner_id, name, location) VALUES (NULL, ?, ?)', ['Demo Gym', 'Downtown'], function (e1) {
+        if (e1) return; // best-effort seed
+        const demoGymId = this.lastID;
+        const stmt = db.prepare('INSERT INTO equipment (gym_id, name, notes, quantity) VALUES (?, ?, ?, ?)');
+        stmt.run(demoGymId, 'Treadmill', 'Cardio machine', 4);
+        stmt.run(demoGymId, 'Bench Press', 'Barbell bench', 2);
+        stmt.run(demoGymId, 'Lat Pulldown', 'Back machine', 1);
+        stmt.finalize();
+      });
+    }
+  });
+} catch (_) {
+  // ignore seeding errors
+}
+
 module.exports = db;

@@ -209,7 +209,7 @@ export default function AdminPanel({ token }) {
         <form onSubmit={createGym}>
           <div><input placeholder="Gym name" value={name} onChange={e => setName(e.target.value)} /></div>
           <div style={{ marginTop: 6 }}><input placeholder="Location" value={location} onChange={e => setLocation(e.target.value)} /></div>
-          <div style={{ marginTop: 6 }}><button type="submit">Create Gym</button></div>
+          <div style={{ marginTop: 6 }}><button type="submit" style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: '9999px', padding: '12px 24px', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Create Gym</button></div>
         </form>
       </section>
 
@@ -252,8 +252,8 @@ export default function AdminPanel({ token }) {
             <div style={{ marginTop: 6 }}><input placeholder="Notes" value={eqNotes} onChange={e => setEqNotes(e.target.value)} /></div>
             <div style={{ marginTop: 6 }}><input type="number" min={1} value={eqQuantity} onChange={e => setEqQuantity(e.target.value)} /></div>
             <div style={{ marginTop: 6 }}>
-              <button type="submit">{editing ? 'Save' : 'Add Equipment'}</button>
-              {editing && <button type="button" onClick={() => { setEditing(null); setEqName(''); setEqNotes(''); setEqQuantity(1) }} style={{ marginLeft: 8 }}>Cancel</button>}
+              <button type="submit" style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: '9999px', padding: '12px 24px', border: 'none', cursor: 'pointer', fontWeight: 600 }}>{editing ? 'Save' : 'Add Equipment'}</button>
+              {editing && <button type="button" onClick={() => { setEditing(null); setEqName(''); setEqNotes(''); setEqQuantity(1) }} style={{ marginLeft: 8, backgroundColor: '#3f3f46', color: '#fafafa', borderRadius: '9999px', padding: '12px 24px', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Cancel</button>}
             </div>
           </form>
         </section>
