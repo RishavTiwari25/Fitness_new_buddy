@@ -42,7 +42,8 @@ app.get('/api/db-status', async (req, res) => {
 });
 
 // Serve uploaded images statically (allow override via env for hosted platforms)
-const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
+// Default to a writable temp dir so it works on platforms like Render
+const UPLOADS_DIR = process.env.UPLOADS_DIR || path.resolve('/tmp/uploads');
 try { fs.mkdirSync(UPLOADS_DIR, { recursive: true }); } catch (_) {}
 app.use('/uploads', express.static(UPLOADS_DIR));
 

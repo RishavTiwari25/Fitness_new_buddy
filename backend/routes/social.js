@@ -18,7 +18,8 @@ if (useCloudinary) {
 }
 
 // Ensure uploads dir exists for disk storage fallback
-const uploadsDir = process.env.UPLOADS_DIR || path.join(__dirname, '..', 'uploads');
+// Default to a writable temp dir on hosting platforms; works locally too
+const uploadsDir = process.env.UPLOADS_DIR || path.resolve('/tmp/uploads');
 try { fs.mkdirSync(uploadsDir, { recursive: true }); } catch (_) {}
 
 const storage = useCloudinary
@@ -40,13 +41,22 @@ router.post('/profile/avatar', verifyToken, upload.single('avatar'), async (req,
   try {
     let url;
     if (useCloudinary) {
-      url = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream({ folder: 'fitness-buddy/avatars' }, (err, result) => {
-          if (err) return reject(err);
-          resolve(result.secure_url);
+      try {
+        url = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream({ folder: 'fitness-buddy/avatars' }, (err, result) => {
+            if (err) return reject(err);
+            resolve(result.secure_url);
+          });
+          streamifier.createReadStream(req.file.buffer).pipe(stream);
         });
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
-      });
+      } catch (e) {
+        // Fallback to disk if Cloudinary fails
+        const ext = path.extname(req.file.originalname || '') || '.bin';
+        const name = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2) + ext.toLowerCase();
+        const filePath = path.join(uploadsDir, name);
+        fs.writeFileSync(filePath, req.file.buffer);
+        url = '/uploads/' + name;
+      }
     } else {
       const relPath = '/uploads/' + path.basename(req.file.path);
       url = relPath;
@@ -196,13 +206,22 @@ router.post('/posts', verifyToken, upload.single('image'), async (req, res) => {
     let imageUrl = null;
     if (req.file) {
       if (useCloudinary) {
-        imageUrl = await new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream({ folder: 'fitness-buddy/posts' }, (err, result) => {
-            if (err) return reject(err);
-            resolve(result.secure_url);
+        try {
+          imageUrl = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream({ folder: 'fitness-buddy/posts' }, (err, result) => {
+              if (err) return reject(err);
+              resolve(result.secure_url);
+            });
+            streamifier.createReadStream(req.file.buffer).pipe(stream);
           });
-          streamifier.createReadStream(req.file.buffer).pipe(stream);
-        });
+        } catch (e) {
+          // Fallback to disk if Cloudinary fails
+          const ext = path.extname(req.file.originalname || '') || '.bin';
+          const name = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2) + ext.toLowerCase();
+          const filePath = path.join(uploadsDir, name);
+          fs.writeFileSync(filePath, req.file.buffer);
+          imageUrl = '/uploads/' + name;
+        }
       } else {
         imageUrl = '/uploads/' + path.basename(req.file.path);
       }
