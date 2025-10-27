@@ -131,7 +131,7 @@ export default function Feed({ token }) {
                   onMouseLeave={(e) => e.currentTarget.style.borderColor = '#3f3f46'}
                 >
                   <img 
-                    src={m.avatar_url || 'https://via.placeholder.com/40'} 
+                    src={m.avatar_url ? (m.avatar_url.startsWith('http') ? m.avatar_url : `${API_BASE}${m.avatar_url.startsWith('/') ? '' : '/'}${m.avatar_url}`) : 'https://via.placeholder.com/40'} 
                     alt="" 
                     style={{
                       width: '40px',
@@ -210,7 +210,7 @@ export default function Feed({ token }) {
                   padding: '20px 24px'
                 }}>
                   <img 
-                    src={p.author_avatar || 'https://via.placeholder.com/48'} 
+                    src={p.author_avatar ? (p.author_avatar.startsWith('http') ? p.author_avatar : `${API_BASE}${p.author_avatar.startsWith('/') ? '' : '/'}${p.author_avatar}`) : 'https://via.placeholder.com/48'} 
                     alt="" 
                     style={{
                       width: '48px',
@@ -258,7 +258,7 @@ export default function Feed({ token }) {
                 {p.image_path && (
                   <div style={{ marginBottom: '16px' }}>
                     <img 
-                      src={p.image_path} 
+                      src={p.image_path.startsWith('http') ? p.image_path : `${API_BASE}${p.image_path.startsWith('/') ? '' : '/'}${p.image_path}`}
                       alt="post" 
                       style={{ 
                         width: '100%',
