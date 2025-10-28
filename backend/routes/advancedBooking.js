@@ -237,3 +237,57 @@ router.get('/my/bookings-advanced', verifyToken, async (req, res) => {
 });
 
 module.exports = router;
+
+// Compatibility endpoint for dashboard widgets expecting /api/bookings/my
+// Returns upcoming bookings for the current user with slot_date/slot_time fields
+router.get('/bookings/my', verifyToken, async (req, res) => {
+  const userId = req.user.id;
+  if (mongo.isEnabled()) {
+    try {
+      await mongo.connect();
+      const Coll = mongo.collection('time_slot_bookings');
+      const Equipment = mongo.collection('equipment');
+      const nowIso = new Date().toISOString();
+      const rows = await Coll.find({ user_id: toObjectId(userId), status: 'ACTIVE', slot_time: { $gte: nowIso } })
+        .sort({ slot_time: 1 }).limit(20).toArray();
+      const eqIds = [...new Set(rows.map(r => r.equipment_id.toString()))].map(toObjectId);
+      const eqs = await Equipment.find({ _id: { $in: eqIds } }).project({ name: 1 }).toArray();
+      const map = new Map(eqs.map(e => [e._id.toString(), e.name]));
+      const out = rows.map(r => {
+        const dt = new Date(r.slot_time);
+        const slot_date = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const slot_time = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        return {
+          id: r._id.toString(),
+          equipment_id: r.equipment_id.toString(),
+          equipment_name: map.get(r.equipment_id.toString()) || 'Equipment',
+          slot_date,
+          slot_time,
+          status: r.status === 'ACTIVE' ? 'confirmed' : (r.status || 'pending')
+        };
+      });
+      return res.json(out);
+    } catch (e) {
+      return res.status(500).json({ error: 'DB error' });
+    }
+  } else {
+    const sql = `
+      SELECT b.id, b.equipment_id, e.name AS equipment_name, b.slot_time,
+             CASE WHEN b.status = 'ACTIVE' THEN 'confirmed' ELSE COALESCE(b.status, 'pending') END AS status
+      FROM bookings b
+      JOIN equipment e ON e.id = b.equipment_id
+      WHERE b.user_id = ? AND b.status = 'ACTIVE' AND datetime(b.slot_time) >= datetime('now')
+      ORDER BY b.slot_time ASC
+      LIMIT 20`;
+    db.all(sql, [userId], (err, rows) => {
+      if (err) return res.status(500).json({ error: 'DB error' });
+      const out = (rows || []).map(r => {
+        const dt = new Date(r.slot_time);
+        const slot_date = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const slot_time = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        return { id: r.id, equipment_id: r.equipment_id, equipment_name: r.equipment_name, slot_date, slot_time, status: r.status };
+      });
+      res.json(out);
+    });
+  }
+});
