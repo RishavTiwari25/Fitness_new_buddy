@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { API_BASE } from './api'
+import Logo from './components/Logo'
+import { APP_NAME } from './branding'
 import Profile from './Profile'
 import AdminPanel from './AdminPanel'
 import MemberHome from './MemberHome'
@@ -171,9 +173,9 @@ export default function Dashboard({ token, onLogout }) {
         borderRadius: '20px',
         border: '1px solid #3f3f46'
       }}>
-        <h2 style={{ color: '#fafafa', fontSize: '24px', fontWeight: '700', margin: 0 }}>
-          Fitness Buddy
-        </h2>
+        <div>
+          <Logo size={28} withText={true} />
+        </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
           <button style={navButtonStyle(view === 'home')} onClick={() => setView('home')}>Home</button>
           <button style={navButtonStyle(view === 'profile')} onClick={() => setView('profile')}>Profile</button>

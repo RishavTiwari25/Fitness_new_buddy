@@ -3,6 +3,8 @@ import Login from './Login'
 import Signup from './Signup'
 import Dashboard from './Dashboard'
 import ContactFooter from './ContactFooter'
+import Logo from './components/Logo'
+import { APP_NAME } from './branding'
 
 export default function App() {
   const [view, setView] = useState('login');
@@ -118,8 +120,11 @@ export default function App() {
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)'
         }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+              <Logo size={36} withText={false} />
+            </div>
             <h2 style={{ fontSize: '32px', fontWeight: '700', color: '#fafafa', marginBottom: '8px' }}>
-              Fitness Buddy
+              {APP_NAME}
             </h2>
             <p style={{ color: '#a1a1aa', fontSize: '14px' }}>Join thousands achieving their fitness goals</p>
           </div>
@@ -174,7 +179,7 @@ export default function App() {
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{ fontSize: '36px', fontWeight: '700', color: '#fafafa', marginBottom: '16px' }}>
-              Why Choose Fitness Buddy?
+              Why Choose {APP_NAME}?
             </h2>
             <p style={{ fontSize: '18px', color: '#a1a1aa', maxWidth: '600px', margin: '0 auto' }}>
               Everything you need to transform your fitness journey, all in one place
@@ -267,7 +272,7 @@ export default function App() {
             borderTop: '1px solid #3f3f46'
           }}>
             <p style={{ color: '#a1a1aa', fontSize: '14px' }}>
-              © 2025 Fitness Buddy. Built for gym owners, trainers, and fitness enthusiasts.
+              © 2025 {APP_NAME}. Built for gym owners, trainers, and fitness enthusiasts.
             </p>
             <div style={{ marginTop: '16px', display: 'flex', gap: '24px', justifyContent: 'center' }}>
               <a href="#" style={{ color: '#D0FD3E', fontSize: '14px', fontWeight: '600', textDecoration: 'none' }}>Features</a>
