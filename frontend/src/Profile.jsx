@@ -144,7 +144,7 @@ export default function Profile({ token, profile, onUpdate }) {
           marginBottom: '24px'
         }}>
           <img 
-            src={avatarUrl || 'https://via.placeholder.com/160'} 
+            src={avatarUrl ? (avatarUrl.startsWith('http') ? avatarUrl : `${API_BASE}${avatarUrl.startsWith('/') ? '' : '/'}${avatarUrl}`) : 'https://via.placeholder.com/160'} 
             alt="avatar" 
             style={{
               width: '160px',
@@ -629,7 +629,7 @@ export default function Profile({ token, profile, onUpdate }) {
               <div style={{ textAlign: 'left', marginTop: 12, maxHeight: 220, overflow: 'auto', display: 'grid', gap: 8 }}>
                 {followers.list.map(u => (
                   <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#0f0f10', border: '1px solid #3f3f46', borderRadius: 12, padding: 10 }}>
-                    <img src={u.avatar_url || 'https://via.placeholder.com/32'} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                    <img src={u.avatar_url ? (u.avatar_url.startsWith('http') ? u.avatar_url : `${API_BASE}${u.avatar_url.startsWith('/') ? '' : '/'}${u.avatar_url}`) : 'https://via.placeholder.com/32'} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
                     <div style={{ flex: 1, color: '#fafafa', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name || `User #${u.id}`}</div>
                     <button onClick={() => removeFollower(u.id)} className="btn-secondary rounded-full" style={{ padding: '6px 10px' }}>Remove</button>
                   </div>
@@ -669,7 +669,7 @@ export default function Profile({ token, profile, onUpdate }) {
               <div style={{ textAlign: 'left', marginTop: 12, maxHeight: 220, overflow: 'auto', display: 'grid', gap: 8 }}>
                 {following.list.map(u => (
                   <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#0f0f10', border: '1px solid #3f3f46', borderRadius: 12, padding: 10 }}>
-                    <img src={u.avatar_url || 'https://via.placeholder.com/32'} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                    <img src={u.avatar_url ? (u.avatar_url.startsWith('http') ? u.avatar_url : `${API_BASE}${u.avatar_url.startsWith('/') ? '' : '/'}${u.avatar_url}`) : 'https://via.placeholder.com/32'} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
                     <div style={{ flex: 1, color: '#fafafa', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name || `User #${u.id}`}</div>
                     <button onClick={() => unfollowUser(u.id)} className="btn-secondary rounded-full" style={{ padding: '6px 10px' }}>Unfollow</button>
                   </div>
