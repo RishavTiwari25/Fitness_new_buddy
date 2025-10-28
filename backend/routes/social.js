@@ -253,6 +253,15 @@ router.get('/feed', verifyToken, async (req, res) => {
       const Users = mongo.collection('users');
       const Likes = mongo.collection('post_likes');
       const Follows = mongo.collection('follows');
+      const normalizePath = (p) => {
+        if (!p) return null;
+        if (typeof p !== 'string') return null;
+        if (p.startsWith('http')) return p;
+        if (p.startsWith('/uploads/')) return p;
+        if (p.startsWith('uploads/')) return '/' + p;
+        // bare filename – serve from /uploads
+        return '/uploads/' + p.replace(/^\/+/, '');
+      };
       const followees = await Follows.find({ follower_id: toObjectId(userId) }).project({ followee_id: 1 }).toArray();
       const ids = [toObjectId(userId), ...followees.map(f => f.followee_id)];
       const posts = await Posts.find({ user_id: { $in: ids } }).sort({ created_at: -1 }).limit(200).toArray();
@@ -271,11 +280,11 @@ router.get('/feed', verifyToken, async (req, res) => {
         return {
           id: p._id.toString(),
           user_id: p.user_id.toString(),
-          image_path: p.image_path,
+          image_path: normalizePath(p.image_path),
           text: p.text,
           created_at: p.created_at,
           author_name: a?.name || 'User',
-          author_avatar: a?.avatar_url || null,
+          author_avatar: normalizePath(a?.avatar_url || null),
           like_count: l?.cnt || 0,
           liked_by_me: (l?.me || 0) > 0,
         };
