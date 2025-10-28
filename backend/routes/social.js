@@ -460,3 +460,29 @@ router.get('/me/streak', verifyToken, async (req, res) => {
 });
 
 module.exports = router;
+
+// Uploads status endpoint to verify Cloudinary configuration and disk fallback
+router.get('/uploads/status', async (req, res) => {
+  const status = { cloudinary: { enabled: useCloudinary, ok: false, error: null }, uploadsDir };
+  if (useCloudinary) {
+    try {
+      // Admin ping requires proper CLOUDINARY_URL (api_key/secret)
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.api.ping((err, res) => err ? reject(err) : resolve(res));
+      });
+      status.cloudinary.ok = !!result?.status;
+    } catch (e) {
+      status.cloudinary.error = e.message || String(e);
+    }
+  }
+  try {
+    // Verify disk path is writable
+    const testFile = path.join(uploadsDir, '.healthcheck');
+    fs.writeFileSync(testFile, String(Date.now()));
+    fs.unlinkSync(testFile);
+    status.diskWritable = true;
+  } catch (_) {
+    status.diskWritable = false;
+  }
+  res.json(status);
+});
