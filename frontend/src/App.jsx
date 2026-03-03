@@ -53,7 +53,7 @@ export default function App() {
               lineHeight: '1.1'
             }}>
               Your Fitness Journey<br />
-              <span style={{ color: '#D0FD3E' }}>Starts Here</span> 💪
+              <span style={{ color: '#D0FD3E' }}>Starts Here</span>
             </h1>
             <p style={{ 
               fontSize: '20px', 
@@ -74,7 +74,6 @@ export default function App() {
               borderRadius: '16px',
               border: '1px solid #3f3f46'
             }}>
-              <div style={{ fontSize: '32px', marginBottom: '8px' }}>📊</div>
               <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>Track Progress</div>
               <div style={{ color: '#a1a1aa', fontSize: '13px' }}>Monitor your gym streaks and achievements</div>
             </div>
@@ -84,7 +83,6 @@ export default function App() {
               borderRadius: '16px',
               border: '1px solid #3f3f46'
             }}>
-              <div style={{ fontSize: '32px', marginBottom: '8px' }}>🎯</div>
               <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>Book Equipment</div>
               <div style={{ color: '#a1a1aa', fontSize: '13px' }}>Reserve gym equipment by time slots</div>
             </div>
@@ -94,7 +92,6 @@ export default function App() {
               borderRadius: '16px',
               border: '1px solid #3f3f46'
             }}>
-              <div style={{ fontSize: '32px', marginBottom: '8px' }}>🍎</div>
               <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>AI Diet Analysis</div>
               <div style={{ color: '#a1a1aa', fontSize: '13px' }}>Scan meals and get instant nutrition info</div>
             </div>
@@ -104,7 +101,6 @@ export default function App() {
               borderRadius: '16px',
               border: '1px solid #3f3f46'
             }}>
-              <div style={{ fontSize: '32px', marginBottom: '8px' }}>🏆</div>
               <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>Earn Rewards</div>
               <div style={{ color: '#a1a1aa', fontSize: '13px' }}>Get points and redeem gym perks</div>
             </div>
@@ -274,11 +270,6 @@ export default function App() {
             <p style={{ color: '#a1a1aa', fontSize: '14px' }}>
               © 2025 {APP_NAME}. Built for gym owners, trainers, and fitness enthusiasts.
             </p>
-            <div style={{ marginTop: '16px', display: 'flex', gap: '24px', justifyContent: 'center' }}>
-              <a href="#" style={{ color: '#D0FD3E', fontSize: '14px', fontWeight: '600', textDecoration: 'none' }}>Features</a>
-              <a href="#" style={{ color: '#D0FD3E', fontSize: '14px', fontWeight: '600', textDecoration: 'none' }}>Pricing</a>
-              <a href="#" style={{ color: '#D0FD3E', fontSize: '14px', fontWeight: '600', textDecoration: 'none' }}>Support</a>
-            </div>
           </div>
 
           {/* Contact & Help Section - Below everything */}

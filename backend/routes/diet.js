@@ -15,6 +15,7 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 // Prefer centralized upload helper (Cloudinary if configured, else disk)
 const upload = uploadHelper;
+const modelCache = new Map();
 
 function parseModelResponse(text) {
   // Expect JSON in the response; fallback to plain text items
@@ -39,10 +40,14 @@ function guessMimeFromPath(p) {
   return 'image/jpeg';
 }
 
-async function callModel(modelName, b64, mimeType) {
-  // Prefer direct HTTP to v1beta for widest model compatibility
-  const apiKey = process.env.GOOGLE_API_KEY;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+function getGeminiApiKeys() {
+  const raw = String(process.env.GOOGLE_API_KEY || '').trim();
+  if (!raw) return [];
+  return raw.split(',').map(k => k.trim()).filter(Boolean);
+}
+
+async function callModel(modelName, b64, mimeType, apiKey, apiVersion = 'v1beta') {
+  const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${modelName}:generateContent?key=${apiKey}`;
   const prompt = `You are a world-class nutritional analyst. Analyze the attached meal image.
 Respond ONLY as strict JSON with this shape:
 {
@@ -72,6 +77,9 @@ Do not include explanations or code fences.`;
   if (!resp.ok) {
     const errBody = await resp.text().catch(() => '');
     const e = new Error(`Gemini HTTP ${resp.status}`);
+    e.statusCode = resp.status;
+    e.modelName = modelName;
+    e.apiVersion = apiVersion;
     e.details = errBody;
     throw e;
   }
@@ -80,61 +88,123 @@ Do not include explanations or code fences.`;
   return text;
 }
 
-async function analyzeWithGemini(imagePathOrUrl) {
-  const apiKey = process.env.GOOGLE_API_KEY;
-  if (!apiKey) {
-    // Mock response for development without key
-    return {
-      items: [
-        { name: '2 eggs' },
-        { name: '3 bacon strips' },
-        { name: '1 toast slice' }
-      ],
-      calories: 450,
-      macros: { protein: 28, carbs: 22, fat: 28 },
-      raw: 'mock'
-    };
+async function discoverModels(apiKey, apiVersion = 'v1beta') {
+  const cacheKey = `${apiVersion}:${apiKey.slice(-8)}`;
+  const cached = modelCache.get(cacheKey);
+  const now = Date.now();
+  if (cached && (now - cached.ts) < 10 * 60 * 1000) return cached.models;
+
+  const url = `https://generativelanguage.googleapis.com/${apiVersion}/models?key=${apiKey}`;
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`list models failed: ${resp.status}`);
+    const data = await resp.json();
+    const models = (data?.models || [])
+      .map(m => String(m?.name || '').replace(/^models\//, ''))
+      .filter(Boolean)
+      .filter(name => /gemini/i.test(name))
+      .filter(name => /(flash|pro|vision|multimodal|image)/i.test(name));
+    modelCache.set(cacheKey, { ts: now, models });
+    return models;
+  } catch (_) {
+    return [];
+  }
+}
+
+async function analyzeWithGemini(input) {
+  const apiKeys = getGeminiApiKeys();
+  if (!apiKeys.length) {
+    throw new Error('GOOGLE_API_KEY is not configured');
   }
   const envModel = (process.env.GOOGLE_GEMINI_MODEL || '').trim();
-  // Prefer most recent multimodal preview if unspecified; fall back to stable 1.5 models
-  let modelName = envModel || 'gemini-2.5-flash-preview-09-2025';
+  // Use stable multimodal model by default; allow env override.
+  let modelName = envModel || 'gemini-1.5-flash-latest';
   if (/^gemini-?pro$/i.test(modelName)) modelName = 'gemini-1.5-pro-latest';
   if (/^gemini-?pro-?vision$/i.test(modelName)) modelName = 'gemini-1.0-pro-vision';
 
-  // If a local path is provided, read file; if it's a URL (Cloudinary), skip inlineData for now
+  const source = typeof input === 'string' ? { pathOrUrl: input } : (input || {});
+
+  // Support in-memory uploads first, then URL/local path fallback
   let b64;
   let mimeType = 'image/jpeg';
-  if (imagePathOrUrl && imagePathOrUrl.startsWith('http')) {
-    // For remote URLs, a more advanced approach would fetch and convert to base64.
-    // Keep simple: skip analysis in this edge case unless needed.
-    // Fall back to mock-like minimal response to avoid blocking.
-    return { items: [], calories: null, macros: null, raw: 'url-skip' };
+  if (source.buffer && Buffer.isBuffer(source.buffer)) {
+    b64 = source.buffer.toString('base64');
+    mimeType = source.mimeType || 'image/jpeg';
+  } else if (source.pathOrUrl && source.pathOrUrl.startsWith('http')) {
+    const resp = await fetch(source.pathOrUrl);
+    if (!resp.ok) throw new Error(`Failed to fetch image URL: ${resp.status}`);
+    const arr = await resp.arrayBuffer();
+    b64 = Buffer.from(arr).toString('base64');
+    mimeType = resp.headers.get('content-type') || 'image/jpeg';
+  } else if (source.pathOrUrl) {
+    b64 = fs.readFileSync(source.pathOrUrl).toString('base64');
+    mimeType = guessMimeFromPath(source.pathOrUrl);
   } else {
-    b64 = fs.readFileSync(imagePathOrUrl).toString('base64');
-    mimeType = guessMimeFromPath(imagePathOrUrl);
+    throw new Error('No image data provided for analysis');
   }
 
-  // Try requested/default model; if it fails for modality, fallback to 1.5-flash-latest then 1.5-pro-latest
+  const staticCandidates = [
+    modelName,
+    'gemini-2.5-flash',
+    'gemini-2.0-flash-exp',
+    'gemini-2.0-flash-lite',
+    'gemini-2.0-flash',
+    'gemini-1.5-flash-8b',
+    'gemini-1.5-flash-latest',
+    'gemini-1.5-flash',
+    'gemini-1.5-pro',
+    'gemini-1.5-pro-latest'
+  ].filter(Boolean);
+  const apiVersions = ['v1beta', 'v1'];
+
   let text;
-  try {
-    text = await callModel(modelName, b64, mimeType);
-  } catch (e) {
-    const fallback = 'gemini-1.5-flash-latest';
-    if (modelName !== fallback) {
-      try {
-        text = await callModel(fallback, b64, mimeType);
-      } catch (e2) {
-        // final fallback to pro-latest
-        const fb2 = 'gemini-1.5-pro-latest';
-        if (fallback !== fb2) {
-          text = await callModel(fb2, b64, mimeType);
-        } else {
-          throw e2;
+  let lastErr = null;
+  for (const apiKey of apiKeys) {
+    for (const apiVersion of apiVersions) {
+      const discovered = await discoverModels(apiKey, apiVersion);
+      const modelCandidates = Array.from(new Set([...staticCandidates, ...discovered]));
+      for (const candidate of modelCandidates) {
+        try {
+          text = await callModel(candidate, b64, mimeType, apiKey, apiVersion);
+          break;
+        } catch (e) {
+          lastErr = e;
+          const status = Number(e?.statusCode || 0);
+          const details = String(e?.details || '').toLowerCase();
+          const isModelNotFound = status === 404 || (status === 400 && /not found|unsupported model|is not found/.test(details));
+          const isRateLimited = status === 429;
+          const isImageProcessError = status === 400 && /unable to process input image|invalid_argument/.test(details);
+          if (isModelNotFound) continue;
+          if (isRateLimited) {
+            // Try next model/version/key before failing.
+            continue;
+          }
+          if (isImageProcessError) {
+            // Some models reject certain image encodings/sizes; try alternatives.
+            continue;
+          }
+          throw e;
         }
       }
-    } else {
-      throw e;
+      if (text) break;
     }
+    if (text) break;
+  }
+
+  if (!text) {
+    if (Number(lastErr?.statusCode || 0) === 429) {
+      const err = new Error('Gemini quota/rate limit reached for configured API key(s). Add another key or retry later.');
+      err.statusCode = 429;
+      throw err;
+    }
+    if (Number(lastErr?.statusCode || 0) === 400) {
+      const err = new Error('Gemini could not process this image. Try a clearer photo (good lighting, non-blurry, larger image).');
+      err.statusCode = 400;
+      throw err;
+    }
+    const modelLabel = lastErr?.modelName ? `${lastErr.modelName}` : 'unknown model';
+    const versionLabel = lastErr?.apiVersion ? `${lastErr.apiVersion}` : 'unknown api version';
+    throw new Error(`Gemini model unavailable (${modelLabel}, ${versionLabel}). Set GOOGLE_GEMINI_MODEL to a valid model.`);
   }
 
   // Some models wrap JSON in code fences; try to extract JSON first
@@ -149,11 +219,24 @@ router.post('/diet/analyze', verifyToken, upload.single('image'), async (req, re
   try {
     if (!req.file) return res.status(400).json({ error: 'Image is required' });
     // Save to Cloudinary if configured
-    const urlOrPath = await saveFile(req.file, 'fitness-buddy/food');
-    const filePath = req.file.path || urlOrPath;
-    const analysis = await analyzeWithGemini(req.file.buffer ? null : filePath);
+    let urlOrPath = null;
+    try {
+      urlOrPath = await saveFile(req.file, 'fitness-buddy/food');
+    } catch (uploadErr) {
+      console.warn('[diet] saveFile failed, continuing without remote image:', uploadErr?.message || uploadErr);
+      urlOrPath = req.file.path ? ('/uploads/' + path.basename(req.file.path)) : null;
+    }
+    const filePath = req.file.path || null;
+    const analysis = await analyzeWithGemini({
+      buffer: req.file.buffer,
+      mimeType: req.file.mimetype,
+      pathOrUrl: filePath || urlOrPath
+    });
+    const imagePath = typeof urlOrPath === 'string'
+      ? urlOrPath
+      : (filePath ? path.basename(filePath) : null);
     res.json({
-      image_path: urlOrPath?.startsWith('http') ? urlOrPath : path.basename(filePath),
+      image_path: imagePath,
       items: analysis.items,
       calories: analysis.calories,
       macros: analysis.macros,
@@ -161,7 +244,13 @@ router.post('/diet/analyze', verifyToken, upload.single('image'), async (req, re
     });
   } catch (err) {
     console.error('diet/analyze error', err);
-    res.status(500).json({ error: 'Failed to analyze image' });
+    const isConfigError = /GOOGLE_API_KEY/i.test(err?.message || '');
+    const geminiStatus = Number(err?.statusCode || ((err?.message || '').match(/Gemini HTTP\s+(\d{3})/) || [])[1] || 0);
+    const status = isConfigError ? 503 : (geminiStatus || 500);
+    if (status === 429) {
+      return res.status(429).json({ error: 'Gemini quota/rate limit reached. Try again later or use a different API key.' });
+    }
+    res.status(status).json({ error: err?.message || 'Failed to analyze image' });
   }
 });
 

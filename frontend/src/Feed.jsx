@@ -300,33 +300,7 @@ export default function Feed({ token }) {
                       e.target.style.opacity = '1'
                     }}
                   >
-                    {p.liked_by_me ? '❤️' : '🤍'} {p.like_count || 0}
-                  </button>
-
-                  {/* Comment Button (placeholder) */}
-                  <button
-                    style={{
-                      padding: '8px 16px',
-                      backgroundColor: '#3f3f46',
-                      color: '#fafafa',
-                      border: 'none',
-                      borderRadius: '9999px',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#52525b'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#3f3f46'
-                    }}
-                  >
-                    💬 Comment
+                    {p.liked_by_me ? 'Liked' : 'Like'} · {p.like_count || 0}
                   </button>
                 </div>
               </div>
@@ -340,7 +314,6 @@ export default function Feed({ token }) {
                 borderRadius: '20px',
                 border: '2px dashed #3f3f46'
               }}>
-                <div style={{ fontSize: '64px', marginBottom: '16px' }}>📱</div>
                 <h3 style={{
                   fontSize: '20px',
                   fontWeight: '700',

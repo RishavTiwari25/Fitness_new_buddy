@@ -9,10 +9,6 @@ export default function Diet({ token }) {
   const [status, setStatus] = useState('')
   const [logs, setLogs] = useState([])
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
-  // Optional: direct Gemini test (paste API key locally; dev-only)
-  const [directKey, setDirectKey] = useState('')
-  const [directBusy, setDirectBusy] = useState(false)
-  const [directText, setDirectText] = useState('')
 
   useEffect(() => {
     if (!file) { setPreview(null); return }
@@ -73,41 +69,6 @@ export default function Diet({ token }) {
 
   const total = logs.reduce((acc, l) => acc + (l.calories || 0), 0)
 
-  // Helpers for optional direct test
-  function fileToBase64(f) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(f)
-      reader.onload = () => resolve(reader.result)
-      reader.onerror = (err) => reject(err)
-    })
-  }
-
-  async function analyzeDirect() {
-    if (!file) { setStatus('Choose an image first'); return }
-    if (!directKey) { setStatus('Enter your Gemini API key below'); return }
-    setDirectBusy(true); setDirectText(''); setStatus('')
-    try {
-      const base64Url = await fileToBase64(file)
-      const pure = base64Url.split(',')[1]
-      const model = 'gemini-2.5-flash-preview-09-2025'
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(directKey)}`
-      const AI_PROMPT = `You are a world-class nutritional analyst.\nAnalyze the attached image of a meal.\nRespond with ONLY the following:\n1. A list of all food items you can identify.\n2. An estimated calorie count for each item.\n3. The total estimated calories for the entire meal.\nFormat your response clearly. Do not add any conversational text.`
-      const payload = {
-        contents: [{ role: 'user', parts: [ { text: AI_PROMPT }, { inlineData: { mimeType: file.type || 'image/jpeg', data: pure } } ] }]
-      }
-      const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-      const data = await resp.json()
-      if (!resp.ok) throw new Error(data?.error?.message || ('HTTP ' + resp.status))
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
-      setDirectText(text || '(no text)')
-    } catch (e) {
-      setDirectText('Error: ' + (e.message || String(e)))
-    } finally {
-      setDirectBusy(false)
-    }
-  }
-
   return (
     <div style={{
       minHeight: '100vh',
@@ -129,7 +90,7 @@ export default function Diet({ token }) {
               color: '#fafafa',
               marginBottom: '8px'
             }}>
-              🍎 My Diet Tracker
+              Nutrition Tracker
             </h1>
             <p style={{
               fontSize: '16px',
@@ -153,7 +114,7 @@ export default function Diet({ token }) {
               marginBottom: '6px',
               fontWeight: '600'
             }}>
-              📅 Date
+              Date
             </label>
             <input 
               type="date" 
@@ -291,11 +252,11 @@ export default function Diet({ token }) {
               >
                 {analyzing ? (
                   <>
-                    <span>⏳</span> Analyzing with AI...
+                    Analyzing with AI...
                   </>
                 ) : (
                   <>
-                    <span>🤖</span> Analyze Meal
+                    Analyze Meal
                   </>
                 )}
               </button>
@@ -312,7 +273,7 @@ export default function Diet({ token }) {
                   fontWeight: '600',
                   textAlign: 'center'
                 }}>
-                  {status === 'Saved!' ? '✓ ' : '✗ '}{status}
+                  {status}
                 </div>
               )}
             </div>
@@ -342,7 +303,7 @@ export default function Diet({ token }) {
                     justifyContent: 'center',
                     fontSize: '24px'
                   }}>
-                    🤖
+                    AI
                   </div>
                   <h3 style={{
                     fontSize: '20px',
@@ -584,7 +545,7 @@ export default function Diet({ token }) {
                 alignItems: 'center',
                 gap: '10px'
               }}>
-                📊 Today's Log
+                Daily Log
               </h2>
 
               {/* Total Calories Card */}
@@ -674,7 +635,7 @@ export default function Diet({ token }) {
                           fontWeight: '700',
                           color: '#fafafa'
                         }}>
-                          🍴 {l.items_text || `Meal ${idx + 1}`}
+                          {l.items_text || `Meal ${idx + 1}`}
                         </div>
                         <div style={{
                           backgroundColor: '#D0FD3E',
@@ -707,93 +668,6 @@ export default function Diet({ token }) {
               </div>
             </div>
 
-            {/* Direct Gemini Test (Debug) */}
-            <div style={{
-              backgroundColor: '#27272a',
-              borderRadius: '20px',
-              padding: '32px',
-              border: '1px dashed #3f3f46',
-              marginTop: '24px'
-            }}>
-              <h3 style={{
-                fontSize: '16px',
-                fontWeight: '700',
-                color: '#fafafa',
-                marginBottom: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                🔧 Direct Gemini Test (Debug)
-              </h3>
-              <p style={{
-                fontSize: '13px',
-                color: '#a1a1aa',
-                marginBottom: '16px',
-                lineHeight: '1.5'
-              }}>
-                Paste your API key locally to call Google directly from the browser for debugging. Don't use this in production.
-              </p>
-              
-              <div style={{
-                display: 'flex',
-                gap: '10px',
-                marginBottom: '16px'
-              }}>
-                <input 
-                  type="password" 
-                  value={directKey} 
-                  onChange={e => setDirectKey(e.target.value)} 
-                  placeholder="Gemini API Key"
-                  style={{
-                    flex: 1,
-                    backgroundColor: '#18181b',
-                    border: '1px solid #3f3f46',
-                    borderRadius: '12px',
-                    padding: '12px 16px',
-                    color: '#fafafa',
-                    fontSize: '14px'
-                  }}
-                />
-                <button 
-                  onClick={analyzeDirect} 
-                  disabled={directBusy || !file}
-                  style={{
-                    padding: '12px 24px',
-                    backgroundColor: directBusy || !file ? '#52525b' : '#D0FD3E',
-                    color: directBusy || !file ? '#a1a1aa' : '#18181b',
-                    border: 'none',
-                    borderRadius: '9999px',
-                    fontSize: '14px',
-                    fontWeight: '700',
-                    cursor: directBusy || !file ? 'not-allowed' : 'pointer',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  {directBusy ? 'Calling…' : 'Analyze'}
-                </button>
-              </div>
-
-              {directText && (
-                <div style={{
-                  backgroundColor: '#18181b',
-                  padding: '16px',
-                  borderRadius: '12px',
-                  border: '1px solid #3f3f46'
-                }}>
-                  <pre style={{
-                    whiteSpace: 'pre-wrap',
-                    margin: 0,
-                    fontSize: '13px',
-                    color: '#d4d4d8',
-                    lineHeight: '1.6',
-                    fontFamily: 'monospace'
-                  }}>
-                    {directText}
-                  </pre>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>

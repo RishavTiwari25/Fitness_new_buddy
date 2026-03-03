@@ -14,7 +14,7 @@ const notificationsRouter = require('./routes/notifications');
 const db = require('./db');
 const mongo = require('./lib/mongo');
 
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -41,11 +41,20 @@ app.get('/api/db-status', async (req, res) => {
 	}
 });
 
-// Serve uploaded images statically (allow override via env for hosted platforms)
-// Default to a writable temp dir so it works on platforms like Render
-const UPLOADS_DIR = process.env.UPLOADS_DIR || path.resolve('/tmp/uploads');
-try { fs.mkdirSync(UPLOADS_DIR, { recursive: true }); } catch (_) {}
-app.use('/uploads', express.static(UPLOADS_DIR));
+// Serve uploaded images statically.
+// Primary dir defaults to backend/uploads for local consistency.
+// If UPLOADS_DIR is set (e.g., /tmp/uploads on Render), that becomes primary.
+const PRIMARY_UPLOADS_DIR = process.env.UPLOADS_DIR || path.resolve(__dirname, 'uploads');
+const LEGACY_UPLOADS_DIRS = [path.resolve('/tmp/uploads'), path.resolve(__dirname, 'uploads')]
+	.filter((p, i, arr) => p !== PRIMARY_UPLOADS_DIR && arr.indexOf(p) === i);
+try { fs.mkdirSync(PRIMARY_UPLOADS_DIR, { recursive: true }); } catch (_) {}
+for (const legacyDir of LEGACY_UPLOADS_DIRS) {
+	try { fs.mkdirSync(legacyDir, { recursive: true }); } catch (_) {}
+}
+app.use('/uploads', express.static(PRIMARY_UPLOADS_DIR));
+for (const legacyDir of LEGACY_UPLOADS_DIRS) {
+	app.use('/uploads', express.static(legacyDir));
+}
 
 // Serve frontend build (single-server mode) only if dist exists
 const distDir = path.resolve(__dirname, '..', 'frontend', 'dist');
