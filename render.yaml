@@ -18,5 +18,9 @@ services:
         value: to-set-in-dashboard
       - key: JWT_SECRET
         value: to-set-in-dashboard
+      - key: GOOGLE_API_KEY
+        value: to-set-in-dashboard
+      - key: GOOGLE_GEMINI_MODEL
+        value: gemini-1.5-flash-latest
       - key: CLOUDINARY_URL
         value: optional-set-in-dashboard

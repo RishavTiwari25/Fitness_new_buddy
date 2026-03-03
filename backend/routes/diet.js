@@ -41,7 +41,13 @@ function guessMimeFromPath(p) {
 }
 
 function getGeminiApiKeys() {
-  const raw = String(process.env.GOOGLE_API_KEY || '').trim();
+  const raw = String(
+    process.env.GOOGLE_API_KEY
+    || process.env.GOOGLE_API_KEYS
+    || process.env.GEMINI_API_KEY
+    || process.env.GOOGLE_GENERATIVE_AI_API_KEY
+    || ''
+  ).trim();
   if (!raw) return [];
   return raw.split(',').map(k => k.trim()).filter(Boolean);
 }
@@ -114,7 +120,7 @@ async function discoverModels(apiKey, apiVersion = 'v1beta') {
 async function analyzeWithGemini(input) {
   const apiKeys = getGeminiApiKeys();
   if (!apiKeys.length) {
-    throw new Error('GOOGLE_API_KEY is not configured');
+    throw new Error('Gemini API key is not configured. Set GOOGLE_API_KEY (or GEMINI_API_KEY) in backend environment.');
   }
   const envModel = (process.env.GOOGLE_GEMINI_MODEL || '').trim();
   // Use stable multimodal model by default; allow env override.
@@ -244,7 +250,7 @@ router.post('/diet/analyze', verifyToken, upload.single('image'), async (req, re
     });
   } catch (err) {
     console.error('diet/analyze error', err);
-    const isConfigError = /GOOGLE_API_KEY/i.test(err?.message || '');
+    const isConfigError = /api key is not configured|GOOGLE_API_KEY|GEMINI_API_KEY/i.test(err?.message || '');
     const geminiStatus = Number(err?.statusCode || ((err?.message || '').match(/Gemini HTTP\s+(\d{3})/) || [])[1] || 0);
     const status = isConfigError ? 503 : (geminiStatus || 500);
     if (status === 429) {

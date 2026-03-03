@@ -136,6 +136,7 @@ Get-NetTCPConnection -LocalPort 4000 -State Listen |
 - Frontend can be deployed on Vercel
 - Backend can be deployed on Render
 - In Vercel project settings, set `VITE_API_URL` to your Render backend URL (example: `https://fitness-new-buddy.onrender.com`)
+- In Render backend settings, set `GOOGLE_API_KEY` (or `GEMINI_API_KEY`) for AI diet analysis to work
 - Use environment variables from `.env.example` in deployment dashboards
 
 ## Security Notes
