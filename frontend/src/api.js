@@ -1,13 +1,14 @@
 function normalizeApiBase(val) {
 	let v = (val || '').trim();
 	if (!v) {
+		const isLocalHost = typeof window !== 'undefined' && window.location && ['localhost', '127.0.0.1'].includes(window.location.hostname);
 		// Helpful hint in production if env var isn't set
 		try {
-			if (typeof window !== 'undefined' && window.location && window.location.hostname !== 'localhost') {
-				console.warn('[API] VITE_API_URL is not set; defaulting to http://localhost:4000. Set VITE_API_URL to your backend URL (e.g., https://fitness-new-buddy.onrender.com).');
+			if (!isLocalHost) {
+				console.warn('[API] VITE_API_URL is not set; defaulting to production backend https://fitness-new-buddy.onrender.com. Set VITE_API_URL explicitly in Vercel for reliability.');
 			}
 		} catch (_) {}
-		return 'http://localhost:4000';
+		return isLocalHost ? 'http://localhost:4000' : 'https://fitness-new-buddy.onrender.com';
 	}
 	// Handle bare port or ":4000"
 	if (/^:?\d{2,5}$/.test(v)) {
