@@ -76,7 +76,8 @@ router.post('/signup', async (req, res) => {
       // Return new user data and token
       return res.json({ id: userId, email, role: safeRole, token });
     } catch (e) {
-      return res.status(500).json({ error: 'Failed to create user' });
+      console.error('Signup MongoDB error:', e);
+      return res.status(500).json({ error: 'Database error: ' + (e.message || String(e)) });
     }
   } else {
     // Handle SQLite path (fallback)
@@ -155,12 +156,16 @@ router.post('/login', async (req, res) => {
         token 
       });
     } catch (e) {
-      return res.status(500).json({ error: 'Database error' });
+      console.error('Login MongoDB error:', e);
+      return res.status(500).json({ error: 'Database error: ' + (e.message || String(e)) });
     }
   } else {
     // Handle SQLite path (fallback)
     db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => {
-      if (err) return res.status(500).json({ error: 'Database error' });
+      if (err) {
+        console.error('Login SQLite error:', err);
+        return res.status(500).json({ error: 'Database error (SQLite): ' + (err.message || String(err)) });
+      }
       if (!row) return res.status(400).json({ error: 'Invalid credentials' });
 
       // Compare password with stored hash
