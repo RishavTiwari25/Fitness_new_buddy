@@ -14,43 +14,13 @@
  * - Corrects deprecated backend URLs
  */
 function normalizeApiBase(val) {
-	// Trim whitespace
-	let v = (val || '').trim();
-	
-	// Check if running in browser and determine if it's localhost
 	const hasWindow = typeof window !== 'undefined' && window.location;
 	const isLocalHost = hasWindow && ['localhost', '127.0.0.1'].includes(window.location.hostname);
 	
-	// If no value provided, use defaults
-	if (!v) {
-		// Log helpful message for production environments
-		try {
-			if (!isLocalHost) {
-				console.warn('[API] VITE_API_URL is not set; defaulting to production backend https://fitness-new-buddy-1.onrender.com. Set VITE_API_URL explicitly in Vercel for reliability.');
-			}
-		} catch (_) {}
-		// Return localhost for development, production URL for production
-		return isLocalHost ? 'http://localhost:4000' : 'https://fitness-new-buddy-1.onrender.com';
-	}
-	
-	// Handle bare port (":4000" or "4000") - convert to full localhost URL
-	if (/^:?\d{2,5}$/.test(v)) {
-		v = v.replace(/^:/, ''); // Remove leading colon if present
-		return `http://localhost:${v}`;
-	}
-	
-	// If missing protocol (http:// or https://), assume http
-	if (!/^https?:\/\//i.test(v)) {
-		v = 'http://' + v;
-	}
-	
-	// Remove trailing slash for consistency
-	v = v.replace(/\/$/, '');
-	
-	return v;
+	// FORCE the frontend to point to the correct Render backend (-1) in production
+	// completely ignoring any potentially incorrect Vercel environment variables.
+	return isLocalHost ? 'http://localhost:4000' : 'https://fitness-new-buddy-1.onrender.com';
 }
 
 // ===== EXPORT API BASE URL =====
-// Main export: the normalized and validated API base URL
-// Used by all API calls throughout the frontend
 export const API_BASE = normalizeApiBase(import.meta.env.VITE_API_URL);
