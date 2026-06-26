@@ -1,40 +1,70 @@
-import React, { useState } from 'react'
-import Login from './Login'
-import Signup from './Signup'
-import Dashboard from './Dashboard'
-import ContactFooter from './ContactFooter'
-import Logo from './components/Logo'
-import { APP_NAME } from './branding'
+/**
+ * =============================================
+ * MAIN APPLICATION COMPONENT (App.jsx)
+ * =============================================
+ * Root component that handles:
+ * - Authentication state management
+ * - Routing between login/signup and dashboard
+ * - Token persistence using localStorage
+ * - Landing page with feature showcase
+ */
 
+// ===== IMPORTS =====
+import React, { useState } from 'react' // React hooks for state management
+import Login from './Login' // Login form component
+import Signup from './Signup' // Signup form component
+import Dashboard from './Dashboard' // Main dashboard component (after login)
+import ContactFooter from './ContactFooter' // Footer with contact info
+import Logo from './components/Logo' // Logo component
+import { APP_NAME } from './branding' // App name from branding config
+
+/**
+ * Main App Component
+ * Manages the overall application flow and authentication state
+ */
 export default function App() {
+  // ===== STATE MANAGEMENT =====
+  // Current view to display: 'login' or 'signup'
   const [view, setView] = useState('login');
+  
+  // JWT token for authentication - retrieved from localStorage on initial load
+  // If token exists, user is logged in and Dashboard is shown
   const [token, setToken] = useState(localStorage.getItem('token'));
 
+  // ===== HANDLE LOGIN =====
+  // Called when user successfully logs in
   function handleLogin(t) {
-    localStorage.setItem('token', t);
-    setToken(t);
+    localStorage.setItem('token', t); // Persist token to localStorage for future sessions
+    setToken(t); // Update state to trigger re-render and show Dashboard
   }
 
+  // ===== HANDLE LOGOUT =====
+  // Called when user clicks logout
   function handleLogout() {
-    localStorage.removeItem('token');
-    setToken(null);
-    setView('login');
+    localStorage.removeItem('token'); // Remove token from localStorage
+    setToken(null); // Clear token state
+    setView('login'); // Show login form
   }
 
+  // ===== CONDITIONAL RENDERING =====
+  // If user has a token, show the Dashboard
+  // Otherwise, show the landing page with login/signup forms
   if (token) return <Dashboard token={token} onLogout={handleLogout} />
 
+  // ===== LANDING PAGE LAYOUT =====
   return (
     <div style={{ 
-      minHeight: '100vh', 
-      backgroundColor: '#18181b',
+      minHeight: '100vh',  // Full screen height
+      backgroundColor: '#18181b', // Dark background
       display: 'flex',
       flexDirection: 'column'
     }}>
-      {/* Hero Section with Login/Signup */}
+      {/* ===== HERO SECTION ===== */}
+      {/* Two-column layout: Left side has marketing copy, right side has auth form */}
       <div style={{
         flex: 1,
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+        gridTemplateColumns: '1fr 1fr', // 50-50 split
         gap: '48px',
         padding: '48px',
         alignItems: 'center',
@@ -42,9 +72,10 @@ export default function App() {
         margin: '0 auto',
         width: '100%'
       }}>
-        {/* Left Side - Hero Content */}
+        {/* ===== LEFT SIDE: HERO CONTENT ===== */}
         <div style={{ padding: '40px 0' }}>
           <div style={{ marginBottom: '24px' }}>
+            {/* Main headline */}
             <h1 style={{ 
               fontSize: '56px', 
               fontWeight: '800', 
@@ -53,8 +84,9 @@ export default function App() {
               lineHeight: '1.1'
             }}>
               Your Fitness Journey<br />
-              <span style={{ color: '#D0FD3E' }}>Starts Here</span>
+              <span style={{ color: '#D0FD3E' }}>Starts Here</span> {/* Accent color for "Starts Here" */}
             </h1>
+            {/* Subheading with feature description */}
             <p style={{ 
               fontSize: '20px', 
               color: '#a1a1aa',
@@ -66,8 +98,10 @@ export default function App() {
             </p>
           </div>
 
-          {/* Feature Icons */}
+          {/* ===== FEATURE CARDS GRID ===== */}
+          {/* 2x2 grid of feature highlights */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '40px' }}>
+            {/* Feature 1: Track Progress */}
             <div style={{
               padding: '20px',
               backgroundColor: '#27272a',
@@ -77,6 +111,8 @@ export default function App() {
               <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>Track Progress</div>
               <div style={{ color: '#a1a1aa', fontSize: '13px' }}>Monitor your gym streaks and achievements</div>
             </div>
+            
+            {/* Feature 2: Book Equipment */}
             <div style={{
               padding: '20px',
               backgroundColor: '#27272a',
@@ -86,6 +122,8 @@ export default function App() {
               <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>Book Equipment</div>
               <div style={{ color: '#a1a1aa', fontSize: '13px' }}>Reserve gym equipment by time slots</div>
             </div>
+            
+            {/* Feature 3: AI Diet Analysis */}
             <div style={{
               padding: '20px',
               backgroundColor: '#27272a',
@@ -95,6 +133,8 @@ export default function App() {
               <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>AI Diet Analysis</div>
               <div style={{ color: '#a1a1aa', fontSize: '13px' }}>Scan meals and get instant nutrition info</div>
             </div>
+            
+            {/* Feature 4: Earn Rewards */}
             <div style={{
               padding: '20px',
               backgroundColor: '#27272a',
@@ -107,7 +147,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Right Side - Auth Form */}
+        {/* ===== RIGHT SIDE: AUTHENTICATION FORM ===== */}
         <div style={{
           backgroundColor: '#27272a',
           borderRadius: '24px',
@@ -115,17 +155,20 @@ export default function App() {
           border: '1px solid #3f3f46',
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)'
         }}>
+          {/* Auth form header */}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
-              <Logo size={36} withText={false} />
+              <Logo size={36} withText={false} /> {/* App logo */}
             </div>
             <h2 style={{ fontSize: '32px', fontWeight: '700', color: '#fafafa', marginBottom: '8px' }}>
-              {APP_NAME}
+              {APP_NAME} {/* App name from branding */}
             </h2>
             <p style={{ color: '#a1a1aa', fontSize: '14px' }}>Join thousands achieving their fitness goals</p>
           </div>
 
+          {/* ===== LOGIN/SIGNUP TOGGLE BUTTONS ===== */}
           <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
+            {/* Login button */}
             <button 
               onClick={() => setView('login')}
               style={{
@@ -136,13 +179,15 @@ export default function App() {
                 fontWeight: '600',
                 border: 'none',
                 cursor: 'pointer',
-                backgroundColor: view === 'login' ? '#D0FD3E' : '#3f3f46',
+                backgroundColor: view === 'login' ? '#D0FD3E' : '#3f3f46', // Highlight if active
                 color: view === 'login' ? '#000' : '#a1a1aa',
                 transition: 'all 0.3s ease'
               }}
             >
               Login
             </button>
+            
+            {/* Signup button */}
             <button 
               onClick={() => setView('signup')}
               style={{
@@ -153,7 +198,7 @@ export default function App() {
                 fontWeight: '600',
                 border: 'none',
                 cursor: 'pointer',
-                backgroundColor: view === 'signup' ? '#D0FD3E' : '#3f3f46',
+                backgroundColor: view === 'signup' ? '#D0FD3E' : '#3f3f46', // Highlight if active
                 color: view === 'signup' ? '#000' : '#a1a1aa',
                 transition: 'all 0.3s ease'
               }}
@@ -162,11 +207,14 @@ export default function App() {
             </button>
           </div>
 
+          {/* ===== RENDER LOGIN OR SIGNUP FORM ===== */}
+          {/* Conditionally render Login or Signup component based on current view */}
           {view === 'login' ? <Login onLogin={handleLogin} /> : <Signup onSignup={handleLogin} />}
         </div>
       </div>
 
-      {/* About Section */}
+      {/* ===== ABOUT SECTION ===== */}
+      {/* Features showcase and footer */}
       <div style={{
         backgroundColor: '#27272a',
         borderTop: '1px solid #3f3f46',

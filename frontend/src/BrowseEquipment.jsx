@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { API_BASE } from './api'
 import EquipmentDetails from './EquipmentDetails'
+import GymDetails from './GymDetails'
 
 export default function BrowseEquipment({ token }) {
+  const [activeTab, setActiveTab] = useState('gyms') // 'gyms' or 'equipment'
+  const [selectedGymForDetails, setSelectedGymForDetails] = useState(null)
   const [equipment, setEquipment] = useState([])
   const [filteredEquipment, setFilteredEquipment] = useState([])
   const [gyms, setGyms] = useState([])
@@ -115,6 +118,17 @@ export default function BrowseEquipment({ token }) {
     return { difficulty, time, muscles }
   }
 
+  // If gym details is selected, show it
+  if (selectedGymForDetails) {
+    return (
+      <GymDetails 
+        gymId={selectedGymForDetails}
+        token={token}
+        onBack={() => setSelectedGymForDetails(null)}
+      />
+    )
+  }
+
   // If equipment is selected, show detail view
   if (selectedEquipment) {
     return (
@@ -145,14 +159,53 @@ export default function BrowseEquipment({ token }) {
           color: '#fafafa',
           marginBottom: '8px' 
         }}>
-          Browse Equipment
+          Discover
         </h2>
         <p style={{ color: '#a1a1aa', fontSize: '16px' }}>
-          Discover and book gym equipment at your selected location
+          Find the perfect gym or browse available equipment.
         </p>
       </div>
 
-      {/* Gym Selector */}
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 24, borderBottom: '1px solid #3f3f46', paddingBottom: 12 }}>
+        <button 
+          onClick={() => setActiveTab('gyms')}
+          style={{ background: activeTab === 'gyms' ? '#D0FD3E' : 'transparent', color: activeTab === 'gyms' ? '#18181b' : '#fafafa', padding: '10px 20px', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 15 }}
+        >Gyms</button>
+        <button 
+          onClick={() => setActiveTab('equipment')}
+          style={{ background: activeTab === 'equipment' ? '#D0FD3E' : 'transparent', color: activeTab === 'equipment' ? '#18181b' : '#fafafa', padding: '10px 20px', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 15 }}
+        >Equipment</button>
+      </div>
+
+      {activeTab === 'gyms' ? (
+        <div>
+          {gyms.length === 0 ? (
+            <div style={{ color: '#a1a1aa', textAlign: 'center', padding: 40 }}>No gyms available right now.</div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 24 }}>
+              {gyms.map(gym => (
+                <div key={gym.id} onClick={() => setSelectedGymForDetails(gym.id)} style={{ backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 24, cursor: 'pointer', transition: 'transform 0.2s, borderColor 0.2s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = '#D0FD3E' }} onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = '#3f3f46' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+                    <div style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: '#3f3f46', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
+                      🏋️
+                    </div>
+                    <div>
+                      <h3 style={{ margin: 0, color: '#fafafa', fontSize: 18 }}>{gym.name}</h3>
+                      <div style={{ color: '#a1a1aa', fontSize: 14 }}>{gym.location || 'Unknown location'}</div>
+                    </div>
+                  </div>
+                  <button style={{ width: '100%', background: '#3f3f46', color: '#fafafa', border: 'none', padding: '12px', borderRadius: 10, cursor: 'pointer', fontWeight: 600 }}>
+                    View Details
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          {/* Gym Selector */}
       <div style={{ marginBottom: '24px' }}>
         <label style={{ 
           display: 'block', 
@@ -604,6 +657,8 @@ export default function BrowseEquipment({ token }) {
             This gym doesn't have any equipment listed yet
           </p>
         </div>
+      )}
+        </>
       )}
     </div>
   )

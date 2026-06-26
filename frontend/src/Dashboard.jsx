@@ -3,7 +3,7 @@ import { API_BASE } from './api'
 import Logo from './components/Logo'
 import { APP_NAME } from './branding'
 import Profile from './Profile'
-import AdminPanel from './AdminPanel'
+import ManagerDashboard from './ManagerDashboard'
 import MemberHome from './MemberHome'
 import Diet from './Diet'
 import Feed from './Feed'
@@ -11,7 +11,6 @@ import MyBookingsNew from './MyBookingsNew'
 import EquipmentSlots from './EquipmentSlots'
 import Rewards from './Rewards'
 import HomeWorkout from './HomeWorkout'
-import TrainerDashboard from './TrainerDashboard'
 import MyPayments from './MyPayments'
 import ContactFooter from './ContactFooter'
 import NotificationsBell from './NotificationsBell'
@@ -84,12 +83,12 @@ function CircularProgress({ percentage, label, value, color = '#D0FD3E' }) {
 export default function Dashboard({ token, onLogout }) {
   const [profile, setProfile] = useState(null)
   const [error, setError] = useState(null)
-  const [view, setView] = useState('home')
+  const payload = parseJwt(token)
+  const [view, setView] = useState(payload.role === 'manager' ? 'manager-overview' : 'home')
   const [selectedEquipment, setSelectedEquipment] = useState(null)
   const [streaks, setStreaks] = useState(null)
   const [points, setPoints] = useState(0)
   const [recentBookings, setRecentBookings] = useState([])
-  const payload = parseJwt(token)
 
   useEffect(() => {
     async function load() {
@@ -148,53 +147,68 @@ export default function Dashboard({ token, onLogout }) {
   }, [token])
 
   const navButtonStyle = (isActive) => ({
-    backgroundColor: isActive ? '#D0FD3E' : '#27272a',
-    color: isActive ? '#000' : '#fafafa',
-    border: isActive ? 'none' : '1px solid #52525b',
-    padding: '10px 20px',
+    backgroundColor: isActive ? '#D0FD3E' : 'transparent',
+    color: isActive ? '#000' : '#a1a1aa',
+    border: 'none',
+    padding: '12px 16px',
     borderRadius: '12px',
-    fontSize: '14px',
+    fontSize: '15px',
     fontWeight: '600',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
-    marginLeft: '8px'
+    textAlign: 'left',
+    width: '100%'
   })
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#18181b', padding: '24px' }}>
-      {/* Top Navigation Bar */}
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#18181b' }}>
+      {/* Side Navigation Bar */}
       <div style={{ 
+        width: '260px',
         display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '32px',
-        padding: '16px 24px',
+        flexDirection: 'column',
+        padding: '24px',
         backgroundColor: '#27272a',
-        borderRadius: '20px',
-        border: '1px solid #3f3f46'
+        borderRight: '1px solid #3f3f46',
+        flexShrink: 0
       }}>
-        <div>
+        <div style={{ marginBottom: '40px', paddingLeft: '8px' }}>
           <Logo size={28} withText={true} />
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-          <button style={navButtonStyle(view === 'home')} onClick={() => setView('home')}>Home</button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'home')} onClick={() => setView('home')}>Home</button>}
           <button style={navButtonStyle(view === 'profile')} onClick={() => setView('profile')}>Profile</button>
-          <button style={navButtonStyle(view === 'browse')} onClick={() => setView('browse')}>Browse</button>
-          {payload.role === 'owner' && <button style={navButtonStyle(view === 'admin')} onClick={() => setView('admin')}>Admin</button>}
+          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'browse')} onClick={() => setView('browse')}>Browse</button>}
+          {payload.role === 'manager' && (
+            <>
+              <div style={{ color: '#a1a1aa', fontSize: 12, fontWeight: 700, padding: '12px 16px 4px 16px', textTransform: 'uppercase', letterSpacing: 1 }}>Manager</div>
+              <button style={navButtonStyle(view === 'manager-overview')} onClick={() => setView('manager-overview')}>Overview</button>
+              <button style={navButtonStyle(view === 'manager-equipment')} onClick={() => setView('manager-equipment')}>Equipment</button>
+              <button style={navButtonStyle(view === 'manager-members')} onClick={() => setView('manager-members')}>Members & Payments</button>
+              <button style={navButtonStyle(view === 'manager-feed')} onClick={() => setView('manager-feed')}>Social Feed</button>
+              <button style={navButtonStyle(view === 'manager-leaderboard')} onClick={() => setView('manager-leaderboard')}>Gym Leaderboard</button>
+            </>
+          )}
           {payload.role === 'member' && <button style={navButtonStyle(view === 'member')} onClick={() => setView('member')}>Member</button>}
           {payload.role === 'member' && <button style={navButtonStyle(view === 'payments')} onClick={() => setView('payments')}>Payments</button>}
-          {payload.role === 'trainer' && <button style={navButtonStyle(view === 'trainer')} onClick={() => setView('trainer')}>Trainer</button>}
-          <button style={navButtonStyle(view === 'myBookingsNew')} onClick={() => setView('myBookingsNew')}>Bookings</button>
-          <button style={navButtonStyle(view === 'diet')} onClick={() => setView('diet')}>Diet</button>
-          <button style={navButtonStyle(view === 'feed')} onClick={() => setView('feed')}>Feed</button>
-          <button style={navButtonStyle(view === 'rewards')} onClick={() => setView('rewards')}>Rewards</button>
-          <button style={navButtonStyle(view === 'homeWorkout')} onClick={() => setView('homeWorkout')}>Workout</button>
-          <NotificationsBell token={token} />
-          <button style={{ ...navButtonStyle(false), backgroundColor: '#ef4444', border: 'none' }} onClick={onLogout}>Logout</button>
+          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'myBookingsNew')} onClick={() => setView('myBookingsNew')}>Bookings</button>}
+          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'diet')} onClick={() => setView('diet')}>Diet</button>}
+          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'feed')} onClick={() => setView('feed')}>Feed</button>}
+          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'rewards')} onClick={() => setView('rewards')}>Rewards</button>}
+          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'homeWorkout')} onClick={() => setView('homeWorkout')}>Workout</button>}
+          
+          <div style={{ marginTop: 'auto', paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ paddingLeft: '8px' }}>
+              <NotificationsBell token={token} />
+            </div>
+            <button style={{ ...navButtonStyle(false), backgroundColor: '#ef4444', color: '#fff' }} onClick={onLogout}>Logout</button>
+          </div>
         </div>
       </div>
 
-      {error && <p style={{ color: '#ef4444', padding: '12px', backgroundColor: '#27272a', borderRadius: '12px' }}>{error}</p>}
+      {/* Main Content Area */}
+      <div style={{ flex: 1, padding: '32px', overflowY: 'auto', height: '100vh', boxSizing: 'border-box' }}>
+        {error && <p style={{ color: '#ef4444', padding: '12px', backgroundColor: '#27272a', borderRadius: '12px', marginBottom: '24px' }}>{error}</p>}
 
       {/* Home View with Daily Activity */}
       {view === 'home' && (
@@ -318,18 +332,19 @@ export default function Dashboard({ token, onLogout }) {
       {/* Other Views */}
       {view === 'profile' && <Profile token={token} profile={profile} onUpdate={setProfile} />}
       {view === 'browse' && <BrowseEquipment token={token} />}
-      {view === 'admin' && payload.role === 'owner' && <AdminPanel token={token} />}
+      {/* Manager View */}
+      {view.startsWith('manager-') && <ManagerDashboard token={token} activeTabProp={view.replace('manager-', '')} />}
       {view === 'member' && payload.role === 'member' && <MemberHome token={token} defaultGymId={profile?.gym_id} />}
       {view === 'myBookingsNew' && <MyBookingsNew token={token} />}
       {view === 'diet' && <Diet token={token} />}
       {view === 'feed' && <Feed token={token} />}
       {view === 'rewards' && <Rewards token={token} />}
       {view === 'homeWorkout' && <HomeWorkout token={token} />}
-      {view === 'trainer' && payload.role === 'trainer' && <TrainerDashboard token={token} />}
       {view === 'payments' && payload.role === 'member' && <MyPayments token={token} />}
 
       {/* Contact & Help Footer - Shows on all pages */}
       <ContactFooter />
+      </div>
     </div>
   )
 }

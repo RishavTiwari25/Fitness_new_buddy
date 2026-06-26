@@ -140,7 +140,7 @@ router.get('/gym/members', verifyToken, async (req, res) => {
 // Follow
 router.post('/follow/:userId', verifyToken, async (req, res) => {
   const followerId = req.user.id;
-  const followeeId = parseInt(req.params.userId, 10);
+  const followeeId = req.params.userId;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
@@ -175,7 +175,7 @@ router.post('/follow/:userId', verifyToken, async (req, res) => {
 // Unfollow
 router.post('/unfollow/:userId', verifyToken, async (req, res) => {
   const followerId = req.user.id;
-  const followeeId = parseInt(req.params.userId, 10);
+  const followeeId = req.params.userId;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
@@ -196,7 +196,7 @@ router.post('/unfollow/:userId', verifyToken, async (req, res) => {
 // Remove a follower (block): remove row where they follow me
 router.post('/me/followers/:userId/remove', verifyToken, async (req, res) => {
   const me = req.user.id;
-  const followerId = parseInt(req.params.userId, 10);
+  const followerId = req.params.userId;
   if (!followerId) return res.status(400).json({ error: 'Invalid user' });
   if (mongo.isEnabled()) {
     try {
@@ -326,7 +326,7 @@ router.get('/feed', verifyToken, async (req, res) => {
 
 router.post('/posts/:id/like', verifyToken, async (req, res) => {
   const userId = req.user.id;
-  const postId = parseInt(req.params.id, 10);
+  const postId = req.params.id;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
@@ -349,7 +349,7 @@ router.post('/posts/:id/like', verifyToken, async (req, res) => {
 
 router.post('/posts/:id/unlike', verifyToken, async (req, res) => {
   const userId = req.user.id;
-  const postId = parseInt(req.params.id, 10);
+  const postId = req.params.id;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();

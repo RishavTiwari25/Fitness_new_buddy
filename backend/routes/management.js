@@ -12,7 +12,7 @@ function addMonths(dateIso, months) {
 }
 
 // ----- Owner: memberships -----
-router.get('/owner/members', verifyToken, requireRole('owner'), async (req, res) => {
+router.get('/manager/members', verifyToken, requireRole('manager'), async (req, res) => {
   // list members for all gyms owned by this owner
   const ownerId = req.user.id;
   if (mongo.isEnabled()) {
@@ -48,9 +48,9 @@ router.get('/owner/members', verifyToken, requireRole('owner'), async (req, res)
   }
 });
 
-router.get('/owner/memberships', verifyToken, requireRole('owner'), async (req, res) => {
+router.get('/manager/memberships', verifyToken, requireRole('manager'), async (req, res) => {
   const ownerId = req.user.id;
-  const gymId = req.query.gymId ? parseInt(req.query.gymId,10) : null;
+  const gymId = req.query.gymId ? req.query.gymId : null;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
@@ -58,29 +58,29 @@ router.get('/owner/memberships', verifyToken, requireRole('owner'), async (req, 
       const Users = mongo.collection('users');
       const Memberships = mongo.collection('memberships');
       const Payments = mongo.collection('payments');
-      const gymFilter = { owner_id: toObjectId(ownerId) };
+      const gymFilter = {};
       if (gymId) gymFilter._id = toObjectId(String(gymId));
       const gyms = await Gyms.find(gymFilter).project({ _id: 1 }).toArray();
       const gymIds = gyms.map(g => g._id);
       if (gymIds.length === 0) return res.json([]);
       const members = await Users.find({ role: 'member', gym_id: { $in: gymIds } }).project({ name: 1, email: 1, gym_id: 1 }).sort({ name: 1 }).toArray();
       const userIds = members.map(m => m._id);
-      const mbs = await Memberships.find({ user_id: { $in: userIds } }).project({ user_id: 1, monthly_fee: 1, next_due_date: 1 }).toArray();
+      const mbs = await Memberships.find({ user_id: { $in: userIds } }).project({ user_id: 1, monthly_fee: 1, next_due_date: 1, status: 1 }).toArray();
       const mbMap = new Map(mbs.map(m => [m.user_id.toString(), m]));
       const pays = await Payments.aggregate([
         { $match: { user_id: { $in: userIds }, gym_id: { $in: gymIds } } },
         { $group: { _id: '$user_id', last_payment_at: { $max: '$created_at' } } }
       ]).toArray();
       const payMap = new Map(pays.map(p => [p._id.toString(), p.last_payment_at]));
-      const rows = members.map(u => ({ user_id: u._id.toString(), name: u.name, email: u.email, gym_id: u.gym_id?.toString() || null, monthly_fee: mbMap.get(u._id.toString())?.monthly_fee || null, next_due_date: mbMap.get(u._id.toString())?.next_due_date || null, last_payment_at: payMap.get(u._id.toString()) || null }));
+      const rows = members.map(u => ({ user_id: u._id.toString(), name: u.name, email: u.email, gym_id: u.gym_id?.toString() || null, monthly_fee: mbMap.get(u._id.toString())?.monthly_fee || null, next_due_date: mbMap.get(u._id.toString())?.next_due_date || null, status: mbMap.get(u._id.toString())?.status || 'approved', last_payment_at: payMap.get(u._id.toString()) || null }));
       return res.json(rows);
     } catch (e) { return res.status(500).json({ error: 'DB error' }); }
   } else {
-    const base = `SELECT u.id as user_id, u.name, u.email, u.gym_id, mb.monthly_fee, mb.next_due_date,
+    const base = `SELECT u.id as user_id, u.name, u.email, u.gym_id, mb.monthly_fee, mb.next_due_date, mb.status,
     (SELECT MAX(created_at) FROM payments p WHERE p.user_id = u.id AND p.gym_id = u.gym_id) as last_payment_at
-    FROM users u JOIN gyms g ON g.id = u.gym_id LEFT JOIN memberships mb ON mb.user_id = u.id WHERE g.owner_id = ? AND u.role = 'member'`;
+    FROM users u JOIN gyms g ON g.id = u.gym_id LEFT JOIN memberships mb ON mb.user_id = u.id WHERE u.role = 'member'`;
     const sql = gymId ? base + ' AND u.gym_id = ? ORDER BY u.name' : base + ' ORDER BY u.name';
-    const params = gymId ? [ownerId, gymId] : [ownerId];
+    const params = gymId ? [gymId] : [];
     db.all(sql, params, (e, rows) => {
       if (e) return res.status(500).json({ error: 'DB error' });
       res.json(rows || []);
@@ -88,7 +88,7 @@ router.get('/owner/memberships', verifyToken, requireRole('owner'), async (req, 
   }
 });
 
-router.post('/owner/memberships/upsert', verifyToken, requireRole('owner'), async (req, res) => {
+router.post('/manager/memberships/upsert', verifyToken, requireRole('manager'), async (req, res) => {
   const ownerId = req.user.id;
   const { user_id, monthly_fee, next_due_date } = req.body || {};
   if (!user_id || !monthly_fee) return res.status(400).json({ error: 'user_id and monthly_fee required' });
@@ -111,12 +111,10 @@ router.post('/owner/memberships/upsert', verifyToken, requireRole('owner'), asyn
       return res.json({ success: true });
     } catch (e) { return res.status(500).json({ error: 'Failed to save' }); }
   } else {
-    // verify that the user belongs to a gym owned by this owner
-    const q = `SELECT u.id, u.gym_id, g.owner_id FROM users u JOIN gyms g ON g.id = u.gym_id WHERE u.id = ?`;
+    const q = `SELECT id, gym_id FROM users WHERE id = ?`;
     db.get(q, [user_id], (e, u) => {
       if (e) return res.status(500).json({ error: 'DB error' });
       if (!u) return res.status(404).json({ error: 'User not found' });
-      if (u.owner_id !== ownerId) return res.status(403).json({ error: 'Forbidden' });
       const up = `INSERT INTO memberships (user_id, gym_id, monthly_fee, next_due_date) VALUES (?, ?, ?, ?)
                 ON CONFLICT(user_id) DO UPDATE SET monthly_fee=excluded.monthly_fee, next_due_date=excluded.next_due_date`;
       db.run(up, [user_id, u.gym_id, Number(monthly_fee), next_due_date || null], function(err2){
@@ -127,9 +125,38 @@ router.post('/owner/memberships/upsert', verifyToken, requireRole('owner'), asyn
   }
 });
 
-router.post('/owner/memberships/:userId/remind', verifyToken, requireRole('owner'), async (req, res) => {
+router.post('/manager/memberships/:userId/approve', verifyToken, requireRole('manager'), async (req, res) => {
   const ownerId = req.user.id;
-  const userId = parseInt(req.params.userId, 10);
+  const userId = req.params.userId;
+  if (mongo.isEnabled()) {
+    try {
+      await mongo.connect();
+      const Users = mongo.collection('users');
+      const Gyms = mongo.collection('gyms');
+      const Memberships = mongo.collection('memberships');
+      const u = await Users.findOne({ _id: toObjectId(String(userId)) }, { projection: { gym_id: 1 } });
+      if (!u || !u.gym_id) return res.status(404).json({ error: 'User/Gym not found' });
+      const g = await Gyms.findOne({ _id: u.gym_id });
+      if (!g) return res.status(403).json({ error: 'Forbidden' });
+      await Memberships.updateOne({ user_id: u._id }, { $set: { status: 'approved' } });
+      return res.json({ success: true });
+    } catch (e) { return res.status(500).json({ error: 'Failed to approve' }); }
+  } else {
+    const q = `SELECT u.id, u.gym_id, g.owner_id FROM users u JOIN gyms g ON g.id = u.gym_id WHERE u.id = ?`;
+    db.get(q, [userId], (e, u) => {
+      if (e) return res.status(500).json({ error: 'DB error' });
+      if (!u || u.owner_id !== ownerId) return res.status(403).json({ error: 'Forbidden' });
+      db.run(`UPDATE memberships SET status = 'approved' WHERE user_id = ?`, [userId], function(err2) {
+        if (err2) return res.status(500).json({ error: 'Failed to approve' });
+        res.json({ success: true });
+      });
+    });
+  }
+});
+
+router.post('/manager/memberships/:userId/remind', verifyToken, requireRole('manager'), async (req, res) => {
+  const ownerId = req.user.id;
+  const userId = req.params.userId;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
@@ -157,7 +184,7 @@ router.post('/owner/memberships/:userId/remind', verifyToken, requireRole('owner
   }
 });
 
-router.post('/owner/payments/record', verifyToken, requireRole('owner'), async (req, res) => {
+router.post('/manager/payments/record', verifyToken, requireRole('manager'), async (req, res) => {
   const ownerId = req.user.id;
   const { user_id, amount, method } = req.body || {};
   if (!user_id || !amount) return res.status(400).json({ error: 'user_id and amount required' });
@@ -202,9 +229,9 @@ router.post('/owner/payments/record', verifyToken, requireRole('owner'), async (
 });
 
 // Owner: list recent payments for a specific member (authorization: must own member's gym)
-router.get('/owner/payments', verifyToken, requireRole('owner'), async (req, res) => {
+router.get('/manager/payments', verifyToken, requireRole('manager'), async (req, res) => {
   const ownerId = req.user.id;
-  const userId = parseInt(req.query.userId, 10);
+  const userId = req.query.userId;
   const limit = Math.min(parseInt(req.query.limit || '20', 10) || 20, 50);
   if (!userId) return res.status(400).json({ error: 'userId required' });
   if (mongo.isEnabled()) {
@@ -302,7 +329,7 @@ router.post('/payments/mock/confirm', verifyToken, async (req, res) => {
 });
 
 // ----- Trainer tools -----
-router.get('/trainer/clients', verifyToken, requireRole('trainer'), async (req, res) => {
+router.get('/manager/clients', verifyToken, requireRole('manager'), async (req, res) => {
   const trainerId = req.user.id;
   if (mongo.isEnabled()) {
     try {
@@ -325,7 +352,7 @@ router.get('/trainer/clients', verifyToken, requireRole('trainer'), async (req, 
   }
 });
 
-router.post('/trainer/clients', verifyToken, requireRole('trainer'), async (req, res) => {
+router.post('/manager/clients', verifyToken, requireRole('manager'), async (req, res) => {
   const trainerId = req.user.id;
   const { client_id } = req.body || {};
   if (!client_id) return res.status(400).json({ error: 'client_id required' });
@@ -355,9 +382,9 @@ router.post('/trainer/clients', verifyToken, requireRole('trainer'), async (req,
   }
 });
 
-router.delete('/trainer/clients/:clientId', verifyToken, requireRole('trainer'), async (req, res) => {
+router.delete('/manager/clients/:clientId', verifyToken, requireRole('manager'), async (req, res) => {
   const trainerId = req.user.id;
-  const clientId = parseInt(req.params.clientId, 10);
+  const clientId = req.params.clientId;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
@@ -373,9 +400,9 @@ router.delete('/trainer/clients/:clientId', verifyToken, requireRole('trainer'),
   }
 });
 
-router.get('/trainer/clients/:clientId/diet-logs', verifyToken, requireRole('trainer'), async (req, res) => {
+router.get('/manager/clients/:clientId/diet-logs', verifyToken, requireRole('manager'), async (req, res) => {
   const trainerId = req.user.id;
-  const clientId = parseInt(req.params.clientId, 10);
+  const clientId = req.params.clientId;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
@@ -409,9 +436,9 @@ router.get('/trainer/clients/:clientId/diet-logs', verifyToken, requireRole('tra
 });
 
 // Trainer: release active equipment booking for equipmentId if in same gym
-router.post('/trainer/equipment/:equipmentId/release', verifyToken, requireRole('trainer'), async (req, res) => {
+router.post('/manager/equipment/:equipmentId/release', verifyToken, requireRole('manager'), async (req, res) => {
   const trainerId = req.user.id;
-  const equipmentId = parseInt(req.params.equipmentId, 10);
+  const equipmentId = req.params.equipmentId;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
@@ -447,7 +474,7 @@ router.post('/trainer/equipment/:equipmentId/release', verifyToken, requireRole(
 });
 
 // Trainer: list gym active equipment bookings
-router.get('/trainer/gym/bookings', verifyToken, requireRole('trainer'), async (req, res) => {
+router.get('/manager/gym/bookings', verifyToken, requireRole('manager'), async (req, res) => {
   const trainerId = req.user.id;
   if (mongo.isEnabled()) {
     try {
@@ -495,6 +522,54 @@ router.get('/trainer/gym/bookings', verifyToken, requireRole('trainer'), async (
         if (e2) return res.status(500).json({ error: 'DB error' });
         res.json(rows || []);
       });
+    });
+  }
+});
+
+
+// ----- Leaderboard -----
+router.get('/manager/leaderboard', verifyToken, requireRole('manager'), async (req, res) => {
+  const { gymId } = req.query;
+  if (!gymId) return res.status(400).json({ error: 'gymId required' });
+
+  if (mongo.isEnabled()) {
+    try {
+      await mongo.connect();
+      const Users = mongo.collection('users');
+      const Streaks = mongo.collection('user_streaks');
+      
+      const members = await Users.find({ role: 'member', gym_id: toObjectId(gymId) }).project({ name: 1, email: 1 }).toArray();
+      if (members.length === 0) return res.json([]);
+      
+      const userIds = members.map(m => m._id);
+      const streaks = await Streaks.find({ user_id: { $in: userIds } }).project({ user_id: 1, gym_streak: 1 }).toArray();
+      
+      const streakMap = new Map(streaks.map(s => [s.user_id.toString(), s.gym_streak]));
+      
+      const rows = members.map(m => ({
+        user_id: m._id.toString(),
+        name: m.name || m.email,
+        gym_streak: streakMap.get(m._id.toString()) || 0
+      }));
+      
+      // Sort by gym_streak descending
+      rows.sort((a, b) => b.gym_streak - a.gym_streak);
+      return res.json(rows);
+    } catch (e) {
+      console.error(e);
+      return res.status(500).json({ error: 'DB error' });
+    }
+  } else {
+    const sql = `
+      SELECT u.id as user_id, COALESCE(u.name, u.email) as name, COALESCE(s.gym_streak, 0) as gym_streak
+      FROM users u
+      LEFT JOIN user_streaks s ON s.user_id = u.id
+      WHERE u.gym_id = ? AND u.role = 'member'
+      ORDER BY gym_streak DESC, name ASC
+    `;
+    db.all(sql, [gymId], (err, rows) => {
+      if (err) return res.status(500).json({ error: 'DB error' });
+      res.json(rows || []);
     });
   }
 });

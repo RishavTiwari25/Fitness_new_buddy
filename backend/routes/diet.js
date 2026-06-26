@@ -124,9 +124,9 @@ async function analyzeWithGemini(input) {
   }
   const envModel = (process.env.GOOGLE_GEMINI_MODEL || '').trim();
   // Use stable multimodal model by default; allow env override.
-  let modelName = envModel || 'gemini-1.5-flash-latest';
-  if (/^gemini-?pro$/i.test(modelName)) modelName = 'gemini-1.5-pro-latest';
-  if (/^gemini-?pro-?vision$/i.test(modelName)) modelName = 'gemini-1.0-pro-vision';
+  let modelName = envModel || 'gemini-2.5-flash';
+  if (/^gemini-?pro$/i.test(modelName)) modelName = 'gemini-2.5-pro';
+  if (/^gemini-?pro-?vision$/i.test(modelName)) modelName = 'gemini-2.5-flash';
 
   const source = typeof input === 'string' ? { pathOrUrl: input } : (input || {});
 

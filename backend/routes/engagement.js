@@ -163,7 +163,7 @@ router.post('/me/claim-daily-points', verifyToken, async (req, res) => {
 });
 
 // Owner: list my rewards (gyms I own)
-router.get('/rewards/my', verifyToken, requireRole('owner'), async (req, res) => {
+router.get('/rewards/my', verifyToken, requireRole('manager'), async (req, res) => {
   const ownerId = req.user.id;
   if (mongo.isEnabled()) {
     try {
@@ -185,7 +185,7 @@ router.get('/rewards/my', verifyToken, requireRole('owner'), async (req, res) =>
 });
 
 // Owner: create reward { gym_id, name, cost_points, description }
-router.post('/rewards', verifyToken, requireRole('owner'), async (req, res) => {
+router.post('/rewards', verifyToken, requireRole('manager'), async (req, res) => {
   const ownerId = req.user.id;
   const { gym_id, name, cost_points, description } = req.body || {};
   if (!gym_id || !name || !cost_points) return res.status(400).json({ error: 'gym_id, name, cost_points required' });
@@ -214,7 +214,7 @@ router.post('/rewards', verifyToken, requireRole('owner'), async (req, res) => {
 });
 
 // Owner: update reward
-router.put('/rewards/:id', verifyToken, requireRole('owner'), async (req, res) => {
+router.put('/rewards/:id', verifyToken, requireRole('manager'), async (req, res) => {
   const ownerId = req.user.id;
   const id = req.params.id;
   const { name, description, cost_points, active } = req.body || {};
@@ -239,11 +239,11 @@ router.put('/rewards/:id', verifyToken, requireRole('owner'), async (req, res) =
     } catch (e) { return res.status(500).json({ error: 'Failed to update' }); }
   } else {
     const sqlCheck = `SELECT r.*, g.owner_id FROM rewards r JOIN gyms g ON g.id = r.gym_id WHERE r.id = ?`;
-    db.get(sqlCheck, [parseInt(id,10)], (e, r) => {
+    db.get(sqlCheck, [id], (e, r) => {
       if (e) return res.status(500).json({ error: 'DB error' });
       if (!r) return res.status(404).json({ error: 'Not found' });
       if (r.owner_id !== ownerId) return res.status(403).json({ error: 'Forbidden' });
-      db.run(`UPDATE rewards SET name = COALESCE(?, name), description = COALESCE(?, description), cost_points = COALESCE(?, cost_points), active = COALESCE(?, active) WHERE id = ?`, [name ?? null, description ?? null, cost_points ?? null, (active==null? null : (active?1:0)), parseInt(id,10)], function(err2){
+      db.run(`UPDATE rewards SET name = COALESCE(?, name), description = COALESCE(?, description), cost_points = COALESCE(?, cost_points), active = COALESCE(?, active) WHERE id = ?`, [name ?? null, description ?? null, cost_points ?? null, (active==null? null : (active?1:0)), id], function(err2){
         if (err2) return res.status(500).json({ error: 'Failed to update' });
         res.json({ success: true });
       });
@@ -252,7 +252,7 @@ router.put('/rewards/:id', verifyToken, requireRole('owner'), async (req, res) =
 });
 
 // Owner: delete reward
-router.delete('/rewards/:id', verifyToken, requireRole('owner'), async (req, res) => {
+router.delete('/rewards/:id', verifyToken, requireRole('manager'), async (req, res) => {
   const ownerId = req.user.id;
   const id = req.params.id;
   if (mongo.isEnabled()) {
@@ -270,11 +270,11 @@ router.delete('/rewards/:id', verifyToken, requireRole('owner'), async (req, res
     } catch (e) { return res.status(500).json({ error: 'Failed to delete' }); }
   } else {
     const sqlCheck = `SELECT r.*, g.owner_id FROM rewards r JOIN gyms g ON g.id = r.gym_id WHERE r.id = ?`;
-    db.get(sqlCheck, [parseInt(id,10)], (e, r) => {
+    db.get(sqlCheck, [id], (e, r) => {
       if (e) return res.status(500).json({ error: 'DB error' });
       if (!r) return res.status(404).json({ error: 'Not found' });
       if (r.owner_id !== ownerId) return res.status(403).json({ error: 'Forbidden' });
-      db.run(`DELETE FROM rewards WHERE id = ?`, [parseInt(id,10)], function(err2){
+      db.run(`DELETE FROM rewards WHERE id = ?`, [id], function(err2){
         if (err2) return res.status(500).json({ error: 'Failed to delete' });
         res.json({ success: true });
       });
@@ -333,7 +333,7 @@ router.post('/rewards/:id/redeem', verifyToken, async (req, res) => {
       return res.json({ success: true, new_balance: Number(updated?.points || 0) });
     } catch (e) { return res.status(500).json({ error: 'Failed to redeem' }); }
   } else {
-    const idNum = parseInt(id,10);
+    const idNum = id;
     db.get(`SELECT u.id as uid, u.gym_id, COALESCE(u.points,0) as points FROM users u WHERE u.id = ?`, [userId], (e, me) => {
       if (e) return res.status(500).json({ error: 'DB error' });
       if (!me || !me.gym_id) return res.status(400).json({ error: 'Join a gym to redeem rewards' });

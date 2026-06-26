@@ -1,56 +1,242 @@
+/**
+ * =============================================
+ * GYM MANAGEMENT ROUTES (routes/gyms.js)
+ * =============================================
+ * Handles gym CRUD operations and equipment management
+ * Different permissions for owners, trainers, and members
+ */
+
+// ===== IMPORTS =====
 const express = require('express');
-const db = require('../db');
-const mongo = require('../lib/mongo');
-const { toObjectId } = mongo;
-const { verifyToken, requireRole } = require('../middleware/auth');
+const db = require('../db'); // SQLite database
+const mongo = require('../lib/mongo'); // MongoDB utilities
+const { toObjectId } = mongo; // Helper to convert strings to ObjectId
+const { verifyToken, requireRole } = require('../middleware/auth'); // Auth middleware
 const router = express.Router();
 
-// Create a gym - only owners can create gyms
-router.post('/gyms', verifyToken, requireRole('owner'), async (req, res) => {
+// =============================================
+// POST /api/gyms
+// =============================================
+// Create a new gym (only gym owners can do this)
+// Body: { name, location }
+// Returns: { id, owner_id, name, location }
+router.post('/gyms', verifyToken, requireRole('manager'), async (req, res) => {
+  // Get owner ID from JWT token
   const ownerId = req.user.id;
-  const { name, location } = req.body;
+  
+  // Extract gym details from request
+  const { name, location, description, timings, contact_info, amenities } = req.body;
+  
+  // Validate required field
   if (!name) return res.status(400).json({ error: 'Gym name required' });
+  
+  // Handle MongoDB path if enabled
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
       const Gyms = mongo.collection('gyms');
-      const doc = { owner_id: toObjectId(ownerId), name, location: location || '', created_at: new Date() };
+      
+      // Create new gym document
+      const doc = { 
+        owner_id: toObjectId(ownerId), 
+        name, 
+        location: location || '', 
+        description: description || '',
+        timings: timings || '',
+        contact_info: contact_info || '',
+        amenities: amenities || '',
+        created_at: new Date() 
+      };
+      
+      // Insert gym into MongoDB
       const ins = await Gyms.insertOne(doc);
-      return res.json({ id: ins.insertedId.toString(), owner_id: ownerId, name, location: location || '' });
-    } catch (e) { return res.status(500).json({ error: 'Failed to create gym' }); }
-  } else {
-    db.run('INSERT INTO gyms (owner_id, name, location) VALUES (?, ?, ?)', [ownerId, name, location || ''], function (err) {
-      if (err) return res.status(500).json({ error: 'Failed to create gym' });
-      db.get('SELECT * FROM gyms WHERE id = ?', [this.lastID], (err2, row) => {
-        if (err2) return res.status(500).json({ error: 'DB error' });
-        res.json(row);
+      return res.json({ 
+        id: ins.insertedId.toString(), 
+        owner_id: ownerId, 
+        name, 
+        location: location || '',
+        description: description || '',
+        timings: timings || '',
+        contact_info: contact_info || '',
+        amenities: amenities || ''
       });
-    });
+    } catch (e) { 
+      return res.status(500).json({ error: 'Failed to create gym' }); 
+    }
+  } else {
+    // Handle SQLite path (fallback)
+    db.run(
+      `INSERT INTO gyms (owner_id, name, location, description, timings, contact_info, amenities) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [ownerId, name, location || '', description || '', timings || '', contact_info || '', amenities || ''],
+      function(err) {
+        if (err) return res.status(500).json({ error: 'Failed to create gym' });
+        
+        // Fetch and return the newly created gym
+        db.get('SELECT * FROM gyms WHERE id = ?', [this.lastID], (err2, row) => {
+          if (err2) return res.status(500).json({ error: 'DB error' });
+          res.json(row);
+        });
+      }
+    );
   }
 });
 
-// Get gyms: owners get their gyms; others get all gyms (for members to select)
+// =============================================
+// GET /api/gyms
+// =============================================
+// Get gyms based on user role:
+// - Owners: Only their own gyms
+// - Members/Trainers: All gyms (to browse and select)
 router.get('/gyms', verifyToken, async (req, res) => {
+  // Handle MongoDB path
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
       const Gyms = mongo.collection('gyms');
+      
+      // Filter based on user role
+      // Owners only see their gyms, others see all
       const filter = req.user.role === 'owner' ? { owner_id: toObjectId(req.user.id) } : {};
       const rows = await Gyms.find(filter).toArray();
-      return res.json(rows.map(g => ({ id: g._id.toString(), owner_id: g.owner_id.toString(), name: g.name, location: g.location })));
+      
+      // Format response with string IDs
+      return res.json(rows.map(g => ({ 
+        id: g._id.toString(), 
+        owner_id: g.owner_id.toString(), 
+        name: g.name, 
+        location: g.location,
+        description: g.description || '',
+        timings: g.timings || '',
+        contact_info: g.contact_info || '',
+        amenities: g.amenities || ''
+      })));
     } catch (e) { return res.status(500).json({ error: 'DB error' }); }
   } else {
+    // Handle SQLite path
     if (req.user.role === 'owner') {
+      // Owners: fetch their gyms only
       db.all('SELECT * FROM gyms WHERE owner_id = ?', [req.user.id], (err, rows) => {
         if (err) return res.status(500).json({ error: 'DB error' });
         res.json(rows);
       });
     } else {
+      // Members/Trainers: fetch all gyms
       db.all('SELECT * FROM gyms', [], (err, rows) => {
         if (err) return res.status(500).json({ error: 'DB error' });
         res.json(rows);
       });
     }
+  }
+});
+
+// =============================================
+// PUT /api/gyms/:gymId
+// =============================================
+// Update gym details
+router.put('/gyms/:gymId', verifyToken, requireRole('manager'), async (req, res) => {
+  const gymId = req.params.gymId;
+  const ownerId = req.user.id;
+  const { name, location, description, timings, contact_info, amenities } = req.body;
+
+  if (mongo.isEnabled()) {
+    try {
+      await mongo.connect();
+      const Gyms = mongo.collection('gyms');
+      
+      const gym = await Gyms.findOne({ _id: toObjectId(String(gymId)) });
+      if (!gym) return res.status(404).json({ error: 'Gym not found' });
+      if (gym.owner_id.toString() !== String(ownerId)) return res.status(403).json({ error: 'Forbidden' });
+      
+      const update = {
+        name: name || gym.name,
+        location: location || gym.location,
+        description: description || '',
+        timings: timings || '',
+        contact_info: contact_info || '',
+        amenities: amenities || ''
+      };
+      
+      await Gyms.updateOne({ _id: gym._id }, { $set: update });
+      return res.json({ success: true });
+    } catch (e) { return res.status(500).json({ error: 'DB error' }); }
+  } else {
+    db.get('SELECT * FROM gyms WHERE id = ?', [gymId], (err, gym) => {
+      if (err) return res.status(500).json({ error: 'DB error' });
+      if (!gym) return res.status(404).json({ error: 'Gym not found' });
+      if (String(gym.owner_id) !== String(ownerId)) return res.status(403).json({ error: 'Forbidden' });
+      
+      const sql = `UPDATE gyms SET name = ?, location = ?, description = ?, timings = ?, contact_info = ?, amenities = ? WHERE id = ?`;
+      db.run(sql, [
+        name || gym.name, 
+        location || gym.location, 
+        description || '', 
+        timings || '', 
+        contact_info || '', 
+        amenities || '', 
+        gymId
+      ], function(err2) {
+        if (err2) return res.status(500).json({ error: 'Failed to update gym' });
+        res.json({ success: true });
+      });
+    });
+  }
+});
+
+// =============================================
+// GET /api/gyms/:gymId/details
+// =============================================
+// Get detailed profile of a gym including trainers and equipment count
+router.get('/gyms/:gymId/details', verifyToken, async (req, res) => {
+  const gymId = req.params.gymId;
+  
+  if (mongo.isEnabled()) {
+    try {
+      await mongo.connect();
+      const Gyms = mongo.collection('gyms');
+      const Users = mongo.collection('users');
+      const Equipment = mongo.collection('equipment');
+      
+      const gym = await Gyms.findOne({ _id: toObjectId(String(gymId)) });
+      if (!gym) return res.status(404).json({ error: 'Gym not found' });
+      
+      const trainers = await Users.find({ role: 'trainer', gym_id: gym._id }).project({ name: 1, email: 1, avatar_url: 1 }).toArray();
+      const eqCount = await Equipment.countDocuments({ gym_id: gym._id });
+      
+      return res.json({
+        id: gym._id.toString(),
+        name: gym.name,
+        location: gym.location,
+        description: gym.description || '',
+        timings: gym.timings || '',
+        contact_info: gym.contact_info || '',
+        amenities: gym.amenities || '',
+        trainers: trainers.map(t => ({ id: t._id.toString(), name: t.name || 'Trainer', email: t.email, avatar_url: t.avatar_url })),
+        equipment_count: eqCount
+      });
+    } catch (e) { return res.status(500).json({ error: 'DB error' }); }
+  } else {
+    db.get('SELECT * FROM gyms WHERE id = ?', [gymId], (err, gym) => {
+      if (err) return res.status(500).json({ error: 'DB error' });
+      if (!gym) return res.status(404).json({ error: 'Gym not found' });
+      
+      db.all('SELECT id, name, email, avatar_url FROM users WHERE role = "trainer" AND gym_id = ?', [gymId], (err2, trainers) => {
+        if (err2) return res.status(500).json({ error: 'DB error' });
+        
+        db.get('SELECT COUNT(*) as count FROM equipment WHERE gym_id = ?', [gymId], (err3, eq) => {
+          if (err3) return res.status(500).json({ error: 'DB error' });
+          
+          res.json({
+            ...gym,
+            description: gym.description || '',
+            timings: gym.timings || '',
+            contact_info: gym.contact_info || '',
+            amenities: gym.amenities || '',
+            trainers: trainers || [],
+            equipment_count: eq ? eq.count : 0
+          });
+        });
+      });
+    });
   }
 });
 
@@ -74,7 +260,7 @@ router.get('/gyms/:gymId/equipment', verifyToken, async (req, res) => {
 
 // Equipment with current booking status for a gym
 router.get('/gyms/:gymId/equipment-status', verifyToken, async (req, res) => {
-  const gymId = parseInt(req.params.gymId, 10);
+  const gymId = req.params.gymId;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
@@ -138,7 +324,7 @@ router.get('/gyms/:gymId/equipment-status', verifyToken, async (req, res) => {
 });
 
 // Add equipment to a gym - only the gym owner
-router.post('/gyms/:gymId/equipment', verifyToken, requireRole('owner'), async (req, res) => {
+router.post('/gyms/:gymId/equipment', verifyToken, requireRole('manager'), async (req, res) => {
   const gymId = req.params.gymId;
   const { name, notes, quantity } = req.body;
   if (!name) return res.status(400).json({ error: 'Equipment name required' });
@@ -173,7 +359,7 @@ router.post('/gyms/:gymId/equipment', verifyToken, requireRole('owner'), async (
 });
 
 // Edit equipment - only owner
-router.put('/equipment/:id', verifyToken, requireRole('owner'), async (req, res) => {
+router.put('/equipment/:id', verifyToken, requireRole('manager'), async (req, res) => {
   const id = req.params.id;
   const { name, notes, quantity } = req.body;
   if (mongo.isEnabled()) {
@@ -208,7 +394,7 @@ router.put('/equipment/:id', verifyToken, requireRole('owner'), async (req, res)
 });
 
 // Delete equipment - only owner
-router.delete('/equipment/:id', verifyToken, requireRole('owner'), async (req, res) => {
+router.delete('/equipment/:id', verifyToken, requireRole('manager'), async (req, res) => {
   const id = req.params.id;
   if (mongo.isEnabled()) {
     try {
@@ -242,7 +428,7 @@ module.exports = router;
 
 // Book an equipment (members/trainers). Requires being checked in to that gym.
 router.post('/equipment/:equipmentId/book', verifyToken, async (req, res) => {
-  const equipmentId = parseInt(req.params.equipmentId, 10);
+  const equipmentId = req.params.equipmentId;
   const userId = req.user.id;
   if (!['member', 'trainer'].includes(req.user.role)) {
     return res.status(403).json({ error: 'Only members or trainers can book equipment' });
@@ -310,7 +496,7 @@ router.post('/equipment/:equipmentId/book', verifyToken, async (req, res) => {
 
 // Release an equipment booking. Only the booking user or the gym owner can release.
 router.post('/equipment/:equipmentId/release', verifyToken, async (req, res) => {
-  const equipmentId = parseInt(req.params.equipmentId, 10);
+  const equipmentId = req.params.equipmentId;
   const userId = req.user.id;
   if (mongo.isEnabled()) {
     try {
@@ -414,7 +600,7 @@ router.get('/me/bookings', verifyToken, async (req, res) => {
 
 // Toggle check-in/out for a member at a gym
 router.post('/gyms/:gymId/checkin', verifyToken, requireRole('member'), async (req, res) => {
-  const gymId = parseInt(req.params.gymId, 10);
+  const gymId = req.params.gymId;
   const userId = req.user.id;
   if (mongo.isEnabled()) {
     try {
@@ -423,6 +609,8 @@ router.post('/gyms/:gymId/checkin', verifyToken, requireRole('member'), async (r
       const Presence = mongo.collection('presence');
       const Equipment = mongo.collection('equipment');
       const Bookings = mongo.collection('equipment_booking');
+      const Memberships = mongo.collection('memberships');
+      
       const gym = await Gyms.findOne({ _id: toObjectId(String(gymId)) });
       if (!gym) return res.status(404).json({ error: 'Gym not found' });
       const activeRow = await Presence.findOne({ user_id: toObjectId(userId), active: true });
@@ -438,6 +626,12 @@ router.post('/gyms/:gymId/checkin', verifyToken, requireRole('member'), async (r
         req._action = 'checkout';
         return finish();
       } else {
+        // Checking in - verify membership is approved
+        const mbr = await Memberships.findOne({ user_id: toObjectId(userId), gym_id: gym._id });
+        if (!mbr || mbr.status !== 'approved') {
+          return res.status(403).json({ error: 'Your membership is pending approval by the Gym Manager.' });
+        }
+        
         if (activeRow) {
           await Presence.updateOne({ _id: activeRow._id }, { $set: { active: false, checkout_at: new Date() } });
           // Release bookings in previous gym
@@ -480,8 +674,15 @@ router.post('/gyms/:gymId/checkin', verifyToken, requireRole('member'), async (r
             });
           });
         } else {
-          const endOther = (cb) => {
-            if (activeRow) {
+          // Checking in - verify membership is approved
+          db.get('SELECT status FROM memberships WHERE user_id = ? AND gym_id = ?', [userId, gymId], (errMbr, mbrRow) => {
+            if (errMbr) return res.status(500).json({ error: 'DB error' });
+            if (!mbrRow || mbrRow.status !== 'approved') {
+              return res.status(403).json({ error: 'Your membership is pending approval by the Gym Manager.' });
+            }
+            
+            const endOther = (cb) => {
+              if (activeRow) {
               db.run('UPDATE presence SET active = 0, checkout_at = datetime("now") WHERE id = ?', [activeRow.id], (errEnd) => {
                 if (errEnd) return cb(errEnd);
                 // Also auto-release any active bookings in the previous gym
@@ -505,6 +706,7 @@ router.post('/gyms/:gymId/checkin', verifyToken, requireRole('member'), async (r
               finish();
             });
           });
+          }); // End db.get(memberships)
         }
       });
     });
@@ -513,7 +715,7 @@ router.post('/gyms/:gymId/checkin', verifyToken, requireRole('member'), async (r
 
 // Get current occupancy for a gym
 router.get('/gyms/:gymId/occupancy', verifyToken, async (req, res) => {
-  const gymId = parseInt(req.params.gymId, 10);
+  const gymId = req.params.gymId;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
@@ -537,8 +739,8 @@ router.get('/gyms/:gymId/occupancy', verifyToken, async (req, res) => {
 });
 
 // List of currently checked-in members for a gym (owners only)
-router.get('/gyms/:gymId/presence', verifyToken, requireRole('owner'), async (req, res) => {
-  const gymId = parseInt(req.params.gymId, 10);
+router.get('/gyms/:gymId/presence', verifyToken, requireRole('manager'), async (req, res) => {
+  const gymId = req.params.gymId;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();
@@ -577,8 +779,8 @@ router.get('/gyms/:gymId/presence', verifyToken, requireRole('owner'), async (re
 });
 
 // List active bookings for a gym (owners only)
-router.get('/gyms/:gymId/bookings', verifyToken, requireRole('owner'), async (req, res) => {
-  const gymId = parseInt(req.params.gymId, 10);
+router.get('/gyms/:gymId/bookings', verifyToken, requireRole('manager'), async (req, res) => {
+  const gymId = req.params.gymId;
   if (mongo.isEnabled()) {
     try {
       await mongo.connect();

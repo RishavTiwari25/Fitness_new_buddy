@@ -74,8 +74,7 @@ export default function Signup({ onSignup }) {
           }}
         >
           <option value="member">Gym Member 💪</option>
-          <option value="trainer">Personal Trainer 🏋️</option>
-          <option value="owner">Gym Owner 🏢</option>
+          <option value="manager">Gym Manager 🏢</option>
         </select>
       </div>
       <div style={{ marginBottom: '20px' }}>

@@ -195,7 +195,7 @@ router.post('/book/take-idle-slot', verifyToken, async (req, res) => {
 });
 
 // POST /api/admin/release-slot { bookingId } (trainer override)
-router.post('/admin/release-slot', verifyToken, requireRole('trainer'), async (req, res) => {
+router.post('/admin/release-slot', verifyToken, requireRole('manager'), async (req, res) => {
   const { bookingId } = req.body || {};
   if (!bookingId) return res.status(400).json({ error: 'bookingId required' });
   if (mongo.isEnabled()) {

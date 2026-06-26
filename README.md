@@ -1,3 +1,4 @@
+
 # Fitness Buddy
 
 A full-stack fitness platform built for gym members, trainers, and gym owners.
