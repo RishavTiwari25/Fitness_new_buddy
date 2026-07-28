@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { motion, animate, useReducedMotion } from 'motion/react'
 import { API_BASE } from './api'
 import Logo from './components/Logo'
+import Icon from './components/Icon'
 import { APP_NAME } from './branding'
 import Profile from './Profile'
 import ManagerDashboard from './ManagerDashboard'
@@ -63,8 +64,17 @@ function CircularProgress({ percentage, label, value, color = ACCENT }) {
   const reduce = useReducedMotion()
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-      <div style={{ position: 'relative', width: size, height: size }}>
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px',
+      width: '100%', padding: '22px 16px', borderRadius: 18,
+      background: 'var(--neu-base)', boxShadow: 'var(--neu-raised)',
+    }}>
+      {/* Ring nested in a soft pressed well (neumorphism) */}
+      <div style={{
+        position: 'relative', width: size, height: size, borderRadius: 9999,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: 'var(--neu-pressed)',
+      }}>
         <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
           <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={strokeWidth} />
           <motion.circle
@@ -185,16 +195,29 @@ export default function Dashboard({ token, onLogout }) {
     e.currentTarget.style.color = 'rgba(255,255,255,0.62)'
   }
 
-  const NavBtn = ({ id, children }) => (
-    <button
-      style={navButtonStyle(view === id)}
-      onClick={() => setView(id)}
-      onMouseEnter={(e) => navHover(e, view === id)}
-      onMouseLeave={(e) => navLeave(e, view === id)}
-    >
-      {children}
-    </button>
-  )
+  const NAV_ICONS = {
+    home: 'home', profile: 'user', browse: 'search', member: 'users', payments: 'card',
+    myBookingsNew: 'calendar', diet: 'diet', feed: 'feed', rewards: 'gift', homeWorkout: 'dumbbell',
+    'manager-overview': 'grid', 'manager-equipment': 'box', 'manager-members': 'users',
+    'manager-feed': 'feed', 'manager-leaderboard': 'trophy',
+  }
+
+  const NavBtn = ({ id, children }) => {
+    const active = view === id
+    return (
+      <button
+        style={{ ...navButtonStyle(active), display: 'flex', alignItems: 'center', gap: 11 }}
+        onClick={() => setView(id)}
+        onMouseEnter={(e) => navHover(e, active)}
+        onMouseLeave={(e) => navLeave(e, active)}
+      >
+        <span style={{ display: 'inline-flex', width: 20, justifyContent: 'center', color: active ? '#0a0a0a' : ACCENT }}>
+          <Icon name={NAV_ICONS[id]} size={18} />
+        </span>
+        {children}
+      </button>
+    )
+  }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
@@ -242,9 +265,12 @@ export default function Dashboard({ token, onLogout }) {
               <NotificationsBell token={token} />
             </div>
             <button
-              style={{ ...navButtonStyle(false), backgroundColor: 'rgba(239,68,68,0.14)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.25)' }}
+              style={{ ...navButtonStyle(false), display: 'flex', alignItems: 'center', gap: 11, backgroundColor: 'rgba(239,68,68,0.14)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.25)' }}
               onClick={onLogout}
             >
+              <span style={{ display: 'inline-flex', width: 20, justifyContent: 'center' }}>
+                <Icon name="logout" size={18} />
+              </span>
               Logout
             </button>
           </div>

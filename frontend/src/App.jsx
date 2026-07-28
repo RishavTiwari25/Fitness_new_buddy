@@ -16,6 +16,7 @@ import Signup from './Signup' // Signup form component
 import Dashboard from './Dashboard' // Main dashboard component (after login)
 import ContactFooter from './ContactFooter' // Footer with contact info
 import Logo from './components/Logo' // Logo component
+import Icon from './components/Icon' // Vector SVG icon set
 import { APP_NAME } from './branding' // App name from branding config
 
 /**
@@ -242,14 +243,14 @@ export default function App() {
                 width: '80px',
                 height: '80px',
                 borderRadius: '20px',
-                backgroundColor: '#3f3f46',
+                background: 'var(--neu-base)',
+                boxShadow: 'var(--neu-raised)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 20px',
-                fontSize: '40px'
+                margin: '0 auto 20px'
               }}>
-                📱
+                <Icon name="phone" size={34} color="#D0FD3E" strokeWidth={1.8} />
               </div>
               <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#fafafa', marginBottom: '12px' }}>
                 Smart Gym Management
@@ -266,14 +267,14 @@ export default function App() {
                 width: '80px',
                 height: '80px',
                 borderRadius: '20px',
-                backgroundColor: '#3f3f46',
+                background: 'var(--neu-base)',
+                boxShadow: 'var(--neu-raised)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 20px',
-                fontSize: '40px'
+                margin: '0 auto 20px'
               }}>
-                🤖
+                <Icon name="robot" size={34} color="#D0FD3E" strokeWidth={1.8} />
               </div>
               <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#fafafa', marginBottom: '12px' }}>
                 AI-Powered Nutrition
@@ -290,14 +291,14 @@ export default function App() {
                 width: '80px',
                 height: '80px',
                 borderRadius: '20px',
-                backgroundColor: '#3f3f46',
+                background: 'var(--neu-base)',
+                boxShadow: 'var(--neu-raised)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 20px',
-                fontSize: '40px'
+                margin: '0 auto 20px'
               }}>
-                🔥
+                <Icon name="activity" size={34} color="#D0FD3E" strokeWidth={1.8} />
               </div>
               <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#fafafa', marginBottom: '12px' }}>
                 Stay Motivated
