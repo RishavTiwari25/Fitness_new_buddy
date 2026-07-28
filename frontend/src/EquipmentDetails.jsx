@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { API_BASE } from './api'
+import Icon from './components/Icon'
 import EquipmentSlots from './EquipmentSlots'
 
 export default function EquipmentDetails({ equipment, token, onBack, onBooked }) {
@@ -29,16 +30,16 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
     // Difficulty heuristic
     let difficulty = 'Medium'
     let difficultyColor = '#f59e0b' // orange
-    let difficultyEmoji = '⚡'
+    let difficultyEmoji = 'bolt'
     
     if (name.includes('dumbbell') || name.includes('bench') || name.includes('mat')) {
       difficulty = 'Beginner'
       difficultyColor = '#22c55e'
-      difficultyEmoji = '✨'
+      difficultyEmoji = 'star'
     } else if (name.includes('barbell') || name.includes('squat') || name.includes('deadlift')) {
       difficulty = 'Advanced'
       difficultyColor = '#dc2626'
-      difficultyEmoji = '🔥'
+      difficultyEmoji = 'flame'
     }
 
     // Time estimate
@@ -51,26 +52,26 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
 
     // Target muscles
     let muscles = 'Full Body'
-    let muscleEmoji = '💪'
+    let muscleEmoji = 'dumbbell'
     
     if (name.includes('chest') || name.includes('bench') || name.includes('press')) {
       muscles = 'Chest'
-      muscleEmoji = '🫁'
+      muscleEmoji = 'activity'
     } else if (name.includes('leg') || name.includes('squat') || name.includes('lunge')) {
       muscles = 'Legs'
-      muscleEmoji = '🦵'
+      muscleEmoji = 'activity'
     } else if (name.includes('back') || name.includes('row') || name.includes('pull')) {
       muscles = 'Back'
-      muscleEmoji = '🔙'
+      muscleEmoji = 'activity'
     } else if (name.includes('shoulder') || name.includes('lateral')) {
       muscles = 'Shoulders'
-      muscleEmoji = '💪'
+      muscleEmoji = 'dumbbell'
     } else if (name.includes('arm') || name.includes('curl') || name.includes('tricep')) {
       muscles = 'Arms'
-      muscleEmoji = '💪'
+      muscleEmoji = 'dumbbell'
     } else if (name.includes('core') || name.includes('ab')) {
       muscles = 'Core'
-      muscleEmoji = '🔥'
+      muscleEmoji = 'flame'
     }
 
     // Generate description based on equipment name
@@ -232,7 +233,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
           opacity: 0.3,
           filter: 'blur(2px)'
         }}>
-          🏋️‍♂️
+          <Icon name="dumbbell" size={150} color="#D0FD3E" />
         </div>
         
         {/* Overlay Equipment Name */}
@@ -326,7 +327,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                 <div style={{
                   fontSize: '32px'
                 }}>
-                  {meta.difficultyEmoji}
+                  <Icon name={meta.difficultyEmoji} size={20} color="#D0FD3E" />
                 </div>
                 <div style={{
                   fontSize: '24px',
@@ -365,7 +366,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                 <div style={{
                   fontSize: '32px'
                 }}>
-                  ⏱️
+                  <Icon name="clock" size={28} color="#D0FD3E" />
                 </div>
                 <div style={{
                   fontSize: '24px',
@@ -404,7 +405,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                 <div style={{
                   fontSize: '32px'
                 }}>
-                  {meta.muscleEmoji}
+                  <Icon name={meta.muscleEmoji} size={20} color="#D0FD3E" />
                 </div>
                 <div style={{
                   fontSize: '24px',
@@ -443,7 +444,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                 <div style={{
                   fontSize: '32px'
                 }}>
-                  📦
+                  <Icon name="box" size={28} color="#D0FD3E" />
                 </div>
                 <div style={{
                   fontSize: '24px',
@@ -528,7 +529,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
               justifyContent: 'center',
               fontSize: '32px'
             }}>
-              👨‍🏫
+              <Icon name="user" size={28} color="#D0FD3E" />
             </div>
             
             {/* Trainer Info */}
@@ -666,7 +667,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                 >
                   {bookedByMe ? '✓ Release Booking' : 
                    isBooked ? 'Not Available' : 
-                   '🔖 Book Now (Instant)'}
+                   'Book Now (Instant)'}
                 </button>
               )}
 
@@ -693,7 +694,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                   e.target.style.backgroundColor = '#3f3f46'
                 }}
               >
-                📅 {showSlots ? 'Hide' : 'View'} Time Slots
+                <Icon name="calendar" size={15} style={{ verticalAlign: '-2px', marginRight: 6 }} />{showSlots ? 'Hide' : 'View'} Time Slots
               </button>
             </div>
 
@@ -705,7 +706,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                 color: '#a1a1aa',
                 lineHeight: '1.5'
               }}>
-                💡 <strong>Instant booking</strong> requires you to be checked in at the gym. 
+                <Icon name="bolt" size={14} style={{ verticalAlign: '-2px', marginRight: 6 }} /><strong>Instant booking</strong> requires you to be checked in at the gym.
                 Use <strong>Time Slots</strong> to reserve equipment for a specific 15-minute window.
               </p>
             )}

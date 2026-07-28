@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { API_BASE } from './api'
+import Icon from './components/Icon'
 import GymQRCode from './GymQRCode'
 import Feed from './Feed'
 
@@ -457,9 +458,9 @@ export default function ManagerDashboard({ token, activeTabProp }) {
                           <button onClick={() => approveMembership(m.user_id)} style={{ background: '#D0FD3E', color: '#18181b', border: 'none', borderRadius: 8, padding: '10px 20px', cursor: 'pointer', fontWeight: 700, fontSize: 14 }}>Approve Request</button>
                         ) : (
                           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                            <button onClick={() => remind(m.user_id)} style={{ background: '#27272a', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>🔔 Remind</button>
-                            <button onClick={() => { const amt = prompt('Amount paid', String(m.monthly_fee || '')); if (amt) recordPayment(m.user_id, amt) }} style={{ background: '#27272a', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>💰 Record Payment</button>
-                            <button onClick={() => toggleViewPayments(m.user_id)} style={{ background: '#27272a', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>{openPaymentsFor[m.user_id] ? 'Hide History' : '📜 View History'}</button>
+                            <button onClick={() => remind(m.user_id)} style={{ background: '#27272a', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}><Icon name="bell" size={13} style={{ verticalAlign: '-2px', marginRight: 5 }} />Remind</button>
+                            <button onClick={() => { const amt = prompt('Amount paid', String(m.monthly_fee || '')); if (amt) recordPayment(m.user_id, amt) }} style={{ background: '#27272a', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}><Icon name="dollar" size={13} style={{ verticalAlign: '-2px', marginRight: 5 }} />Record Payment</button>
+                            <button onClick={() => toggleViewPayments(m.user_id)} style={{ background: '#27272a', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>{openPaymentsFor[m.user_id] ? 'Hide History' : 'View History'}</button>
                           </div>
                         )}
                       </div>
@@ -523,7 +524,7 @@ export default function ManagerDashboard({ token, activeTabProp }) {
                   <div key={m.user_id} style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #3f3f46', background: idx === 0 ? '#1f2937' : 'transparent', borderRadius: idx === 0 ? 8 : 0 }}>
                     <div style={{ width: 40, fontSize: 20, fontWeight: 800, color: idx === 0 ? '#D0FD3E' : '#a1a1aa' }}>#{idx + 1}</div>
                     <div style={{ flex: 1, fontSize: 16, fontWeight: 600, color: '#fafafa' }}>{m.name}</div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: '#D0FD3E' }}>🔥 {m.gym_streak} days</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: '#D0FD3E' }}><Icon name="flame" size={14} style={{ verticalAlign: '-2px', marginRight: 4 }} />{m.gym_streak} days</div>
                   </div>
                 ))}
               </div>

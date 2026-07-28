@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { API_BASE } from './api'
+import Icon from './components/Icon'
 
 export default function NotificationsBell({ token }) {
   const [open, setOpen] = useState(false)
@@ -90,7 +91,7 @@ export default function NotificationsBell({ token }) {
         style={buttonStyle}
         title="Notifications"
       >
-        🔔
+        <Icon name="bell" size={20} />
         {unread > 0 && (
           <span style={{ position: 'absolute', top: -4, right: -4, background: '#D0FD3E', color: '#18181b', borderRadius: 9999, padding: '2px 6px', fontSize: 12, fontWeight: 800 }}>
             {unread}
@@ -110,7 +111,7 @@ export default function NotificationsBell({ token }) {
             )}
             {list.map(n => (
               <div key={n.id} style={{ padding: 12, display: 'flex', gap: 10, alignItems: 'flex-start', background: n.read ? 'transparent' : '#1f2937' }}>
-                <div style={{ fontSize: 18 }}>📣</div>
+                <div style={{ display: 'flex', paddingTop: 2 }}><Icon name="megaphone" size={18} color="#D0FD3E" /></div>
                 <div style={{ flex: 1 }}>
                   <div style={{ color: '#fafafa', fontSize: 14 }}>{n.message || n.type}</div>
                   <div style={{ color: '#a1a1aa', fontSize: 12, marginTop: 2 }}>{fmtTime(n.created_at)}</div>

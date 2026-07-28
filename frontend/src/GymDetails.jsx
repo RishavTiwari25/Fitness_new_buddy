@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { API_BASE } from './api'
+import Icon from './components/Icon'
 
 export default function GymDetails({ token, gymId, onBack, onEnrolled }) {
   const [details, setDetails] = useState(null)
@@ -57,7 +58,7 @@ export default function GymDetails({ token, gymId, onBack, onEnrolled }) {
       <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flexWrap: 'wrap' }}>
         <div style={{ flex: 2, minWidth: 300 }}>
           <h1 style={{ fontSize: 42, fontWeight: 800, color: '#fafafa', margin: '0 0 8px 0' }}>{details.name}</h1>
-          <p style={{ color: '#a1a1aa', fontSize: 16, margin: '0 0 24px 0' }}>📍 {details.location || 'Location not specified'}</p>
+          <p style={{ color: '#a1a1aa', fontSize: 16, margin: '0 0 24px 0', display: 'flex', alignItems: 'center', gap: 8 }}><Icon name="pin" size={15} color="#D0FD3E" /> {details.location || 'Location not specified'}</p>
           
           <div style={{ backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 24, marginBottom: 24 }}>
             <h3 style={{ marginTop: 0, color: '#fafafa', fontSize: 18 }}>About</h3>

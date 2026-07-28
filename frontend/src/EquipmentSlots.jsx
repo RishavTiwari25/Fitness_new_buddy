@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { API_BASE } from './api'
+import Icon from './components/Icon'
 
 export default function EquipmentSlots({ token, equipment, onBooked }) {
   const [status, setStatus] = useState('')
@@ -153,7 +154,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
             e.target.style.backgroundColor = '#3f3f46'
           }}
         >
-          {loadingAlts ? '⏳ Loading...' : '🔄 View Alternatives'}
+          {loadingAlts ? 'Loading…' : 'View Alternatives'}
         </button>
       </div>
 
@@ -258,7 +259,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       e.target.style.transform = 'translateY(0)'
                     }}
                   >
-                    🔖 Book
+                    <Icon name="bookmark" size={12} style={{ verticalAlign: '-1px', marginRight: 4 }} />Book
                   </button>
                 )}
 
@@ -291,7 +292,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       e.target.style.transform = 'translateY(0)'
                     }}
                   >
-                    ⚠️ Book (1 spot left)
+                    <Icon name="alert" size={12} style={{ verticalAlign: '-1px', marginRight: 4 }} />Book (1 spot left)
                   </button>
                 )}
 
@@ -324,7 +325,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       e.target.style.transform = 'translateY(0)'
                     }}
                   >
-                    ➕ Join Waitlist
+                    <Icon name="plus" size={12} style={{ verticalAlign: '-1px', marginRight: 4 }} />Join Waitlist
                   </button>
                 )}
 
@@ -355,7 +356,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       e.target.style.backgroundColor = '#3f3f46'
                     }}
                   >
-                    ⚡ Take Idle Slot
+                    <Icon name="bolt" size={12} style={{ verticalAlign: '-1px', marginRight: 4 }} />Take Idle Slot
                   </button>
                 )}
 
@@ -368,7 +369,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                     textAlign: 'center',
                     padding: '8px'
                   }}>
-                    🔴 Full
+                    Full
                   </div>
                 )}
               </div>
@@ -386,7 +387,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
           borderRadius: '12px',
           border: '1px solid #3f3f46'
         }}>
-          <div style={{ fontSize: '32px', marginBottom: '12px' }}>📅</div>
+          <div style={{ marginBottom: '12px' }}><Icon name="calendar" size={28} color="#D0FD3E" /></div>
           <div style={{ color: '#a1a1aa', fontSize: '14px' }}>
             No upcoming time slots available
           </div>
@@ -486,7 +487,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                   padding: '40px 20px',
                   color: '#a1a1aa'
                 }}>
-                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>🤷</div>
+                  <div style={{ marginBottom: '16px' }}><Icon name="help" size={38} color="#D0FD3E" /></div>
                   <div>No alternative exercises found</div>
                 </div>
               ) : (
@@ -527,7 +528,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                         fontSize: '24px',
                         marginBottom: '12px'
                       }}>
-                        💪
+                        <Icon name="dumbbell" size={24} color="#D0FD3E" />
                       </div>
 
                       {/* Exercise Name */}

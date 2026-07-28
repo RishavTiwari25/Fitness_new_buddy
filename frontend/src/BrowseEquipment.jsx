@@ -200,8 +200,8 @@ export default function BrowseEquipment({ token }) {
               {gyms.map(gym => (
                 <div key={gym.id} onClick={() => setSelectedGymForDetails(gym.id)} style={{ backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 24, cursor: 'pointer', transition: 'transform 0.2s, borderColor 0.2s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = '#D0FD3E' }} onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = '#3f3f46' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-                    <div style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: '#3f3f46', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
-                      🏋️
+                    <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--neu-base)', boxShadow: 'var(--neu-raised-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon name="dumbbell" size={22} color="#D0FD3E" />
                     </div>
                     <div>
                       <h3 style={{ margin: 0, color: '#fafafa', fontSize: 18 }}>{gym.name}</h3>
@@ -470,7 +470,7 @@ export default function BrowseEquipment({ token }) {
           borderRadius: '16px',
           border: '2px dashed #3f3f46'
         }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏋️</div>
+          <div style={{ marginBottom: '16px' }}><Icon name="dumbbell" size={40} color="#D0FD3E" /></div>
           <h3 style={{ color: '#fafafa', marginBottom: '8px', fontWeight: '700' }}>
             Select a Gym to Browse
           </h3>
@@ -525,7 +525,7 @@ export default function BrowseEquipment({ token }) {
                   fontSize: '64px',
                   background: 'linear-gradient(135deg, #3f3f46 0%, #27272a 100%)',
                 }}>
-                  🏋️‍♂️
+                  <Icon name="dumbbell" size={56} color="#D0FD3E" />
                 </div>
 
                 {/* Equipment Details */}
@@ -560,7 +560,7 @@ export default function BrowseEquipment({ token }) {
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      ⏱️ {meta.time}
+                      <Icon name="clock" size={12} /> {meta.time}
                     </span>
 
                     {/* Muscles Tag */}
@@ -575,7 +575,7 @@ export default function BrowseEquipment({ token }) {
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      💪 {meta.muscles}
+                      <Icon name="dumbbell" size={12} /> {meta.muscles}
                     </span>
 
                     {/* Difficulty Tag */}
@@ -591,8 +591,7 @@ export default function BrowseEquipment({ token }) {
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      {meta.difficulty === 'Hard' ? '🔥' : 
-                       meta.difficulty === 'Medium' ? '⚡' : '✨'} {meta.difficulty}
+                      <Icon name={meta.difficulty === 'Hard' ? 'flame' : meta.difficulty === 'Medium' ? 'bolt' : 'star'} size={12} /> {meta.difficulty}
                     </span>
                   </div>
 
@@ -616,7 +615,7 @@ export default function BrowseEquipment({ token }) {
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      {isBooked ? '🔴 Booked' : '🟢 Available'}
+                      {isBooked ? 'Booked' : 'Available'}
                     </div>
                   </div>
 
@@ -678,7 +677,7 @@ export default function BrowseEquipment({ token }) {
           borderRadius: '16px',
           border: '2px dashed #3f3f46'
         }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+          <div style={{ marginBottom: '16px' }}><Icon name="search" size={40} color="#D0FD3E" /></div>
           <h3 style={{ color: '#fafafa', marginBottom: '8px', fontWeight: '700' }}>
             No Equipment Found
           </h3>
@@ -697,7 +696,7 @@ export default function BrowseEquipment({ token }) {
           borderRadius: '16px',
           border: '2px dashed #3f3f46'
         }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>📦</div>
+          <div style={{ marginBottom: '16px' }}><Icon name="box" size={40} color="#D0FD3E" /></div>
           <h3 style={{ color: '#fafafa', marginBottom: '8px', fontWeight: '700' }}>
             No Equipment Available
           </h3>
