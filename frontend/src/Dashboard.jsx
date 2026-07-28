@@ -3,6 +3,7 @@ import { motion, animate, useReducedMotion } from 'motion/react'
 import { API_BASE } from './api'
 import Logo from './components/Logo'
 import Icon from './components/Icon'
+import Coach from './Coach'
 import { APP_NAME } from './branding'
 import Profile from './Profile'
 import ManagerDashboard from './ManagerDashboard'
@@ -196,7 +197,7 @@ export default function Dashboard({ token, onLogout }) {
   }
 
   const NAV_ICONS = {
-    home: 'home', profile: 'user', browse: 'search', member: 'users', payments: 'card',
+    home: 'home', coach: 'robot', profile: 'user', browse: 'search', member: 'users', payments: 'card',
     myBookingsNew: 'calendar', diet: 'diet', feed: 'feed', rewards: 'gift', homeWorkout: 'dumbbell',
     'manager-overview': 'grid', 'manager-equipment': 'box', 'manager-members': 'users',
     'manager-feed': 'feed', 'manager-leaderboard': 'trophy',
@@ -240,6 +241,7 @@ export default function Dashboard({ token, onLogout }) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, overflowY: 'auto' }}>
           {payload.role !== 'manager' && <NavBtn id="home">Home</NavBtn>}
+          {payload.role !== 'manager' && <NavBtn id="coach">AI Coach</NavBtn>}
           <NavBtn id="profile">Profile</NavBtn>
           {payload.role !== 'manager' && <NavBtn id="browse">Browse</NavBtn>}
           {payload.role === 'manager' && (
@@ -355,6 +357,7 @@ export default function Dashboard({ token, onLogout }) {
         )}
 
         {/* Other Views */}
+        {view === 'coach' && <Coach token={token} profile={profile} streaks={streaks} points={points} bookings={recentBookings} />}
         {view === 'profile' && <Profile token={token} profile={profile} onUpdate={setProfile} />}
         {view === 'browse' && <BrowseEquipment token={token} />}
         {view.startsWith('manager-') && <ManagerDashboard token={token} activeTabProp={view.replace('manager-', '')} />}

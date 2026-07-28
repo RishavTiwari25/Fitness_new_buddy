@@ -24,6 +24,8 @@ const socialRouter = require('./routes/social'); // Social features (follows, po
 const engagementRouter = require('./routes/engagement'); // Engagement & rewards system
 const managementRouter = require('./routes/management'); // Management endpoints (memberships, payments)
 const notificationsRouter = require('./routes/notifications'); // Notification system
+const coachRouter = require('./routes/coach'); // AI personal trainer (RAG chat, streaming)
+const aiRouter = require('./routes/ai'); // AI features: semantic search, NL booking, weekly insights
 const db = require('./db'); // SQLite database connection
 const mongo = require('./lib/mongo'); // MongoDB connection utilities
 
@@ -50,6 +52,8 @@ app.use('/api', socialRouter); // Social networking features
 app.use('/api', engagementRouter); // Engagement points and rewards
 app.use('/api', managementRouter); // Management and billing
 app.use('/api', notificationsRouter); // Notifications system
+app.use('/api', coachRouter); // AI personal trainer chat (streaming)
+app.use('/api', aiRouter); // AI: semantic search, NL booking, weekly insights
 
 // ===== HEALTH CHECK ENDPOINT =====
 // Endpoint to verify that the backend server is running
