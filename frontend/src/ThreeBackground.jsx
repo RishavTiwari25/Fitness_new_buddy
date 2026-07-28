@@ -47,22 +47,21 @@ export default function ThreeBackground({ accent = '#D0FD3E' }) {
       new THREE.WireframeGeometry(icoGeo),
       new THREE.LineBasicMaterial({ color: accentColor, transparent: true, opacity: 0.14 })
     )
-    scene.add(wire)
 
     // Faint solid shell for depth (dark, barely-there faces)
     const shell = new THREE.Mesh(
       icoGeo,
       new THREE.MeshBasicMaterial({ color: 0x14140f, transparent: true, opacity: 0.35 })
     )
-    scene.add(shell)
 
     // Glowing core — reads as an energy source, additive so it never muddies
+    const coreGeo = new THREE.IcosahedronGeometry(0.85, 2)
     const core = new THREE.Mesh(
-      new THREE.IcosahedronGeometry(0.85, 2),
+      coreGeo,
       new THREE.MeshBasicMaterial({ color: accentColor, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending })
     )
-    scene.add(core)
 
+    // Parent everything under one group (single source of transform truth)
     const group = new THREE.Group()
     group.add(wire, shell, core)
     // Sit off-centre toward the upper-right so it stays out from behind the main text column
@@ -154,7 +153,9 @@ export default function ThreeBackground({ accent = '#D0FD3E' }) {
         }
       })
       icoGeo.dispose()
+      coreGeo.dispose()
       renderer.dispose()
+      renderer.forceContextLoss() // release the WebGL context (prevents context buildup on StrictMode remount)
       if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement)
     }
   }, [accent])
