@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import { motion } from 'motion/react'
 import { API_BASE } from './api'
+import Icon from './components/Icon'
 
 export default function MyPayments({ token }) {
   const [billing, setBilling] = useState(null)
@@ -23,9 +25,10 @@ export default function MyPayments({ token }) {
   }
 
   return (
-    <div className="card" style={{ marginTop: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h3 style={{ fontSize: 20 }}>My Membership & Payments</h3>
+    <motion.div className="card" style={{ marginTop: 16 }} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 120, damping: 18, mass: 0.9 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+        <span className="neu-badge" style={{ width: 44, height: 44 }}><Icon name="card" size={22} color="#D0FD3E" /></span>
+        <h3 className="font-display" style={{ fontSize: 20 }}>My Membership & Payments</h3>
       </div>
 
       {billing ? (
@@ -35,15 +38,15 @@ export default function MyPayments({ token }) {
           gap: 12,
           marginBottom: 16
         }}>
-          <div className="card" style={{ padding: 16, background: 'var(--bg-card)' }}>
+          <div className="neu-tile" style={{ padding: 16 }}>
             <div className="text-secondary" style={{ fontSize: 12, marginBottom: 6 }}>Gym</div>
             <div style={{ fontWeight: 700 }}>#{billing.gym_id}</div>
           </div>
-          <div className="card" style={{ padding: 16, background: 'var(--bg-card)' }}>
+          <div className="neu-tile" style={{ padding: 16 }}>
             <div className="text-secondary" style={{ fontSize: 12, marginBottom: 6 }}>Monthly fee</div>
             <div style={{ fontWeight: 700 }}>₹{billing.monthly_fee ?? '-'}</div>
           </div>
-          <div className="card" style={{ padding: 16, background: 'var(--bg-card)' }}>
+          <div className="neu-tile" style={{ padding: 16 }}>
             <div className="text-secondary" style={{ fontSize: 12, marginBottom: 6 }}>Next due date</div>
             <div style={{ fontWeight: 700 }}>{billing.next_due_date ?? '-'}</div>
           </div>
@@ -135,6 +138,6 @@ export default function MyPayments({ token }) {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { API_BASE } from './api'
+import Icon from './components/Icon'
 
 export default function Feed({ token }) {
   const [members, setMembers] = useState([])
@@ -77,17 +78,17 @@ export default function Feed({ token }) {
   }
 
   return (
-    <div style={{ 
-      minHeight: '100vh',
-      backgroundColor: '#18181b',
-      padding: '24px'
-    }}>
-      <h2 style={{
+    <div style={{ padding: '0' }}>
+      <h2 className="font-display" style={{
         fontSize: '32px',
-        fontWeight: '800',
+        fontWeight: '700',
         color: '#fafafa',
-        marginBottom: '32px'
+        marginBottom: '32px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '14px'
       }}>
+        <span className="neu-badge" style={{ width: 48, height: 48 }}><Icon name="feed" size={24} color="#D0FD3E" /></span>
         Community Feed
       </h2>
 
@@ -440,7 +441,7 @@ export default function Feed({ token }) {
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#52525b'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3f3f46'}
               >
-                📷 Add Photo
+                <Icon name="camera" size={16} /> Add Photo
                 <input 
                   type="file" 
                   accept="image/*" 
@@ -471,8 +472,9 @@ export default function Feed({ token }) {
                   e.target.style.backgroundColor = '#D0FD3E'
                   e.target.style.transform = 'translateY(0)'
                 }}
+                title="Post"
               >
-                📝 Post
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Icon name="send" size={15} /> Post</span>
               </button>
             </div>
 

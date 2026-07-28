@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import Icon from './components/Icon'
 import { API_BASE } from './api'
 import EquipmentDetails from './EquipmentDetails'
 import GymDetails from './GymDetails'
@@ -14,6 +15,8 @@ export default function BrowseEquipment({ token }) {
   const [sortBy, setSortBy] = useState('name') // name, difficulty, time
   const [showFilters, setShowFilters] = useState(false)
   const [showSort, setShowSort] = useState(false)
+  const [difficultyFilter, setDifficultyFilter] = useState('All')
+  const [muscleFilter, setMuscleFilter] = useState('All')
   const [loading, setLoading] = useState(false)
   const [selectedEquipment, setSelectedEquipment] = useState(null) // For detail view
 
@@ -46,6 +49,16 @@ export default function BrowseEquipment({ token }) {
       )
     }
 
+    // Difficulty filter
+    if (difficultyFilter !== 'All') {
+      filtered = filtered.filter(eq => getEquipmentMeta(eq).difficulty === difficultyFilter)
+    }
+
+    // Muscle-group filter
+    if (muscleFilter !== 'All') {
+      filtered = filtered.filter(eq => getEquipmentMeta(eq).muscles === muscleFilter)
+    }
+
     // Sort
     if (sortBy === 'name') {
       filtered.sort((a, b) => a.name.localeCompare(b.name))
@@ -54,7 +67,7 @@ export default function BrowseEquipment({ token }) {
     }
 
     setFilteredEquipment(filtered)
-  }, [equipment, searchQuery, sortBy])
+  }, [equipment, searchQuery, sortBy, difficultyFilter, muscleFilter])
 
   async function loadGyms() {
     try {
@@ -257,7 +270,7 @@ export default function BrowseEquipment({ token }) {
         <div style={{ flex: '1', minWidth: '250px' }}>
           <input
             type="text"
-            placeholder="🔍 Search equipment..."
+            placeholder="Search equipment..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             style={{
@@ -304,7 +317,7 @@ export default function BrowseEquipment({ token }) {
             }
           }}
         >
-          🎚️ Filters
+          <Icon name="sliders" size={15} /> Filters
         </button>
 
         {/* Sort Button */}
@@ -335,7 +348,7 @@ export default function BrowseEquipment({ token }) {
             }
           }}
         >
-          ↕️ Sort
+          <Icon name="sort" size={15} /> Sort
         </button>
       </div>
 
@@ -348,12 +361,47 @@ export default function BrowseEquipment({ token }) {
           marginBottom: '24px',
           border: '1px solid #3f3f46'
         }}>
-          <h4 style={{ color: '#D0FD3E', marginBottom: '16px', fontWeight: '600' }}>
+          <h4 className="font-display" style={{ color: '#D0FD3E', marginBottom: '16px', fontWeight: '600' }}>
             Filter Options
           </h4>
-          <p style={{ color: '#a1a1aa', fontSize: '14px' }}>
-            More filter options coming soon! (Difficulty, Availability, Type)
-          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', alignItems: 'flex-end' }}>
+            {/* Difficulty */}
+            <div>
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginBottom: 8 }}>Difficulty</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {['All', 'Easy', 'Medium', 'Hard'].map(d => {
+                  const active = difficultyFilter === d
+                  return (
+                    <button
+                      key={d}
+                      onClick={() => setDifficultyFilter(d)}
+                      style={{
+                        padding: '7px 14px', borderRadius: 9999, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                        border: '1px solid ' + (active ? 'transparent' : 'rgba(255,255,255,0.12)'),
+                        background: active ? '#D0FD3E' : 'transparent',
+                        color: active ? '#0a0a0a' : 'rgba(255,255,255,0.7)',
+                      }}
+                    >{d}</button>
+                  )
+                })}
+              </div>
+            </div>
+            {/* Muscle group */}
+            <div>
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginBottom: 8 }}>Target muscle</div>
+              <select value={muscleFilter} onChange={e => setMuscleFilter(e.target.value)} style={{ minWidth: 160 }}>
+                {['All', 'Full Body', 'Chest', 'Back', 'Legs', 'Shoulders', 'Arms'].map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </div>
+            {(difficultyFilter !== 'All' || muscleFilter !== 'All') && (
+              <button
+                onClick={() => { setDifficultyFilter('All'); setMuscleFilter('All') }}
+                style={{ padding: '7px 14px', borderRadius: 9999, fontSize: 13, fontWeight: 600, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'rgba(255,255,255,0.7)' }}
+              >Clear</button>
+            )}
+          </div>
         </div>
       )}
 

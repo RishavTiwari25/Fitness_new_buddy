@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { API_BASE } from './api'
+import Icon from './components/Icon'
+
+const roleBadge = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 
 export default function Profile({ token, profile, onUpdate }) {
   const [name, setName] = useState(profile ? profile.name : '')
@@ -176,7 +179,7 @@ export default function Profile({ token, profile, onUpdate }) {
           onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
           >
-            <span style={{ fontSize: '20px' }}>📷</span>
+            <span style={{ display: 'inline-flex' }}><Icon name="camera" size={18} color="#0a0a0a" /></span>
             <input type="file" accept="image/*" style={{ display: 'none' }} onChange={uploadAvatar} />
           </label>
         </div>
@@ -204,8 +207,8 @@ export default function Profile({ token, profile, onUpdate }) {
           textTransform: 'uppercase',
           marginBottom: '16px'
         }}>
-          {user.role === 'owner' ? '👑 Gym Owner' : 
-           user.role === 'trainer' ? '🏋️ Trainer' : '💪 Member'}
+          {user.role === 'owner' ? <span style={roleBadge}><Icon name="trophy" size={14} /> Gym Owner</span> :
+           user.role === 'trainer' ? <span style={roleBadge}><Icon name="dumbbell" size={14} /> Trainer</span> : <span style={roleBadge}><Icon name="user" size={14} /> Member</span>}
         </div>
 
         {/* Trainer Rating */}
@@ -218,7 +221,9 @@ export default function Profile({ token, profile, onUpdate }) {
             marginTop: '12px'
           }}>
             <div style={{ color: '#fbbf24', fontSize: '20px' }}>
-              {'⭐'.repeat(Math.floor(parseFloat(trainerRating)))}
+              {Array.from({ length: Math.max(0, Math.floor(parseFloat(trainerRating) || 0)) }).map((_, i) => (
+                <Icon key={i} name="star" size={16} color="#fbbf24" />
+              ))}
             </div>
             <span style={{
               fontSize: '18px',
@@ -258,7 +263,7 @@ export default function Profile({ token, profile, onUpdate }) {
             e.target.style.opacity = '1'
           }}
         >
-          {isEditing ? '✕ Cancel Edit' : '✏️ Edit Profile'}
+          {isEditing ? <span style={roleBadge}><Icon name="close" size={15} /> Cancel Edit</span> : <span style={roleBadge}><Icon name="edit" size={15} /> Edit Profile</span>}
         </button>
       </div>
 
@@ -462,7 +467,7 @@ export default function Profile({ token, profile, onUpdate }) {
                 e.target.style.transform = 'translateY(0)'
               }}
             >
-              💾 Save Changes
+              <span style={roleBadge}><Icon name="check" size={16} /> Save Changes</span>
             </button>
           </form>
         </div>
@@ -523,7 +528,7 @@ export default function Profile({ token, profile, onUpdate }) {
             border: '1px solid #3f3f46',
             textAlign: 'center'
           }}>
-            <div style={{ fontSize: '36px', marginBottom: '8px' }}>🔥</div>
+            <div style={{ marginBottom: '8px' }}><Icon name="flame" size={30} color="#D0FD3E" /></div>
             <div style={{
               fontSize: '28px',
               fontWeight: '800',
@@ -551,7 +556,7 @@ export default function Profile({ token, profile, onUpdate }) {
             border: '1px solid #3f3f46',
             textAlign: 'center'
           }}>
-            <div style={{ fontSize: '36px', marginBottom: '8px' }}>🍎</div>
+            <div style={{ marginBottom: '8px' }}><Icon name="diet" size={30} color="#D0FD3E" /></div>
             <div style={{
               fontSize: '28px',
               fontWeight: '800',
@@ -579,7 +584,7 @@ export default function Profile({ token, profile, onUpdate }) {
             border: '1px solid #3f3f46',
             textAlign: 'center'
           }}>
-            <div style={{ fontSize: '36px', marginBottom: '8px' }}>🏆</div>
+            <div style={{ marginBottom: '8px' }}><Icon name="trophy" size={30} color="#D0FD3E" /></div>
             <div style={{
               fontSize: '28px',
               fontWeight: '800',
@@ -607,7 +612,7 @@ export default function Profile({ token, profile, onUpdate }) {
             border: '1px solid #3f3f46',
             textAlign: 'center'
           }}>
-            <div style={{ fontSize: '36px', marginBottom: '8px' }}>👥</div>
+            <div style={{ marginBottom: '8px' }}><Icon name="users" size={30} color="#D0FD3E" /></div>
             <div style={{
               fontSize: '28px',
               fontWeight: '800',
@@ -647,7 +652,7 @@ export default function Profile({ token, profile, onUpdate }) {
             border: '1px solid #3f3f46',
             textAlign: 'center'
           }}>
-            <div style={{ fontSize: '36px', marginBottom: '8px' }}>💚</div>
+            <div style={{ marginBottom: '8px' }}><Icon name="heart" size={30} color="#D0FD3E" /></div>
             <div style={{
               fontSize: '28px',
               fontWeight: '800',
@@ -688,7 +693,7 @@ export default function Profile({ token, profile, onUpdate }) {
               border: '1px solid #3f3f46',
               textAlign: 'center'
             }}>
-              <div style={{ fontSize: '36px', marginBottom: '8px' }}>⭐</div>
+              <div style={{ marginBottom: '8px' }}><Icon name="star" size={30} color="#D0FD3E" /></div>
               <div style={{
                 fontSize: '28px',
                 fontWeight: '800',
