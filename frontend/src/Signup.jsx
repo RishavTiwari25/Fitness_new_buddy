@@ -73,8 +73,8 @@ export default function Signup({ onSignup }) {
             cursor: 'pointer'
           }}
         >
-          <option value="member">Gym Member 💪</option>
-          <option value="manager">Gym Manager 🏢</option>
+          <option value="member">Gym Member</option>
+          <option value="manager">Gym Manager</option>
         </select>
       </div>
       <div style={{ marginBottom: '20px' }}>

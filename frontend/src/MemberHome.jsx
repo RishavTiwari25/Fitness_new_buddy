@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { API_BASE } from './api'
+import Icon from './components/Icon'
 import EquipmentSlots from './EquipmentSlots'
 
 // We'll dynamically import html5-qrcode when the user starts scanning.
@@ -163,7 +164,7 @@ export default function MemberHome({ token, defaultGymId }) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div>
-            <h1 style={{ color: '#fafafa', fontSize: 28, fontWeight: 800, margin: 0 }}>👤 Member Home</h1>
+            <h1 className="font-display" style={{ color: '#fafafa', fontSize: 28, fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: 12 }}><span className="neu-badge" style={{ width: 40, height: 40 }}><Icon name="user" size={20} color="#D0FD3E" /></span> Member Home</h1>
             <div style={{ color: '#a1a1aa', fontSize: 14 }}>Scan to check in, or choose a gym and manage equipment</div>
           </div>
           <div>
@@ -214,7 +215,7 @@ export default function MemberHome({ token, defaultGymId }) {
         {gymId && (
           <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ backgroundColor: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', padding: '8px 12px', borderRadius: 9999, fontWeight: 700 }}>
-              🏋️ People currently at {gymName || `Gym #${gymId}`}: {count ?? '—'}
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Icon name="users" size={16} color="#D0FD3E" /> People currently at {gymName || `Gym #${gymId}`}: {count ?? '—'}</span>
             </div>
           </div>
         )}
@@ -226,7 +227,7 @@ export default function MemberHome({ token, defaultGymId }) {
         {/* Equipment List */}
         {gymId && (
           <div style={{ marginTop: 18 }}>
-            <h2 style={{ color: '#fafafa', fontSize: 18, fontWeight: 800, margin: '6px 0 12px' }}>🧰 Equipment at this gym</h2>
+            <h2 className="font-display" style={{ color: '#fafafa', fontSize: 18, fontWeight: 700, margin: '6px 0 12px', display: 'flex', alignItems: 'center', gap: 10 }}><Icon name="box" size={18} color="#D0FD3E" /> Equipment at this gym</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {equipment.map(eq => {
                 const activeCount = Number(eq.active_count || 0)
