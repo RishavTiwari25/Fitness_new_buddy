@@ -1,5 +1,5 @@
-/* Fitness Buddy — Claude-inspired dark theme (warm charcoal + coral, serif display) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&display=swap');
+/* Fitness Buddy — SaaS UI (from the Claude Design "Fitness Buddy" mockup, matched exactly) */
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Instrument+Sans:wght@400;500;600&display=swap');
 
 * {
   margin: 0;
@@ -19,40 +19,42 @@
   --border-color: #4C4A46;
   --border-light: #3A3937;
 
-  /* System tokens */
-  --font-display: 'Newsreader', 'Iowan Old Style', Georgia, serif; /* editorial serif, Claude-style */
-  /* Glass surface: warm translucent tint + inner top highlight + layered shadow */
-  --glass-bg: rgba(38, 37, 35, 0.62);
-  --glass-border: rgba(255, 255, 255, 0.09);
-  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.10);
-  --shadow-contact: 0 1px 2px rgba(15, 12, 10, 0.45);
-  --shadow-ambient: 0 24px 60px rgba(15, 12, 10, 0.35);
+  /* System tokens — matched to the design export */
+  --font-display: 'Newsreader', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Instrument Sans', system-ui, sans-serif;
+  --panel: #262624;             /* opaque card surface */
+  --tile: #30302E;              /* nested tile / icon well */
+  --tile-dim: #2B2B29;          /* completed / muted tile */
+  --hairline: rgba(255, 255, 255, 0.08);
+  --text-tertiary: #7C7972;
+  --text-body: #CFCCC4;
+  --coral-tint-text: #F0B79C;   /* text inside coral-tinted chips */
+  --accent-hover: #C96846;
+  /* Card = border + inset top highlight + deep soft shadow (no blur/glass) */
+  --card-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 16px 34px -22px rgba(0,0,0,0.75);
+  --card-shadow-lg: 0 1px 0 rgba(255,255,255,0.06) inset, 0 22px 44px -28px rgba(0,0,0,0.9);
+  --coral-btn-shadow: 0 1px 0 rgba(255,255,255,0.24) inset, 0 10px 24px -14px rgba(217,119,87,0.9);
   --accent-glow: 0 0 0 1px rgba(217, 119, 87, 0.28), 0 10px 40px rgba(217, 119, 87, 0.12);
 
-  /* Neumorphism (soft UI) — warm opaque tiles that sit on the glass panels */
-  --neu-base: #292826;
-  --neu-raised: -5px -5px 12px rgba(255, 252, 245, 0.03), 7px 7px 16px rgba(12, 10, 8, 0.55);
-  --neu-raised-sm: -3px -3px 8px rgba(255, 252, 245, 0.026), 4px 4px 10px rgba(12, 10, 8, 0.5);
-  --neu-pressed: inset 3px 3px 7px rgba(12, 10, 8, 0.6), inset -3px -3px 7px rgba(255, 252, 245, 0.03);
+  /* Legacy aliases (glass/neu classes now resolve to the flat mock surfaces) */
+  --glass-bg: #262624;
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-contact: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-ambient: 0 16px 34px -22px rgba(0, 0, 0, 0.75);
+  --neu-base: #30302E;
+  --neu-raised: 0 1px 0 rgba(255,255,255,0.05) inset, 0 10px 24px -18px rgba(0,0,0,0.7);
+  --neu-raised-sm: 0 1px 0 rgba(255,255,255,0.05) inset;
+  --neu-pressed: inset 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
-}
-
-body {
-  /* Warm stage: soft coral vignette above, faint candlelight below — depth behind the 3D canvas */
-  background-image:
-    radial-gradient(1100px 700px at 78% -8%, rgba(217, 119, 87, 0.09), transparent 60%),
-    radial-gradient(900px 600px at 8% 108%, rgba(230, 185, 128, 0.05), transparent 60%);
-  background-attachment: fixed;
 }
 
 #root {
@@ -62,19 +64,17 @@ body {
   z-index: 1;
 }
 
-/* Glass surface utility (framewright: translucent + blur + inner highlight) */
+/* Panel surface (mock: opaque #262624, hairline border, inset highlight, deep shadow) */
 .glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-highlight), var(--shadow-contact), var(--shadow-ambient);
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--card-shadow);
 }
 
 .font-display {
   font-family: var(--font-display);
-  letter-spacing: -0.01em; /* serif needs less tightening than a grotesk */
-  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-weight: 400; /* the mock's serif headings sit at 400 */
 }
 
 /* Typography */
@@ -96,7 +96,7 @@ p {
 
 /* Button Base Styles */
 button {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body);
   font-weight: 600;
   border: none;
   border-radius: 12px;
@@ -139,7 +139,7 @@ button.btn-secondary:hover {
 
 /* Input Styles */
 input, textarea, select {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body);
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -159,56 +159,45 @@ input::placeholder, textarea::placeholder {
   color: var(--text-secondary);
 }
 
-/* Card Styles — glassmorphic by default (framewright).
-   Nested cards that set their own inline background stay opaque tiles. */
+/* Card — the mock's panel: opaque, 18px radius, hairline + inset highlight + soft depth */
 .card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  border-radius: 20px;
+  background: var(--panel);
+  border-radius: 18px;
   padding: 24px;
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-highlight), var(--shadow-contact), var(--shadow-ambient);
-  transition: border-color .2s ease, box-shadow .2s ease;
+  border: 1px solid var(--hairline);
+  box-shadow: var(--card-shadow);
+  transition: border-color .2s ease;
 }
 
 .card:hover {
   border-color: rgba(255, 255, 255, 0.16);
 }
 
-/* Neumorphic tile — opaque soft-UI surface that sits on glass panels */
+/* Nested tile — mock's #30302E wells (icon tiles, list items inside cards) */
 .neu-tile {
-  background: var(--neu-base);
-  box-shadow: var(--neu-raised);
-  border: none;
-  border-radius: 16px;
+  background: var(--tile);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+  border-radius: 12px;
 }
 .neu-badge {
-  background: var(--neu-base);
-  box-shadow: var(--neu-raised-sm);
+  background: var(--tile);
+  border: 1px solid var(--hairline);
   border-radius: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-}
-
+/* Scrollbar (mock spec) */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: var(--bg-card);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 8px;
+  border: 3px solid #1F1E1D;
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-color);
-}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.16); }
 
 /* Link Styles */
 a {
@@ -218,7 +207,7 @@ a {
 }
 
 a:hover {
-  color: #C4664A;
+  color: #E8A288;
 }
 
 /* Utility Classes */

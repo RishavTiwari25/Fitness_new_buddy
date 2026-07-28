@@ -222,10 +222,10 @@ export default function BrowseEquipment({ token }) {
           color: '#F5F4EE',
           marginBottom: '8px' 
         }}>
-          Discover
+          <span className="font-display" style={{ letterSpacing: '-0.02em' }}>Browse <span style={{ fontStyle: 'italic', color: '#D97757' }}>equipment</span></span>
         </h2>
-        <p style={{ color: '#A6A29A', fontSize: '16px' }}>
-          Find the perfect gym or browse available equipment.
+        <p style={{ color: '#A6A29A', fontSize: '14.5px' }}>
+          Find the perfect gym or browse live equipment availability.
         </p>
       </div>
 
@@ -308,38 +308,47 @@ export default function BrowseEquipment({ token }) {
         </select>
       </div>
 
-      {/* AI Tools — semantic search (F3) + natural-language booking (F2) */}
-      <div className="card" style={{ padding: 18, marginBottom: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <span className="neu-badge" style={{ width: 34, height: 34, borderRadius: 9 }}><Icon name="robot" size={17} color="#D97757" /></span>
-          <div className="font-display" style={{ color: '#F5F4EE', fontWeight: 600, fontSize: 15 }}>AI Tools</div>
+      {/* AI Tools (mock: kicker + 2-col Smart search / Book in plain language) */}
+      <div style={{ background: 'var(--panel)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 18, padding: '20px 22px', boxShadow: 'var(--card-shadow-lg)', marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+          <Icon name="sparkle" size={15} strokeWidth={1.7} color="#D97757" />
+          <span style={{ fontSize: 11.5, fontWeight: 600, letterSpacing: '0.11em', textTransform: 'uppercase', color: '#A6A29A' }}>AI tools</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
-          <input
-            value={aiQuery}
-            onChange={e => setAiQuery(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') runSemantic() }}
-            placeholder="Smart search — e.g. “something for my chest” or “low-impact cardio”"
-            style={{ flex: '1 1 280px', padding: '11px 15px', background: '#1F1E1D', color: '#F5F4EE', border: '1px solid #3A3937', borderRadius: 10, fontSize: 14, outline: 'none' }}
-          />
-          <button onClick={runSemantic} disabled={aiSearching || !aiQuery.trim()} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '0 16px', borderRadius: 10, border: 'none', background: aiSearching || !aiQuery.trim() ? '#4C4A46' : '#D97757', color: '#FFFFFF', fontWeight: 700, fontSize: 13.5, cursor: aiSearching ? 'wait' : 'pointer' }}>
-            <Icon name="search" size={15} /> {aiSearching ? 'Ranking…' : 'Smart search'}
-          </button>
-          {semanticScores && (
-            <button onClick={() => { setSemanticScores(null); setAiQuery('') }} style={{ padding: '0 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>Clear</button>
-          )}
-        </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <input
-            value={aiBookText}
-            onChange={e => setAiBookText(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') runBooking() }}
-            placeholder="Book in plain English — e.g. “book the treadmill tomorrow at 7am”"
-            style={{ flex: '1 1 280px', padding: '11px 15px', background: '#1F1E1D', color: '#F5F4EE', border: '1px solid #3A3937', borderRadius: 10, fontSize: 14, outline: 'none' }}
-          />
-          <button onClick={runBooking} disabled={aiBookBusy || !aiBookText.trim()} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '0 16px', borderRadius: 10, border: '1px solid rgba(217,119,87,0.3)', background: 'rgba(217,119,87,0.1)', color: '#D97757', fontWeight: 700, fontSize: 13.5, cursor: aiBookBusy ? 'wait' : 'pointer' }}>
-            <Icon name="calendar" size={15} /> {aiBookBusy ? 'Parsing…' : 'AI book'}
-          </button>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 14, marginTop: 15 }}>
+          <div>
+            <div style={{ fontSize: 13, color: '#A6A29A', marginBottom: 8 }}>Smart search</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 12, background: 'var(--tile)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <Icon name="search" size={17} strokeWidth={1.6} color="#A6A29A" />
+              <input
+                value={aiQuery}
+                onChange={e => setAiQuery(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') runSemantic() }}
+                placeholder="Something gentle for a sore lower back"
+                style={{ flex: 1, minWidth: 0, background: 'transparent', border: 0, outline: 'none', color: '#F5F4EE', fontSize: 14, padding: 0, boxShadow: 'none' }}
+              />
+              {aiSearching && <span style={{ fontSize: 12, color: '#A6A29A' }}>Ranking…</span>}
+              {semanticScores && !aiSearching && (
+                <button onClick={() => { setSemanticScores(null); setAiQuery('') }} style={{ border: 0, background: 'transparent', color: '#A6A29A', fontSize: 12.5, fontWeight: 500, cursor: 'pointer', padding: 0 }}>Clear</button>
+              )}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 13, color: '#A6A29A', marginBottom: 8 }}>Book in plain language</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 8px 8px 14px', borderRadius: 12, background: 'var(--tile)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <input
+                value={aiBookText}
+                onChange={e => setAiBookText(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') runBooking() }}
+                placeholder="Book the treadmill tomorrow at 7 AM"
+                style={{ flex: 1, minWidth: 0, background: 'transparent', border: 0, outline: 'none', color: '#F5F4EE', fontSize: 14, padding: 0, boxShadow: 'none' }}
+              />
+              <button onClick={runBooking} disabled={aiBookBusy || !aiBookText.trim()}
+                style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 14px', borderRadius: 9, border: 0, background: aiBookBusy || !aiBookText.trim() ? '#4C4A46' : '#D97757', color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: aiBookBusy ? 'wait' : 'pointer', boxShadow: '0 1px 0 rgba(255,255,255,0.24) inset' }}>
+                <Icon name="check" size={15} strokeWidth={1.8} />
+                <span>{aiBookBusy ? 'Parsing…' : 'Book'}</span>
+              </button>
+            </div>
+          </div>
         </div>
         {aiError && <div style={{ marginTop: 10, color: '#fca5a5', fontSize: 13 }}>{aiError}</div>}
         {aiIntent && (
