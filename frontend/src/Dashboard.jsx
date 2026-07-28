@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { motion, animate, useReducedMotion } from 'motion/react'
 import { API_BASE } from './api'
 import Logo from './components/Logo'
 import { APP_NAME } from './branding'
@@ -16,6 +17,15 @@ import ContactFooter from './ContactFooter'
 import NotificationsBell from './NotificationsBell'
 import BrowseEquipment from './BrowseEquipment'
 
+const ACCENT = '#D0FD3E'
+// Framewright easing: fast start, long decel to rest (easeOutExpo-ish)
+const EASE = [0.22, 1, 0.36, 1]
+
+// Weighty entrance with a single restrained overshoot (never a bounce)
+const SPRING = { type: 'spring', stiffness: 120, damping: 18, mass: 0.9 }
+const containerVar = { hidden: {}, show: { transition: { staggerChildren: 0.07, delayChildren: 0.04 } } }
+const itemVar = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: SPRING } }
+
 function parseJwt(token) {
   try {
     const payload = token.split('.')[1]
@@ -25,56 +35,66 @@ function parseJwt(token) {
   }
 }
 
-// Circular Progress Ring Component
-function CircularProgress({ percentage, label, value, color = '#D0FD3E' }) {
-  const size = 120
-  const strokeWidth = 10
+// Count a number up to its target once, driven by motion (respects reduced-motion)
+function CountUp({ to, duration = 1.2, format = (v) => Math.round(v).toString() }) {
+  const ref = useRef(null)
+  const reduce = useReducedMotion()
+  useEffect(() => {
+    const node = ref.current
+    if (!node) return
+    if (reduce) { node.textContent = format(to); return }
+    const controls = animate(0, to, {
+      duration,
+      ease: EASE,
+      onUpdate: (v) => { node.textContent = format(v) },
+    })
+    return () => controls.stop()
+  }, [to, duration, reduce])
+  return <span ref={ref}>{format(reduce ? to : 0)}</span>
+}
+
+// Circular progress ring — the arc draws itself once, no perpetual motion at rest
+function CircularProgress({ percentage, label, value, color = ACCENT }) {
+  const size = 132
+  const strokeWidth = 9
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
-  const offset = circumference - (percentage / 100) * circumference
+  const offset = circumference - (Math.min(percentage, 100) / 100) * circumference
+  const reduce = useReducedMotion()
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-        {/* Background circle */}
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="#3f3f46"
-          strokeWidth={strokeWidth}
-        />
-        {/* Progress circle */}
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke={color}
-          strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          style={{ transition: 'stroke-dashoffset 0.5s ease' }}
-        />
-        {/* Center text */}
-        <text
-          x="50%"
-          y="50%"
-          textAnchor="middle"
-          dy="0.3em"
-          fill="#fafafa"
-          fontSize="24"
-          fontWeight="700"
-          transform={`rotate(90 ${size/2} ${size/2})`}
-        >
-          {value}
-        </text>
-      </svg>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+      <div style={{ position: 'relative', width: size, height: size }}>
+        <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={strokeWidth} />
+          <motion.circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke={color}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            initial={{ strokeDashoffset: reduce ? offset : circumference }}
+            animate={{ strokeDashoffset: offset }}
+            transition={{ duration: 1.3, ease: EASE, delay: 0.1 }}
+            style={{ filter: `drop-shadow(0 0 6px ${color}66)` }}
+          />
+        </svg>
+        {/* Center value — sharp, level, still (framewright: readable content never moves) */}
+        <div style={{
+          position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 700, color: '#fafafa', letterSpacing: '-0.02em',
+        }}>
+          {typeof value === 'number'
+            ? <CountUp to={value} />
+            : <span><CountUp to={parseInt(value) || 0} format={(v) => `${Math.round(v)}d`} /></span>}
+        </div>
+      </div>
       <div style={{ textAlign: 'center' }}>
-        <div style={{ color: '#fafafa', fontSize: '14px', fontWeight: '600' }}>{label}</div>
-        <div style={{ color: '#a1a1aa', fontSize: '12px' }}>{Math.round(percentage)}%</div>
+        <div style={{ color: '#fafafa', fontSize: '14px', fontWeight: 600 }}>{label}</div>
+        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12px', marginTop: 2 }}>{Math.round(Math.min(percentage, 100))}% of goal</div>
       </div>
     </div>
   )
@@ -98,7 +118,6 @@ export default function Dashboard({ token, onLogout }) {
         })
         const data = await res.json()
         if (!res.ok) {
-          // If token is invalid/expired, force logout to fix refresh error states
           if (res.status === 401) {
             onLogout?.()
             return
@@ -106,19 +125,14 @@ export default function Dashboard({ token, onLogout }) {
           throw new Error(data.error || 'Failed to fetch')
         }
         setProfile(data)
-        
-        // Load streaks data
+
         try {
           const streaksRes = await fetch(`${API_BASE}/api/me/streaks`, {
             headers: { Authorization: 'Bearer ' + token }
           })
-          if (streaksRes.ok) {
-            const streaksData = await streaksRes.json()
-            setStreaks(streaksData)
-          }
+          if (streaksRes.ok) setStreaks(await streaksRes.json())
         } catch {}
-        
-        // Load points
+
         try {
           const pointsRes = await fetch(`${API_BASE}/api/me/points`, {
             headers: { Authorization: 'Bearer ' + token }
@@ -128,8 +142,7 @@ export default function Dashboard({ token, onLogout }) {
             setPoints(pointsData.points || 0)
           }
         } catch {}
-        
-        // Load recent bookings
+
         try {
           const bookingsRes = await fetch(`${API_BASE}/api/bookings/my`, {
             headers: { Authorization: 'Bearer ' + token }
@@ -147,203 +160,188 @@ export default function Dashboard({ token, onLogout }) {
   }, [token])
 
   const navButtonStyle = (isActive) => ({
-    backgroundColor: isActive ? '#D0FD3E' : 'transparent',
-    color: isActive ? '#000' : '#a1a1aa',
-    border: 'none',
-    padding: '12px 16px',
-    borderRadius: '12px',
-    fontSize: '15px',
-    fontWeight: '600',
+    backgroundColor: isActive ? ACCENT : 'transparent',
+    color: isActive ? '#0a0a0a' : 'rgba(255,255,255,0.62)',
+    border: '1px solid ' + (isActive ? 'transparent' : 'transparent'),
+    padding: '11px 14px',
+    borderRadius: '10px',
+    fontSize: '14.5px',
+    fontWeight: 600,
     cursor: 'pointer',
-    transition: 'all 0.3s ease',
+    transition: 'background-color .2s ease, color .2s ease',
     textAlign: 'left',
-    width: '100%'
+    width: '100%',
+    boxShadow: isActive ? 'var(--accent-glow)' : 'none',
   })
 
+  const navHover = (e, isActive) => {
+    if (isActive) return
+    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+    e.currentTarget.style.color = '#fafafa'
+  }
+  const navLeave = (e, isActive) => {
+    if (isActive) return
+    e.currentTarget.style.backgroundColor = 'transparent'
+    e.currentTarget.style.color = 'rgba(255,255,255,0.62)'
+  }
+
+  const NavBtn = ({ id, children }) => (
+    <button
+      style={navButtonStyle(view === id)}
+      onClick={() => setView(id)}
+      onMouseEnter={(e) => navHover(e, view === id)}
+      onMouseLeave={(e) => navLeave(e, view === id)}
+    >
+      {children}
+    </button>
+  )
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#18181b' }}>
-      {/* Side Navigation Bar */}
-      <div style={{ 
-        width: '260px',
-        display: 'flex', 
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
+      {/* Side Navigation Bar (glass) */}
+      <div className="glass" style={{
+        width: '264px',
+        display: 'flex',
         flexDirection: 'column',
-        padding: '24px',
-        backgroundColor: '#27272a',
-        borderRight: '1px solid #3f3f46',
-        flexShrink: 0
+        padding: '22px 18px',
+        borderRadius: 0,
+        borderRight: '1px solid var(--glass-border)',
+        flexShrink: 0,
+        position: 'sticky',
+        top: 0,
+        height: '100vh',
+        boxSizing: 'border-box',
       }}>
-        <div style={{ marginBottom: '40px', paddingLeft: '8px' }}>
+        <div style={{ marginBottom: '32px', paddingLeft: '8px' }}>
           <Logo size={28} withText={true} />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
-          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'home')} onClick={() => setView('home')}>Home</button>}
-          <button style={navButtonStyle(view === 'profile')} onClick={() => setView('profile')}>Profile</button>
-          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'browse')} onClick={() => setView('browse')}>Browse</button>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, overflowY: 'auto' }}>
+          {payload.role !== 'manager' && <NavBtn id="home">Home</NavBtn>}
+          <NavBtn id="profile">Profile</NavBtn>
+          {payload.role !== 'manager' && <NavBtn id="browse">Browse</NavBtn>}
           {payload.role === 'manager' && (
             <>
-              <div style={{ color: '#a1a1aa', fontSize: 12, fontWeight: 700, padding: '12px 16px 4px 16px', textTransform: 'uppercase', letterSpacing: 1 }}>Manager</div>
-              <button style={navButtonStyle(view === 'manager-overview')} onClick={() => setView('manager-overview')}>Overview</button>
-              <button style={navButtonStyle(view === 'manager-equipment')} onClick={() => setView('manager-equipment')}>Equipment</button>
-              <button style={navButtonStyle(view === 'manager-members')} onClick={() => setView('manager-members')}>Members & Payments</button>
-              <button style={navButtonStyle(view === 'manager-feed')} onClick={() => setView('manager-feed')}>Social Feed</button>
-              <button style={navButtonStyle(view === 'manager-leaderboard')} onClick={() => setView('manager-leaderboard')}>Gym Leaderboard</button>
+              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, padding: '14px 14px 4px 14px', textTransform: 'uppercase', letterSpacing: 1.2 }}>Manager</div>
+              <NavBtn id="manager-overview">Overview</NavBtn>
+              <NavBtn id="manager-equipment">Equipment</NavBtn>
+              <NavBtn id="manager-members">Members &amp; Payments</NavBtn>
+              <NavBtn id="manager-feed">Social Feed</NavBtn>
+              <NavBtn id="manager-leaderboard">Gym Leaderboard</NavBtn>
             </>
           )}
-          {payload.role === 'member' && <button style={navButtonStyle(view === 'member')} onClick={() => setView('member')}>Member</button>}
-          {payload.role === 'member' && <button style={navButtonStyle(view === 'payments')} onClick={() => setView('payments')}>Payments</button>}
-          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'myBookingsNew')} onClick={() => setView('myBookingsNew')}>Bookings</button>}
-          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'diet')} onClick={() => setView('diet')}>Diet</button>}
-          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'feed')} onClick={() => setView('feed')}>Feed</button>}
-          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'rewards')} onClick={() => setView('rewards')}>Rewards</button>}
-          {payload.role !== 'manager' && <button style={navButtonStyle(view === 'homeWorkout')} onClick={() => setView('homeWorkout')}>Workout</button>}
-          
-          <div style={{ marginTop: 'auto', paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {payload.role === 'member' && <NavBtn id="member">Member</NavBtn>}
+          {payload.role === 'member' && <NavBtn id="payments">Payments</NavBtn>}
+          {payload.role !== 'manager' && <NavBtn id="myBookingsNew">Bookings</NavBtn>}
+          {payload.role !== 'manager' && <NavBtn id="diet">Diet</NavBtn>}
+          {payload.role !== 'manager' && <NavBtn id="feed">Feed</NavBtn>}
+          {payload.role !== 'manager' && <NavBtn id="rewards">Rewards</NavBtn>}
+          {payload.role !== 'manager' && <NavBtn id="homeWorkout">Workout</NavBtn>}
+
+          <div style={{ marginTop: 'auto', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ paddingLeft: '8px' }}>
               <NotificationsBell token={token} />
             </div>
-            <button style={{ ...navButtonStyle(false), backgroundColor: '#ef4444', color: '#fff' }} onClick={onLogout}>Logout</button>
+            <button
+              style={{ ...navButtonStyle(false), backgroundColor: 'rgba(239,68,68,0.14)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.25)' }}
+              onClick={onLogout}
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div style={{ flex: 1, padding: '32px', overflowY: 'auto', height: '100vh', boxSizing: 'border-box' }}>
-        {error && <p style={{ color: '#ef4444', padding: '12px', backgroundColor: '#27272a', borderRadius: '12px', marginBottom: '24px' }}>{error}</p>}
+      <div style={{ flex: 1, padding: '36px clamp(20px, 4vw, 44px)', overflowY: 'auto', height: '100vh', boxSizing: 'border-box' }}>
+        {error && <p style={{ color: '#fca5a5', padding: '12px 16px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '12px', marginBottom: '24px' }}>{error}</p>}
 
-      {/* Home View with Daily Activity */}
-      {view === 'home' && (
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          {/* Welcome Header */}
-          <div style={{ marginBottom: '32px' }}>
-            <h1 style={{ fontSize: '36px', fontWeight: '800', color: '#fafafa', marginBottom: '8px' }}>
-              Hello, {profile?.name || profile?.email || 'User'}! 👋
-            </h1>
-            <p style={{ color: '#a1a1aa', fontSize: '16px' }}>Ready to crush your fitness goals today?</p>
-          </div>
-
-          {/* Daily Activity Card */}
-          <div style={{
-            backgroundColor: '#27272a',
-            borderRadius: '20px',
-            padding: '32px',
-            border: '1px solid #3f3f46',
-            marginBottom: '24px'
-          }}>
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#fafafa', marginBottom: '4px' }}>
-                Your Progress
-              </h3>
-              <p style={{ color: '#a1a1aa', fontSize: '14px' }}>Track your streaks and points</p>
-            </div>
-
-            {/* Circular Progress Rings */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-              gap: '32px',
-              justifyItems: 'center'
-            }}>
-              <CircularProgress 
-                percentage={streaks ? Math.min((streaks.gym_streak / 30) * 100, 100) : 0}
-                label="Gym Streak"
-                value={streaks ? `${streaks.gym_streak}d` : '0d'}
-                color="#D0FD3E"
-              />
-              <CircularProgress 
-                percentage={streaks ? Math.min((streaks.diet_streak / 30) * 100, 100) : 0}
-                label="Diet Streak"
-                value={streaks ? `${streaks.diet_streak}d` : '0d'}
-                color="#D0FD3E"
-              />
-              <CircularProgress 
-                percentage={points > 0 ? Math.min((points / 1000) * 100, 100) : 0}
-                label="Points"
-                value={points}
-                color="#D0FD3E"
-              />
-            </div>
-          </div>
-
-          {/* Workouts/Bookings Section */}
-          <div style={{
-            backgroundColor: '#27272a',
-            borderRadius: '20px',
-            padding: '32px',
-            border: '1px solid #3f3f46'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#fafafa' }}>Recent Bookings</h3>
-              <button 
-                onClick={() => setView('myBookingsNew')}
-                style={{
-                  background: 'transparent',
-                  color: '#D0FD3E',
-                  border: 'none',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  padding: '8px 16px'
-                }}
-              >
-                See All →
-              </button>
-            </div>
-            {recentBookings.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {recentBookings.map((booking, idx) => (
-                  <div key={idx} style={{
-                    padding: '16px',
-                    backgroundColor: '#3f3f46',
-                    borderRadius: '12px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}>
-                    <div>
-                      <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>
-                        {booking.equipment_name || 'Equipment'}
-                      </div>
-                      <div style={{ color: '#a1a1aa', fontSize: '12px' }}>
-                        {booking.slot_date} at {booking.slot_time}
-                      </div>
-                    </div>
-                    <div style={{
-                      padding: '6px 12px',
-                      borderRadius: '8px',
-                      backgroundColor: booking.status === 'confirmed' ? '#065f46' : '#713f12',
-                      color: booking.status === 'confirmed' ? '#6ee7b7' : '#fcd34d',
-                      fontSize: '12px',
-                      fontWeight: '600'
-                    }}>
-                      {booking.status || 'pending'}
-                    </div>
-                  </div>
-                ))}
+        {/* Home View */}
+        {view === 'home' && (
+          <motion.div
+            variants={containerVar}
+            initial="hidden"
+            animate="show"
+            style={{ maxWidth: '1200px', margin: '0 auto' }}
+          >
+            {/* Welcome Header */}
+            <motion.div variants={itemVar} style={{ marginBottom: '30px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 9999, background: 'rgba(208,253,62,0.10)', border: '1px solid rgba(208,253,62,0.22)', marginBottom: 16 }}>
+                <span style={{ width: 6, height: 6, borderRadius: 9999, background: ACCENT, boxShadow: `0 0 8px ${ACCENT}` }} />
+                <span style={{ color: ACCENT, fontSize: 12, fontWeight: 600, letterSpacing: 0.3 }}>Today's session</span>
               </div>
-            ) : (
-              <p style={{ color: '#a1a1aa', fontSize: '14px' }}>
-                No bookings yet. Book equipment slots to track your workouts!
-              </p>
-            )}
-          </div>
-        </div>
-      )}
+              <h1 className="font-display" style={{ fontSize: 'clamp(30px, 4vw, 44px)', fontWeight: 700, color: '#fafafa', marginBottom: '8px', lineHeight: 1.08 }}>
+                Hello, {profile?.name || profile?.email?.split('@')[0] || 'there'}.
+              </h1>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '16px' }}>Ready to crush your fitness goals today?</p>
+            </motion.div>
 
-      {/* Other Views */}
-      {view === 'profile' && <Profile token={token} profile={profile} onUpdate={setProfile} />}
-      {view === 'browse' && <BrowseEquipment token={token} />}
-      {/* Manager View */}
-      {view.startsWith('manager-') && <ManagerDashboard token={token} activeTabProp={view.replace('manager-', '')} />}
-      {view === 'member' && payload.role === 'member' && <MemberHome token={token} defaultGymId={profile?.gym_id} />}
-      {view === 'myBookingsNew' && <MyBookingsNew token={token} />}
-      {view === 'diet' && <Diet token={token} />}
-      {view === 'feed' && <Feed token={token} />}
-      {view === 'rewards' && <Rewards token={token} />}
-      {view === 'homeWorkout' && <HomeWorkout token={token} />}
-      {view === 'payments' && payload.role === 'member' && <MyPayments token={token} />}
+            {/* Progress Card */}
+            <motion.div variants={itemVar} className="glass" style={{ borderRadius: '20px', padding: '28px', marginBottom: '22px' }}>
+              <div style={{ marginBottom: '24px' }}>
+                <h3 className="font-display" style={{ fontSize: '19px', fontWeight: 600, color: '#fafafa', marginBottom: '4px' }}>Your Progress</h3>
+                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13.5px' }}>Streaks and points, updated in real time</p>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '20px', justifyItems: 'center' }}>
+                <CircularProgress percentage={streaks ? Math.min((streaks.gym_streak / 30) * 100, 100) : 0} label="Gym Streak" value={`${streaks?.gym_streak || 0}d`} />
+                <CircularProgress percentage={streaks ? Math.min((streaks.diet_streak / 30) * 100, 100) : 0} label="Diet Streak" value={`${streaks?.diet_streak || 0}d`} />
+                <CircularProgress percentage={points > 0 ? Math.min((points / 1000) * 100, 100) : 0} label="Points" value={points} />
+              </div>
+            </motion.div>
 
-      {/* Contact & Help Footer - Shows on all pages */}
-      <ContactFooter />
+            {/* Recent Bookings */}
+            <motion.div variants={itemVar} className="glass" style={{ borderRadius: '20px', padding: '28px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                <h3 className="font-display" style={{ fontSize: '19px', fontWeight: 600, color: '#fafafa' }}>Recent Bookings</h3>
+                <button onClick={() => setView('myBookingsNew')} style={{ background: 'transparent', color: ACCENT, border: 'none', fontSize: '14px', fontWeight: 600, cursor: 'pointer', padding: '6px 10px' }}>
+                  See all →
+                </button>
+              </div>
+              {recentBookings.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {recentBookings.map((booking, idx) => {
+                    const confirmed = booking.status === 'confirmed'
+                    return (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ ...SPRING, delay: 0.2 + idx * 0.06 }}
+                        style={{ padding: '14px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                      >
+                        <div>
+                          <div style={{ color: '#fafafa', fontWeight: 600, marginBottom: '3px' }}>{booking.equipment_name || 'Equipment'}</div>
+                          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12.5px' }}>{booking.slot_date} at {booking.slot_time}</div>
+                        </div>
+                        {/* Status chip: dot + label, tinted border, meaning by colour */}
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 11px', borderRadius: 9999, background: confirmed ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)', border: `1px solid ${confirmed ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.3)'}`, color: confirmed ? '#6ee7b7' : '#fcd34d', fontSize: '12px', fontWeight: 600 }}>
+                          <span style={{ width: 6, height: 6, borderRadius: 9999, background: confirmed ? '#34d399' : '#fbbf24' }} />
+                          {booking.status || 'pending'}
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>No bookings yet. Book equipment slots to track your workouts!</p>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Other Views */}
+        {view === 'profile' && <Profile token={token} profile={profile} onUpdate={setProfile} />}
+        {view === 'browse' && <BrowseEquipment token={token} />}
+        {view.startsWith('manager-') && <ManagerDashboard token={token} activeTabProp={view.replace('manager-', '')} />}
+        {view === 'member' && payload.role === 'member' && <MemberHome token={token} defaultGymId={profile?.gym_id} />}
+        {view === 'myBookingsNew' && <MyBookingsNew token={token} />}
+        {view === 'diet' && <Diet token={token} />}
+        {view === 'feed' && <Feed token={token} />}
+        {view === 'rewards' && <Rewards token={token} />}
+        {view === 'homeWorkout' && <HomeWorkout token={token} />}
+        {view === 'payments' && payload.role === 'member' && <MyPayments token={token} />}
+
+        {/* Contact & Help Footer - Shows on all pages */}
+        <ContactFooter />
       </div>
     </div>
   )

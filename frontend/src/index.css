@@ -1,5 +1,5 @@
 /* Fitness Buddy - Global Dark Theme */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 * {
   margin: 0;
@@ -17,6 +17,16 @@
   --text-secondary: #a1a1aa;    /* zinc-400 */
   --border-color: #52525b;      /* zinc-600 */
   --border-light: #3f3f46;      /* zinc-700 */
+
+  /* Framewright system tokens */
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  /* Glass surface: translucent tint + inner top highlight + layered shadow */
+  --glass-bg: rgba(30, 30, 34, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --shadow-contact: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-ambient: 0 24px 60px rgba(0, 0, 0, 0.35);
+  --accent-glow: 0 0 0 1px rgba(208, 253, 62, 0.25), 0 10px 40px rgba(208, 253, 62, 0.10);
 }
 
 body {
@@ -30,9 +40,33 @@ body {
   min-height: 100vh;
 }
 
+body {
+  /* Dark stage with a soft lime-tinted vignette — depth behind the 3D canvas */
+  background-image:
+    radial-gradient(1100px 700px at 78% -8%, rgba(208, 253, 62, 0.08), transparent 60%),
+    radial-gradient(900px 600px at 8% 108%, rgba(120, 200, 255, 0.05), transparent 60%);
+  background-attachment: fixed;
+}
+
 #root {
   min-height: 100vh;
-  background-color: var(--bg-primary);
+  background-color: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+/* Glass surface utility (framewright: translucent + blur + inner highlight) */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight), var(--shadow-contact), var(--shadow-ambient);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 /* Typography */
