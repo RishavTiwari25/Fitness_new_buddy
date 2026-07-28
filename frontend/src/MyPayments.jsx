@@ -44,7 +44,7 @@ export default function MyPayments({ token }) {
   return (
     <motion.div className="card" style={{ marginTop: 16 }} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 120, damping: 18, mass: 0.9 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-        <span className="neu-badge" style={{ width: 44, height: 44 }}><Icon name="card" size={22} color="#D0FD3E" /></span>
+        <span className="neu-badge" style={{ width: 44, height: 44 }}><Icon name="card" size={22} color="#D97757" /></span>
         <h3 className="font-display" style={{ fontSize: 20 }}>My Membership & Payments</h3>
       </div>
 
@@ -92,7 +92,7 @@ export default function MyPayments({ token }) {
           <div
             style={{
               marginTop: 10,
-              background: 'rgba(208, 253, 62, 0.12)',
+              background: 'rgba(217, 119, 87, 0.12)',
               color: 'var(--accent-lime)',
               border: '1px solid var(--accent-lime)',
               padding: '10px 12px',

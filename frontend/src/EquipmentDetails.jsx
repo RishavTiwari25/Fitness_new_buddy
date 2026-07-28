@@ -173,7 +173,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
   return (
     <div style={{ 
       minHeight: '100vh',
-      backgroundColor: '#18181b',
+      backgroundColor: '#1F1E1D',
       paddingBottom: '40px'
     }}>
       {/* Header with Back Button */}
@@ -182,15 +182,15 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
         display: 'flex',
         alignItems: 'center',
         gap: '16px',
-        backgroundColor: '#27272a',
-        borderBottom: '1px solid #3f3f46'
+        backgroundColor: '#262624',
+        borderBottom: '1px solid #3A3937'
       }}>
         <button
           onClick={onBack}
           style={{
             padding: '10px 20px',
-            backgroundColor: '#3f3f46',
-            color: '#fafafa',
+            backgroundColor: '#3A3937',
+            color: '#F5F4EE',
             border: 'none',
             borderRadius: '12px',
             fontSize: '14px',
@@ -201,13 +201,13 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
             gap: '8px',
             transition: 'background-color 0.2s'
           }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = '#52525b'}
-          onMouseLeave={(e) => e.target.style.backgroundColor = '#3f3f46'}
+          onMouseEnter={(e) => e.target.style.backgroundColor = '#4C4A46'}
+          onMouseLeave={(e) => e.target.style.backgroundColor = '#3A3937'}
         >
           ← Back to Browse
         </button>
         <h2 style={{ 
-          color: '#fafafa', 
+          color: '#F5F4EE', 
           fontSize: '20px', 
           fontWeight: '700',
           margin: 0 
@@ -220,7 +220,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
       <div style={{
         width: '100%',
         height: '400px',
-        background: 'linear-gradient(135deg, #3f3f46 0%, #27272a 50%, #18181b 100%)',
+        background: 'linear-gradient(135deg, #3A3937 0%, #262624 50%, #1F1E1D 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -233,7 +233,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
           opacity: 0.3,
           filter: 'blur(2px)'
         }}>
-          <Icon name="dumbbell" size={150} color="#D0FD3E" />
+          <Icon name="dumbbell" size={150} color="#D97757" />
         </div>
         
         {/* Overlay Equipment Name */}
@@ -246,7 +246,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
           <h1 style={{
             fontSize: '48px',
             fontWeight: '900',
-            color: '#D0FD3E',
+            color: '#D97757',
             margin: 0,
             textShadow: '2px 2px 8px rgba(0,0,0,0.5)',
             lineHeight: '1.2'
@@ -267,7 +267,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
           <h2 style={{
             fontSize: '28px',
             fontWeight: '800',
-            color: '#fafafa',
+            color: '#F5F4EE',
             marginBottom: '16px'
           }}>
             About
@@ -275,11 +275,11 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
           <p style={{
             fontSize: '16px',
             lineHeight: '1.8',
-            color: '#a1a1aa',
-            backgroundColor: '#27272a',
+            color: '#A6A29A',
+            backgroundColor: '#262624',
             padding: '24px',
             borderRadius: '16px',
-            border: '1px solid #3f3f46'
+            border: '1px solid #3A3937'
           }}>
             {meta.description}
           </p>
@@ -290,7 +290,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
           <h2 style={{
             fontSize: '28px',
             fontWeight: '800',
-            color: '#fafafa',
+            color: '#F5F4EE',
             marginBottom: '16px'
           }}>
             Stats
@@ -302,10 +302,10 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
           }}>
             {/* Difficulty Card */}
             <div style={{
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               padding: '24px',
               borderRadius: '16px',
-              border: '1px solid #3f3f46',
+              border: '1px solid #3A3937',
               display: 'flex',
               flexDirection: 'column',
               gap: '12px'
@@ -313,7 +313,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
               <div style={{
                 fontSize: '14px',
                 fontWeight: '600',
-                color: '#a1a1aa',
+                color: '#A6A29A',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
               }}>
@@ -327,7 +327,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                 <div style={{
                   fontSize: '32px'
                 }}>
-                  <Icon name={meta.difficultyEmoji} size={20} color="#D0FD3E" />
+                  <Icon name={meta.difficultyEmoji} size={20} color="#D97757" />
                 </div>
                 <div style={{
                   fontSize: '24px',
@@ -341,10 +341,10 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
 
             {/* Time/Duration Card */}
             <div style={{
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               padding: '24px',
               borderRadius: '16px',
-              border: '1px solid #3f3f46',
+              border: '1px solid #3A3937',
               display: 'flex',
               flexDirection: 'column',
               gap: '12px'
@@ -352,7 +352,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
               <div style={{
                 fontSize: '14px',
                 fontWeight: '600',
-                color: '#a1a1aa',
+                color: '#A6A29A',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
               }}>
@@ -366,12 +366,12 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                 <div style={{
                   fontSize: '32px'
                 }}>
-                  <Icon name="clock" size={28} color="#D0FD3E" />
+                  <Icon name="clock" size={28} color="#D97757" />
                 </div>
                 <div style={{
                   fontSize: '24px',
                   fontWeight: '700',
-                  color: '#D0FD3E'
+                  color: '#D97757'
                 }}>
                   {meta.time}
                 </div>
@@ -380,10 +380,10 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
 
             {/* Target Muscle Card */}
             <div style={{
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               padding: '24px',
               borderRadius: '16px',
-              border: '1px solid #3f3f46',
+              border: '1px solid #3A3937',
               display: 'flex',
               flexDirection: 'column',
               gap: '12px'
@@ -391,7 +391,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
               <div style={{
                 fontSize: '14px',
                 fontWeight: '600',
-                color: '#a1a1aa',
+                color: '#A6A29A',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
               }}>
@@ -405,12 +405,12 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                 <div style={{
                   fontSize: '32px'
                 }}>
-                  <Icon name={meta.muscleEmoji} size={20} color="#D0FD3E" />
+                  <Icon name={meta.muscleEmoji} size={20} color="#D97757" />
                 </div>
                 <div style={{
                   fontSize: '24px',
                   fontWeight: '700',
-                  color: '#fafafa'
+                  color: '#F5F4EE'
                 }}>
                   {meta.muscles}
                 </div>
@@ -419,10 +419,10 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
 
             {/* Quantity Card */}
             <div style={{
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               padding: '24px',
               borderRadius: '16px',
-              border: '1px solid #3f3f46',
+              border: '1px solid #3A3937',
               display: 'flex',
               flexDirection: 'column',
               gap: '12px'
@@ -430,7 +430,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
               <div style={{
                 fontSize: '14px',
                 fontWeight: '600',
-                color: '#a1a1aa',
+                color: '#A6A29A',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
               }}>
@@ -444,12 +444,12 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                 <div style={{
                   fontSize: '32px'
                 }}>
-                  <Icon name="box" size={28} color="#D0FD3E" />
+                  <Icon name="box" size={28} color="#D97757" />
                 </div>
                 <div style={{
                   fontSize: '24px',
                   fontWeight: '700',
-                  color: '#fafafa'
+                  color: '#F5F4EE'
                 }}>
                   {equipment.quantity || 1}
                 </div>
@@ -463,16 +463,16 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
           <h2 style={{
             fontSize: '28px',
             fontWeight: '800',
-            color: '#fafafa',
+            color: '#F5F4EE',
             marginBottom: '16px'
           }}>
             How to Use
           </h2>
           <div style={{
-            backgroundColor: '#27272a',
+            backgroundColor: '#262624',
             padding: '24px',
             borderRadius: '16px',
-            border: '1px solid #3f3f46'
+            border: '1px solid #3A3937'
           }}>
             <ol style={{
               margin: 0,
@@ -485,7 +485,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                 <li key={idx} style={{
                   fontSize: '15px',
                   lineHeight: '1.6',
-                  color: '#d4d4d8'
+                  color: '#D9D5CC'
                 }}>
                   {instruction}
                 </li>
@@ -499,37 +499,37 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
           <h2 style={{
             fontSize: '28px',
             fontWeight: '800',
-            color: '#fafafa',
+            color: '#F5F4EE',
             marginBottom: '16px'
           }}>
             Need Help?
           </h2>
           <div style={{
-            backgroundColor: '#27272a',
+            backgroundColor: '#262624',
             padding: '24px',
             borderRadius: '16px',
-            border: '1px solid #3f3f46',
+            border: '1px solid #3A3937',
             display: 'flex',
             alignItems: 'center',
             gap: '20px',
             cursor: 'pointer',
             transition: 'background-color 0.2s'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3f3f46'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#27272a'}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3A3937'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#262624'}
           >
             {/* Trainer Avatar */}
             <div style={{
               width: '64px',
               height: '64px',
               borderRadius: '50%',
-              backgroundColor: '#D0FD3E',
+              backgroundColor: '#D97757',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: '32px'
             }}>
-              <Icon name="user" size={28} color="#D0FD3E" />
+              <Icon name="user" size={28} color="#D97757" />
             </div>
             
             {/* Trainer Info */}
@@ -537,14 +537,14 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
               <h3 style={{
                 fontSize: '18px',
                 fontWeight: '700',
-                color: '#fafafa',
+                color: '#F5F4EE',
                 marginBottom: '4px'
               }}>
                 Ask a Trainer
               </h3>
               <p style={{
                 fontSize: '14px',
-                color: '#a1a1aa',
+                color: '#A6A29A',
                 margin: 0
               }}>
                 Get personalized guidance from our certified fitness trainers
@@ -554,7 +554,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
             {/* Arrow */}
             <div style={{
               fontSize: '24px',
-              color: '#D0FD3E'
+              color: '#D97757'
             }}>
               →
             </div>
@@ -566,17 +566,17 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
           <h2 style={{
             fontSize: '28px',
             fontWeight: '800',
-            color: '#fafafa',
+            color: '#F5F4EE',
             marginBottom: '16px'
           }}>
             Availability
           </h2>
           
           <div style={{
-            backgroundColor: '#27272a',
+            backgroundColor: '#262624',
             padding: '24px',
             borderRadius: '16px',
-            border: '1px solid #3f3f46'
+            border: '1px solid #3A3937'
           }}>
             {/* Status Display */}
             <div style={{
@@ -585,12 +585,12 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
               justifyContent: 'space-between',
               marginBottom: '20px',
               paddingBottom: '20px',
-              borderBottom: '1px solid #3f3f46'
+              borderBottom: '1px solid #3A3937'
             }}>
               <div>
                 <div style={{
                   fontSize: '14px',
-                  color: '#a1a1aa',
+                  color: '#A6A29A',
                   marginBottom: '8px'
                 }}>
                   Current Status
@@ -619,7 +619,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
               {isBooked && (
                 <div style={{
                   fontSize: '13px',
-                  color: '#a1a1aa'
+                  color: '#A6A29A'
                 }}>
                   {bookedByMe ? (
                     <span>You booked this at {equipment.booking_started_at}</span>
@@ -646,9 +646,9 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                     minWidth: '200px',
                     padding: '16px 24px',
                     backgroundColor: bookedByMe ? '#dc2626' : 
-                                     isBooked ? '#3f3f46' : '#D0FD3E',
-                    color: bookedByMe ? '#fafafa' : 
-                           isBooked ? '#a1a1aa' : '#18181b',
+                                     isBooked ? '#3A3937' : '#D97757',
+                    color: bookedByMe ? '#F5F4EE' : 
+                           isBooked ? '#A6A29A' : '#1F1E1D',
                     border: 'none',
                     borderRadius: '12px',
                     fontSize: '16px',
@@ -678,9 +678,9 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                   flex: '1',
                   minWidth: '200px',
                   padding: '16px 24px',
-                  backgroundColor: '#3f3f46',
-                  color: '#fafafa',
-                  border: '2px solid #D0FD3E',
+                  backgroundColor: '#3A3937',
+                  color: '#F5F4EE',
+                  border: '2px solid #D97757',
                   borderRadius: '12px',
                   fontSize: '16px',
                   fontWeight: '700',
@@ -688,10 +688,10 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
                   transition: 'all 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#52525b'
+                  e.target.style.backgroundColor = '#4C4A46'
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#3f3f46'
+                  e.target.style.backgroundColor = '#3A3937'
                 }}
               >
                 <Icon name="calendar" size={15} style={{ verticalAlign: '-2px', marginRight: 6 }} />{showSlots ? 'Hide' : 'View'} Time Slots
@@ -703,7 +703,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
               <p style={{
                 marginTop: '16px',
                 fontSize: '13px',
-                color: '#a1a1aa',
+                color: '#A6A29A',
                 lineHeight: '1.5'
               }}>
                 <Icon name="bolt" size={14} style={{ verticalAlign: '-2px', marginRight: 6 }} /><strong>Instant booking</strong> requires you to be checked in at the gym.
@@ -717,15 +717,15 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
         {showSlots && (
           <section style={{
             marginBottom: '32px',
-            backgroundColor: '#27272a',
+            backgroundColor: '#262624',
             padding: '24px',
             borderRadius: '16px',
-            border: '2px solid #D0FD3E'
+            border: '2px solid #D97757'
           }}>
             <h3 style={{
               fontSize: '20px',
               fontWeight: '700',
-              color: '#D0FD3E',
+              color: '#D97757',
               marginBottom: '16px'
             }}>
               Available Time Slots

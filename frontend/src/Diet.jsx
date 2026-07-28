@@ -88,14 +88,14 @@ export default function Diet({ token }) {
             <h1 style={{
               fontSize: '32px',
               fontWeight: '800',
-              color: '#fafafa',
+              color: '#F5F4EE',
               marginBottom: '8px'
             }}>
               Nutrition Tracker
             </h1>
             <p style={{
               fontSize: '16px',
-              color: '#a1a1aa'
+              color: '#A6A29A'
             }}>
               AI-powered meal analysis and calorie tracking
             </p>
@@ -103,14 +103,14 @@ export default function Diet({ token }) {
 
           {/* Date Picker */}
           <div style={{
-            backgroundColor: '#27272a',
+            backgroundColor: '#262624',
             padding: '12px 20px',
             borderRadius: '12px',
-            border: '1px solid #3f3f46'
+            border: '1px solid #3A3937'
           }}>
             <label style={{
               fontSize: '14px',
-              color: '#a1a1aa',
+              color: '#A6A29A',
               display: 'block',
               marginBottom: '6px',
               fontWeight: '600'
@@ -122,11 +122,11 @@ export default function Diet({ token }) {
               value={date} 
               onChange={e => setDate(e.target.value)}
               style={{
-                backgroundColor: '#18181b',
-                border: '1px solid #3f3f46',
+                backgroundColor: '#1F1E1D',
+                border: '1px solid #3A3937',
                 borderRadius: '8px',
                 padding: '8px 12px',
-                color: '#fafafa',
+                color: '#F5F4EE',
                 fontSize: '14px',
                 fontWeight: '600',
                 cursor: 'pointer'
@@ -140,22 +140,22 @@ export default function Diet({ token }) {
           <div>
             {/* Upload Card */}
             <div style={{
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               borderRadius: '20px',
               padding: '32px',
-              border: '1px solid #3f3f46',
+              border: '1px solid #3A3937',
               marginBottom: '24px'
             }}>
               <h2 style={{
                 fontSize: '20px',
                 fontWeight: '700',
-                color: '#fafafa',
+                color: '#F5F4EE',
                 marginBottom: '20px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px'
               }}>
-                <Icon name="camera" size={22} color="#D0FD3E" /> Upload Meal Photo
+                <Icon name="camera" size={22} color="#D97757" /> Upload Meal Photo
               </h2>
 
               {/* File Input */}
@@ -163,8 +163,8 @@ export default function Diet({ token }) {
                 display: 'block',
                 width: '100%',
                 padding: '48px 24px',
-                backgroundColor: '#18181b',
-                border: '2px dashed #3f3f46',
+                backgroundColor: '#1F1E1D',
+                border: '2px dashed #3A3937',
                 borderRadius: '16px',
                 textAlign: 'center',
                 cursor: 'pointer',
@@ -172,12 +172,12 @@ export default function Diet({ token }) {
                 position: 'relative'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#D0FD3E'
-                e.currentTarget.style.backgroundColor = '#1a1a1d'
+                e.currentTarget.style.borderColor = '#D97757'
+                e.currentTarget.style.backgroundColor = '#232120'
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#3f3f46'
-                e.currentTarget.style.backgroundColor = '#18181b'
+                e.currentTarget.style.borderColor = '#3A3937'
+                e.currentTarget.style.backgroundColor = '#1F1E1D'
               }}>
                 <input 
                   type="file" 
@@ -187,18 +187,18 @@ export default function Diet({ token }) {
                 />
                 {!preview ? (
                   <>
-                    <div className="neu-badge" style={{ width: 64, height: 64, borderRadius: 18, margin: '0 auto 12px' }}><Icon name="upload" size={30} color="#D0FD3E" /></div>
+                    <div className="neu-badge" style={{ width: 64, height: 64, borderRadius: 18, margin: '0 auto 12px' }}><Icon name="upload" size={30} color="#D97757" /></div>
                     <div style={{
                       fontSize: '16px',
                       fontWeight: '600',
-                      color: '#fafafa',
+                      color: '#F5F4EE',
                       marginBottom: '6px'
                     }}>
                       Choose File
                     </div>
                     <div style={{
                       fontSize: '14px',
-                      color: '#a1a1aa'
+                      color: '#A6A29A'
                     }}>
                       Click to upload a photo of your meal
                     </div>
@@ -225,8 +225,8 @@ export default function Diet({ token }) {
                   width: '100%',
                   marginTop: '20px',
                   padding: '16px',
-                  backgroundColor: !file || analyzing ? '#52525b' : '#D0FD3E',
-                  color: !file || analyzing ? '#a1a1aa' : '#18181b',
+                  backgroundColor: !file || analyzing ? '#4C4A46' : '#D97757',
+                  color: !file || analyzing ? '#A6A29A' : '#1F1E1D',
                   border: 'none',
                   borderRadius: '9999px',
                   fontSize: '16px',
@@ -240,13 +240,13 @@ export default function Diet({ token }) {
                 }}
                 onMouseEnter={(e) => {
                   if (!(!file || analyzing)) {
-                    e.target.style.backgroundColor = '#c4ed38'
+                    e.target.style.backgroundColor = '#C4664A'
                     e.target.style.transform = 'translateY(-2px)'
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!(!file || analyzing)) {
-                    e.target.style.backgroundColor = '#D0FD3E'
+                    e.target.style.backgroundColor = '#D97757'
                     e.target.style.transform = 'translateY(0)'
                   }
                 }}
@@ -282,10 +282,10 @@ export default function Diet({ token }) {
             {/* AI Analysis Result */}
             {analysis && (
               <div style={{
-                backgroundColor: '#27272a',
+                backgroundColor: '#262624',
                 borderRadius: '20px',
                 padding: '32px',
-                border: '2px solid #D0FD3E',
+                border: '2px solid #D97757',
                 animation: 'slideUp 0.3s ease-out'
               }}>
                 <div style={{
@@ -297,7 +297,7 @@ export default function Diet({ token }) {
                   <div style={{
                     width: '48px',
                     height: '48px',
-                    backgroundColor: '#D0FD3E',
+                    backgroundColor: '#D97757',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
@@ -309,7 +309,7 @@ export default function Diet({ token }) {
                   <h3 style={{
                     fontSize: '20px',
                     fontWeight: '700',
-                    color: '#fafafa'
+                    color: '#F5F4EE'
                   }}>
                     AI Analysis Complete
                   </h3>
@@ -317,16 +317,16 @@ export default function Diet({ token }) {
 
                 {/* Calorie Badge */}
                 <div style={{
-                  backgroundColor: '#18181b',
+                  backgroundColor: '#1F1E1D',
                   padding: '20px',
                   borderRadius: '16px',
                   marginBottom: '20px',
                   textAlign: 'center',
-                  border: '1px solid #3f3f46'
+                  border: '1px solid #3A3937'
                 }}>
                   <div style={{
                     fontSize: '14px',
-                    color: '#a1a1aa',
+                    color: '#A6A29A',
                     marginBottom: '8px',
                     fontWeight: '600',
                     textTransform: 'uppercase',
@@ -337,7 +337,7 @@ export default function Diet({ token }) {
                   <div style={{
                     fontSize: '48px',
                     fontWeight: '800',
-                    color: '#D0FD3E'
+                    color: '#D97757'
                   }}>
                     {analysis.calories ?? '—'}
                   </div>
@@ -352,24 +352,24 @@ export default function Diet({ token }) {
                     marginBottom: '20px'
                   }}>
                     <div style={{
-                      backgroundColor: '#18181b',
+                      backgroundColor: '#1F1E1D',
                       padding: '16px',
                       borderRadius: '12px',
                       textAlign: 'center',
-                      border: '1px solid #3f3f46'
+                      border: '1px solid #3A3937'
                     }}>
-                      <div style={{ marginBottom: '6px' }}><Icon name="dumbbell" size={22} color="#D0FD3E" /></div>
+                      <div style={{ marginBottom: '6px' }}><Icon name="dumbbell" size={22} color="#D97757" /></div>
                       <div style={{
                         fontSize: '20px',
                         fontWeight: '700',
-                        color: '#fafafa',
+                        color: '#F5F4EE',
                         marginBottom: '4px'
                       }}>
                         {analysis.macros.protein ?? '—'}g
                       </div>
                       <div style={{
                         fontSize: '12px',
-                        color: '#a1a1aa',
+                        color: '#A6A29A',
                         fontWeight: '600',
                         textTransform: 'uppercase'
                       }}>
@@ -378,24 +378,24 @@ export default function Diet({ token }) {
                     </div>
 
                     <div style={{
-                      backgroundColor: '#18181b',
+                      backgroundColor: '#1F1E1D',
                       padding: '16px',
                       borderRadius: '12px',
                       textAlign: 'center',
-                      border: '1px solid #3f3f46'
+                      border: '1px solid #3A3937'
                     }}>
-                      <div style={{ marginBottom: '6px' }}><Icon name="bolt" size={22} color="#D0FD3E" /></div>
+                      <div style={{ marginBottom: '6px' }}><Icon name="bolt" size={22} color="#D97757" /></div>
                       <div style={{
                         fontSize: '20px',
                         fontWeight: '700',
-                        color: '#fafafa',
+                        color: '#F5F4EE',
                         marginBottom: '4px'
                       }}>
                         {analysis.macros.carbs ?? '—'}g
                       </div>
                       <div style={{
                         fontSize: '12px',
-                        color: '#a1a1aa',
+                        color: '#A6A29A',
                         fontWeight: '600',
                         textTransform: 'uppercase'
                       }}>
@@ -404,24 +404,24 @@ export default function Diet({ token }) {
                     </div>
 
                     <div style={{
-                      backgroundColor: '#18181b',
+                      backgroundColor: '#1F1E1D',
                       padding: '16px',
                       borderRadius: '12px',
                       textAlign: 'center',
-                      border: '1px solid #3f3f46'
+                      border: '1px solid #3A3937'
                     }}>
-                      <div style={{ marginBottom: '6px' }}><Icon name="diet" size={22} color="#D0FD3E" /></div>
+                      <div style={{ marginBottom: '6px' }}><Icon name="diet" size={22} color="#D97757" /></div>
                       <div style={{
                         fontSize: '20px',
                         fontWeight: '700',
-                        color: '#fafafa',
+                        color: '#F5F4EE',
                         marginBottom: '4px'
                       }}>
                         {analysis.macros.fat ?? '—'}g
                       </div>
                       <div style={{
                         fontSize: '12px',
-                        color: '#a1a1aa',
+                        color: '#A6A29A',
                         fontWeight: '600',
                         textTransform: 'uppercase'
                       }}>
@@ -433,16 +433,16 @@ export default function Diet({ token }) {
 
                 {/* Food Items */}
                 <div style={{
-                  backgroundColor: '#18181b',
+                  backgroundColor: '#1F1E1D',
                   padding: '20px',
                   borderRadius: '16px',
                   marginBottom: '20px',
-                  border: '1px solid #3f3f46'
+                  border: '1px solid #3A3937'
                 }}>
                   <div style={{
                     fontSize: '14px',
                     fontWeight: '600',
-                    color: '#a1a1aa',
+                    color: '#A6A29A',
                     marginBottom: '12px',
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px'
@@ -457,14 +457,14 @@ export default function Diet({ token }) {
                     {analysis.items.map((it, i) => (
                       <li key={i} style={{
                         padding: '10px 0',
-                        borderBottom: i < analysis.items.length - 1 ? '1px solid #3f3f46' : 'none',
-                        color: '#fafafa',
+                        borderBottom: i < analysis.items.length - 1 ? '1px solid #3A3937' : 'none',
+                        color: '#F5F4EE',
                         fontSize: '15px',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '10px'
                       }}>
-                        <span style={{ color: '#D0FD3E' }}>•</span>
+                        <span style={{ color: '#D97757' }}>•</span>
                         {typeof it === 'string' ? it : (it.name || JSON.stringify(it))}
                       </li>
                     ))}
@@ -481,8 +481,8 @@ export default function Diet({ token }) {
                     style={{
                       flex: 1,
                       padding: '14px',
-                      backgroundColor: '#D0FD3E',
-                      color: '#18181b',
+                      backgroundColor: '#D97757',
+                      color: '#FFFFFF',
                       border: 'none',
                       borderRadius: '9999px',
                       fontSize: '16px',
@@ -491,11 +491,11 @@ export default function Diet({ token }) {
                       transition: 'all 0.2s'
                     }}
                     onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#c4ed38'
+                      e.target.style.backgroundColor = '#C4664A'
                       e.target.style.transform = 'translateY(-2px)'
                     }}
                     onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#D0FD3E'
+                      e.target.style.backgroundColor = '#D97757'
                       e.target.style.transform = 'translateY(0)'
                     }}
                   >
@@ -506,8 +506,8 @@ export default function Diet({ token }) {
                     style={{
                       flex: 1,
                       padding: '14px',
-                      backgroundColor: '#3f3f46',
-                      color: '#fafafa',
+                      backgroundColor: '#3A3937',
+                      color: '#F5F4EE',
                       border: 'none',
                       borderRadius: '9999px',
                       fontSize: '16px',
@@ -516,10 +516,10 @@ export default function Diet({ token }) {
                       transition: 'all 0.2s'
                     }}
                     onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#52525b'
+                      e.target.style.backgroundColor = '#4C4A46'
                     }}
                     onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#3f3f46'
+                      e.target.style.backgroundColor = '#3A3937'
                     }}
                   >
                     ✗ Discard
@@ -532,15 +532,15 @@ export default function Diet({ token }) {
           {/* Right Column - Today's Log */}
           <div>
             <div style={{
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               borderRadius: '20px',
               padding: '32px',
-              border: '1px solid #3f3f46'
+              border: '1px solid #3A3937'
             }}>
               <h2 style={{
                 fontSize: '20px',
                 fontWeight: '700',
-                color: '#fafafa',
+                color: '#F5F4EE',
                 marginBottom: '24px',
                 display: 'flex',
                 alignItems: 'center',
@@ -551,16 +551,16 @@ export default function Diet({ token }) {
 
               {/* Total Calories Card */}
               <div style={{
-                backgroundColor: '#18181b',
+                backgroundColor: '#1F1E1D',
                 padding: '24px',
                 borderRadius: '16px',
                 marginBottom: '24px',
                 textAlign: 'center',
-                border: '2px solid #3f3f46'
+                border: '2px solid #3A3937'
               }}>
                 <div style={{
                   fontSize: '14px',
-                  color: '#a1a1aa',
+                  color: '#A6A29A',
                   marginBottom: '10px',
                   fontWeight: '600',
                   textTransform: 'uppercase',
@@ -571,7 +571,7 @@ export default function Diet({ token }) {
                 <div style={{
                   fontSize: '56px',
                   fontWeight: '800',
-                  color: '#D0FD3E',
+                  color: '#D97757',
                   lineHeight: '1'
                 }}>
                   {total}
@@ -588,22 +588,22 @@ export default function Diet({ token }) {
                   <div style={{
                     padding: '48px 24px',
                     textAlign: 'center',
-                    backgroundColor: '#18181b',
+                    backgroundColor: '#1F1E1D',
                     borderRadius: '16px',
-                    border: '1px solid #3f3f46'
+                    border: '1px solid #3A3937'
                   }}>
-                    <div className="neu-badge" style={{ width: 60, height: 60, borderRadius: 16, margin: '0 auto 12px' }}><Icon name="utensils" size={28} color="#D0FD3E" /></div>
+                    <div className="neu-badge" style={{ width: 60, height: 60, borderRadius: 16, margin: '0 auto 12px' }}><Icon name="utensils" size={28} color="#D97757" /></div>
                     <div style={{
                       fontSize: '16px',
                       fontWeight: '600',
-                      color: '#fafafa',
+                      color: '#F5F4EE',
                       marginBottom: '6px'
                     }}>
                       No meals logged yet
                     </div>
                     <div style={{
                       fontSize: '14px',
-                      color: '#a1a1aa'
+                      color: '#A6A29A'
                     }}>
                       Upload a meal photo to get started
                     </div>
@@ -611,18 +611,18 @@ export default function Diet({ token }) {
                 ) : (
                   logs.map((l, idx) => (
                     <div key={l.id} style={{
-                      backgroundColor: '#18181b',
+                      backgroundColor: '#1F1E1D',
                       padding: '20px',
                       borderRadius: '16px',
-                      border: '1px solid #3f3f46',
+                      border: '1px solid #3A3937',
                       transition: 'all 0.2s'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = '#52525b'
+                      e.currentTarget.style.borderColor = '#4C4A46'
                       e.currentTarget.style.transform = 'translateY(-2px)'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = '#3f3f46'
+                      e.currentTarget.style.borderColor = '#3A3937'
                       e.currentTarget.style.transform = 'translateY(0)'
                     }}>
                       <div style={{
@@ -634,13 +634,13 @@ export default function Diet({ token }) {
                         <div style={{
                           fontSize: '16px',
                           fontWeight: '700',
-                          color: '#fafafa'
+                          color: '#F5F4EE'
                         }}>
                           {l.items_text || `Meal ${idx + 1}`}
                         </div>
                         <div style={{
-                          backgroundColor: '#D0FD3E',
-                          color: '#18181b',
+                          backgroundColor: '#D97757',
+                          color: '#FFFFFF',
                           padding: '6px 12px',
                           borderRadius: '9999px',
                           fontSize: '14px',
@@ -655,12 +655,12 @@ export default function Diet({ token }) {
                           display: 'flex',
                           gap: '16px',
                           fontSize: '13px',
-                          color: '#a1a1aa',
+                          color: '#A6A29A',
                           fontWeight: '600'
                         }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Icon name="dumbbell" size={13} color="#D0FD3E" /> P: {l.protein ?? '—'}g</span>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Icon name="bolt" size={13} color="#D0FD3E" /> C: {l.carbs ?? '—'}g</span>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Icon name="diet" size={13} color="#D0FD3E" /> F: {l.fat ?? '—'}g</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Icon name="dumbbell" size={13} color="#D97757" /> P: {l.protein ?? '—'}g</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Icon name="bolt" size={13} color="#D97757" /> C: {l.carbs ?? '—'}g</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Icon name="diet" size={13} color="#D97757" /> F: {l.fat ?? '—'}g</span>
                         </div>
                       )}
                     </div>

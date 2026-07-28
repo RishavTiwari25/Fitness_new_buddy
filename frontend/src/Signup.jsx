@@ -30,11 +30,11 @@ export default function Signup({ onSignup }) {
       <div style={{ marginBottom: '20px' }}>
         <label style={{ 
           display: 'block', 
-          color: '#fafafa', 
+          color: '#F5F4EE', 
           fontWeight: '600', 
           marginBottom: '8px',
           fontSize: '14px'
-        }}>Name <span style={{ color: '#a1a1aa', fontWeight: '400' }}>(optional)</span></label>
+        }}>Name <span style={{ color: '#A6A29A', fontWeight: '400' }}>(optional)</span></label>
         <input 
           type="text"
           value={name} 
@@ -42,10 +42,10 @@ export default function Signup({ onSignup }) {
           style={{
             width: '100%',
             padding: '14px 16px',
-            backgroundColor: '#18181b',
-            border: '1px solid #3f3f46',
+            backgroundColor: '#1F1E1D',
+            border: '1px solid #3A3937',
             borderRadius: '12px',
-            color: '#fafafa',
+            color: '#F5F4EE',
             fontSize: '15px'
           }}
           placeholder="Your name"
@@ -54,7 +54,7 @@ export default function Signup({ onSignup }) {
       <div style={{ marginBottom: '20px' }}>
         <label style={{ 
           display: 'block', 
-          color: '#fafafa', 
+          color: '#F5F4EE', 
           fontWeight: '600', 
           marginBottom: '8px',
           fontSize: '14px'
@@ -65,10 +65,10 @@ export default function Signup({ onSignup }) {
           style={{
             width: '100%',
             padding: '14px 16px',
-            backgroundColor: '#18181b',
-            border: '1px solid #3f3f46',
+            backgroundColor: '#1F1E1D',
+            border: '1px solid #3A3937',
             borderRadius: '12px',
-            color: '#fafafa',
+            color: '#F5F4EE',
             fontSize: '15px',
             cursor: 'pointer'
           }}
@@ -80,7 +80,7 @@ export default function Signup({ onSignup }) {
       <div style={{ marginBottom: '20px' }}>
         <label style={{ 
           display: 'block', 
-          color: '#fafafa', 
+          color: '#F5F4EE', 
           fontWeight: '600', 
           marginBottom: '8px',
           fontSize: '14px'
@@ -93,10 +93,10 @@ export default function Signup({ onSignup }) {
           style={{
             width: '100%',
             padding: '14px 16px',
-            backgroundColor: '#18181b',
-            border: '1px solid #3f3f46',
+            backgroundColor: '#1F1E1D',
+            border: '1px solid #3A3937',
             borderRadius: '12px',
-            color: '#fafafa',
+            color: '#F5F4EE',
             fontSize: '15px'
           }}
           placeholder="your.email@example.com"
@@ -105,7 +105,7 @@ export default function Signup({ onSignup }) {
       <div style={{ marginBottom: '24px' }}>
         <label style={{ 
           display: 'block', 
-          color: '#fafafa', 
+          color: '#F5F4EE', 
           fontWeight: '600', 
           marginBottom: '8px',
           fontSize: '14px'
@@ -118,10 +118,10 @@ export default function Signup({ onSignup }) {
           style={{
             width: '100%',
             padding: '14px 16px',
-            backgroundColor: '#18181b',
-            border: '1px solid #3f3f46',
+            backgroundColor: '#1F1E1D',
+            border: '1px solid #3A3937',
             borderRadius: '12px',
-            color: '#fafafa',
+            color: '#F5F4EE',
             fontSize: '15px'
           }}
           placeholder="••••••••"
@@ -132,8 +132,8 @@ export default function Signup({ onSignup }) {
         style={{
           width: '100%',
           padding: '16px',
-          backgroundColor: '#D0FD3E',
-          color: '#18181b',
+          backgroundColor: '#D97757',
+          color: '#FFFFFF',
           border: 'none',
           borderRadius: '9999px',
           fontSize: '16px',
@@ -141,8 +141,8 @@ export default function Signup({ onSignup }) {
           cursor: 'pointer',
           transition: 'all 0.3s ease'
         }}
-        onMouseOver={e => e.target.style.backgroundColor = '#bef334'}
-        onMouseOut={e => e.target.style.backgroundColor = '#D0FD3E'}
+        onMouseOver={e => e.target.style.backgroundColor = '#C4664A'}
+        onMouseOut={e => e.target.style.backgroundColor = '#D97757'}
       >
         Create Account
       </button>

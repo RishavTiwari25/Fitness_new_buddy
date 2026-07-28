@@ -67,13 +67,13 @@ export default function Rewards({ token }) {
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 120, damping: 18, mass: 0.9 }}>
       <div className="card" style={{ padding: 20, marginTop: 12, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span className="neu-badge" style={{ width: 46, height: 46 }}><Icon name="gift" size={22} color="#D0FD3E" /></span>
+          <span className="neu-badge" style={{ width: 46, height: 46 }}><Icon name="gift" size={22} color="#D97757" /></span>
           <div>
           <h3 className="font-display" style={{ fontSize: 20, marginBottom: 6 }}>Rewards & Points</h3>
           <div className="text-secondary" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 13 }}>Your points</span>
             <span style={{
-              background: 'rgba(208, 253, 62, 0.12)',
+              background: 'rgba(217, 119, 87, 0.12)',
               color: 'var(--accent-lime)',
               border: '1px solid var(--accent-lime)',
               padding: '6px 10px',
@@ -89,7 +89,7 @@ export default function Rewards({ token }) {
         <div className="card" style={{
           padding: 12,
           marginBottom: 16,
-          background: 'rgba(208, 253, 62, 0.08)',
+          background: 'rgba(217, 119, 87, 0.08)',
           border: '1px solid var(--accent-lime)',
           color: 'var(--accent-lime)',
           fontWeight: 600

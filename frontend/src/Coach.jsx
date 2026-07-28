@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import { API_BASE } from './api'
 import Icon from './components/Icon'
 
-const ACCENT = '#D0FD3E'
+const ACCENT = '#D97757'
 const SUGGESTIONS = [
   'How am I doing this week?',
   'Plan a 30-min home workout',
@@ -128,14 +128,14 @@ export default function Coach({ token, profile, streaks, points, bookings }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <span className="neu-badge" style={{ width: 48, height: 48 }}><Icon name="robot" size={24} color={ACCENT} /></span>
           <div>
-            <h1 className="font-display" style={{ fontSize: 26, fontWeight: 700, color: '#fafafa', lineHeight: 1.1 }}>AI Coach</h1>
+            <h1 className="font-display" style={{ fontSize: 26, fontWeight: 700, color: '#F5F4EE', lineHeight: 1.1 }}>AI Coach</h1>
             <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13.5 }}>Personal guidance from your streaks, meals &amp; bookings</p>
           </div>
         </div>
         <button
           onClick={genInsights}
           disabled={insightsBusy}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 9999, border: '1px solid rgba(208,253,62,0.3)', background: 'rgba(208,253,62,0.1)', color: ACCENT, fontSize: 13.5, fontWeight: 600, cursor: insightsBusy ? 'wait' : 'pointer', whiteSpace: 'nowrap' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 9999, border: '1px solid rgba(217,119,87,0.3)', background: 'rgba(217,119,87,0.1)', color: ACCENT, fontSize: 13.5, fontWeight: 600, cursor: insightsBusy ? 'wait' : 'pointer', whiteSpace: 'nowrap' }}
         >
           <Icon name="activity" size={16} /> {insightsBusy ? 'Analyzing…' : 'Weekly insights'}
         </button>
@@ -149,7 +149,7 @@ export default function Coach({ token, profile, streaks, points, bookings }) {
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 12 }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ color: ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>Weekly insights</div>
-                  <h3 className="font-display" style={{ color: '#fafafa', fontSize: 18, lineHeight: 1.2 }}>{insights.headline}</h3>
+                  <h3 className="font-display" style={{ color: '#F5F4EE', fontSize: 18, lineHeight: 1.2 }}>{insights.headline}</h3>
                 </div>
                 {typeof insights.score === 'number' && (
                   <div className="neu-badge" style={{ width: 54, height: 54, borderRadius: 14, flexDirection: 'column' }}>
@@ -167,7 +167,7 @@ export default function Coach({ token, profile, streaks, points, bookings }) {
                   <div>
                     <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 600, marginBottom: 6 }}>Wins</div>
                     {insights.wins.map((w, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, color: '#e9e9ea', fontSize: 13.5, marginBottom: 5 }}>
+                      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, color: '#EDEAE3', fontSize: 13.5, marginBottom: 5 }}>
                         <span style={{ color: ACCENT, flexShrink: 0, marginTop: 1 }}><Icon name="check" size={14} /></span>{w}
                       </div>
                     ))}
@@ -177,7 +177,7 @@ export default function Coach({ token, profile, streaks, points, bookings }) {
                   <div>
                     <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 600, marginBottom: 6 }}>Focus next week</div>
                     {insights.focus.map((f, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, color: '#e9e9ea', fontSize: 13.5, marginBottom: 5 }}>
+                      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, color: '#EDEAE3', fontSize: 13.5, marginBottom: 5 }}>
                         <span style={{ color: ACCENT, flexShrink: 0, marginTop: 1 }}><Icon name="bolt" size={14} /></span>{f}
                       </div>
                     ))}
@@ -189,7 +189,7 @@ export default function Coach({ token, profile, streaks, points, bookings }) {
           {empty && !insights && (
             <div style={{ margin: 'auto', textAlign: 'center', maxWidth: 460 }}>
               <span className="neu-badge" style={{ width: 60, height: 60, borderRadius: 18, marginBottom: 16 }}><Icon name="robot" size={30} color={ACCENT} /></span>
-              <h3 className="font-display" style={{ color: '#fafafa', fontSize: 18, marginBottom: 6 }}>Ask your coach anything</h3>
+              <h3 className="font-display" style={{ color: '#F5F4EE', fontSize: 18, marginBottom: 6 }}>Ask your coach anything</h3>
               <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, marginBottom: 20 }}>Grounded in your own fitness data — workouts, diet, streaks and points.</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
                 {SUGGESTIONS.map(s => (
@@ -219,7 +219,7 @@ export default function Coach({ token, profile, streaks, points, bookings }) {
                   borderTopRightRadius: isUser ? 4 : 16,
                   borderTopLeftRadius: isUser ? 16 : 4,
                   background: isUser ? ACCENT : 'var(--neu-base)',
-                  color: isUser ? '#0a0a0a' : '#e9e9ea',
+                  color: isUser ? '#FFFFFF' : '#EDEAE3',
                   boxShadow: isUser ? 'none' : 'var(--neu-raised-sm)',
                   fontSize: 14.5,
                   lineHeight: 1.55,
@@ -248,12 +248,12 @@ export default function Coach({ token, profile, streaks, points, bookings }) {
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
             placeholder="Ask your coach…"
             disabled={busy}
-            style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 9999, padding: '12px 18px', color: '#fafafa', fontSize: 14.5, outline: 'none' }}
+            style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 9999, padding: '12px 18px', color: '#F5F4EE', fontSize: 14.5, outline: 'none' }}
           />
           <button
             onClick={() => send()}
             disabled={busy || !input.trim()}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 7, minWidth: 48, padding: '0 18px', borderRadius: 9999, border: 'none', background: busy || !input.trim() ? '#52525b' : ACCENT, color: '#0a0a0a', fontWeight: 700, fontSize: 14, cursor: busy || !input.trim() ? 'not-allowed' : 'pointer' }}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 7, minWidth: 48, padding: '0 18px', borderRadius: 9999, border: 'none', background: busy || !input.trim() ? '#4C4A46' : ACCENT, color: '#FFFFFF', fontWeight: 700, fontSize: 14, cursor: busy || !input.trim() ? 'not-allowed' : 'pointer' }}
           >
             <Icon name="send" size={16} />
           </button>

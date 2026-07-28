@@ -82,13 +82,13 @@ export default function Feed({ token }) {
       <h2 className="font-display" style={{
         fontSize: '32px',
         fontWeight: '700',
-        color: '#fafafa',
+        color: '#F5F4EE',
         marginBottom: '32px',
         display: 'flex',
         alignItems: 'center',
         gap: '14px'
       }}>
-        <span className="neu-badge" style={{ width: 48, height: 48 }}><Icon name="feed" size={24} color="#D0FD3E" /></span>
+        <span className="neu-badge" style={{ width: 48, height: 48 }}><Icon name="feed" size={24} color="#D97757" /></span>
         Community Feed
       </h2>
 
@@ -100,15 +100,15 @@ export default function Feed({ token }) {
           top: '24px'
         }}>
           <div style={{
-            backgroundColor: '#27272a',
+            backgroundColor: '#262624',
             borderRadius: '20px',
             padding: '24px',
-            border: '1px solid #3f3f46'
+            border: '1px solid #3A3937'
           }}>
             <h3 style={{
               fontSize: '18px',
               fontWeight: '700',
-              color: '#D0FD3E',
+              color: '#D97757',
               marginBottom: '20px'
             }}>
               Gym Members
@@ -123,13 +123,13 @@ export default function Feed({ token }) {
                     alignItems: 'center', 
                     gap: '12px',
                     padding: '12px',
-                    backgroundColor: '#18181b',
+                    backgroundColor: '#1F1E1D',
                     borderRadius: '12px',
-                    border: '1px solid #3f3f46',
+                    border: '1px solid #3A3937',
                     transition: 'border-color 0.2s'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.borderColor = '#52525b'}
-                  onMouseLeave={(e) => e.currentTarget.style.borderColor = '#3f3f46'}
+                  onMouseEnter={(e) => e.currentTarget.style.borderColor = '#4C4A46'}
+                  onMouseLeave={(e) => e.currentTarget.style.borderColor = '#3A3937'}
                 >
                   <img 
                     src={m.avatar_url ? (m.avatar_url.startsWith('http') ? m.avatar_url : `${API_BASE}${m.avatar_url.startsWith('/') ? '' : '/'}${m.avatar_url}`) : 'https://via.placeholder.com/40'} 
@@ -139,14 +139,14 @@ export default function Feed({ token }) {
                       height: '40px',
                       borderRadius: '50%',
                       objectFit: 'cover',
-                      border: '2px solid #3f3f46'
+                      border: '2px solid #3A3937'
                     }}
                   />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
                       fontSize: '14px',
                       fontWeight: '600',
-                      color: '#fafafa',
+                      color: '#F5F4EE',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap'
@@ -158,8 +158,8 @@ export default function Feed({ token }) {
                     onClick={() => toggleFollow(m)}
                     style={{
                       padding: '6px 12px',
-                      backgroundColor: m.is_following ? '#3f3f46' : '#D0FD3E',
-                      color: m.is_following ? '#fafafa' : '#18181b',
+                      backgroundColor: m.is_following ? '#3A3937' : '#D97757',
+                      color: m.is_following ? '#F5F4EE' : '#1F1E1D',
                       border: 'none',
                       borderRadius: '9999px',
                       fontSize: '12px',
@@ -178,7 +178,7 @@ export default function Feed({ token }) {
               
               {members.length === 0 && (
                 <div style={{ 
-                  color: '#a1a1aa', 
+                  color: '#A6A29A', 
                   fontSize: '14px',
                   textAlign: 'center',
                   padding: '20px'
@@ -197,10 +197,10 @@ export default function Feed({ token }) {
               <div 
                 key={p.id} 
                 style={{
-                  backgroundColor: '#27272a',
+                  backgroundColor: '#262624',
                   borderRadius: '20px',
                   overflow: 'hidden',
-                  border: '1px solid #3f3f46'
+                  border: '1px solid #3A3937'
                 }}
               >
                 {/* Post Header */}
@@ -218,20 +218,20 @@ export default function Feed({ token }) {
                       height: '48px',
                       borderRadius: '50%',
                       objectFit: 'cover',
-                      border: '2px solid #D0FD3E'
+                      border: '2px solid #D97757'
                     }}
                   />
                   <div style={{ flex: 1 }}>
                     <div style={{
                       fontSize: '16px',
                       fontWeight: '700',
-                      color: '#fafafa'
+                      color: '#F5F4EE'
                     }}>
                       {p.author_name || `User #${p.user_id}`}
                     </div>
                     <div style={{
                       fontSize: '13px',
-                      color: '#a1a1aa'
+                      color: '#A6A29A'
                     }}>
                       {new Date(p.created_at).toLocaleDateString('en-US', { 
                         month: 'short', 
@@ -249,7 +249,7 @@ export default function Feed({ token }) {
                     padding: '0 24px 16px 24px',
                     fontSize: '15px',
                     lineHeight: '1.6',
-                    color: '#d4d4d8'
+                    color: '#D9D5CC'
                   }}>
                     {p.text}
                   </div>
@@ -273,7 +273,7 @@ export default function Feed({ token }) {
                 {/* Post Actions */}
                 <div style={{
                   padding: '16px 24px',
-                  borderTop: '1px solid #3f3f46',
+                  borderTop: '1px solid #3A3937',
                   display: 'flex',
                   gap: '12px'
                 }}>
@@ -282,8 +282,8 @@ export default function Feed({ token }) {
                     onClick={() => like(p.id, p.liked_by_me)}
                     style={{
                       padding: '8px 16px',
-                      backgroundColor: p.liked_by_me ? '#D0FD3E' : '#3f3f46',
-                      color: p.liked_by_me ? '#18181b' : '#fafafa',
+                      backgroundColor: p.liked_by_me ? '#D97757' : '#3A3937',
+                      color: p.liked_by_me ? '#1F1E1D' : '#F5F4EE',
                       border: 'none',
                       borderRadius: '9999px',
                       fontSize: '14px',
@@ -311,21 +311,21 @@ export default function Feed({ token }) {
               <div style={{
                 textAlign: 'center',
                 padding: '60px 20px',
-                backgroundColor: '#27272a',
+                backgroundColor: '#262624',
                 borderRadius: '20px',
-                border: '2px dashed #3f3f46'
+                border: '2px dashed #3A3937'
               }}>
                 <h3 style={{
                   fontSize: '20px',
                   fontWeight: '700',
-                  color: '#fafafa',
+                  color: '#F5F4EE',
                   marginBottom: '8px'
                 }}>
                   No Posts Yet
                 </h3>
                 <p style={{
                   fontSize: '15px',
-                  color: '#a1a1aa'
+                  color: '#A6A29A'
                 }}>
                   Follow gym members to see their posts in your feed
                 </p>
@@ -339,16 +339,16 @@ export default function Feed({ token }) {
           <form 
             onSubmit={submitPost} 
             style={{
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               borderRadius: '20px',
               padding: '24px',
-              border: '1px solid #3f3f46'
+              border: '1px solid #3A3937'
             }}
           >
             <h3 style={{
               fontSize: '18px',
               fontWeight: '700',
-              color: '#fafafa',
+              color: '#F5F4EE',
               marginBottom: '16px'
             }}>
               Create Post
@@ -362,9 +362,9 @@ export default function Feed({ token }) {
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                backgroundColor: '#18181b',
-                color: '#fafafa',
-                border: '2px solid #3f3f46',
+                backgroundColor: '#1F1E1D',
+                color: '#F5F4EE',
+                border: '2px solid #3A3937',
                 borderRadius: '12px',
                 fontSize: '15px',
                 outline: 'none',
@@ -374,8 +374,8 @@ export default function Feed({ token }) {
                 lineHeight: '1.5',
                 marginBottom: '12px'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#D0FD3E'}
-              onBlur={(e) => e.target.style.borderColor = '#3f3f46'}
+              onFocus={(e) => e.target.style.borderColor = '#D97757'}
+              onBlur={(e) => e.target.style.borderColor = '#3A3937'}
             />
 
             {imagePreview && (
@@ -384,7 +384,7 @@ export default function Feed({ token }) {
                 marginBottom: '12px',
                 borderRadius: '12px',
                 overflow: 'hidden',
-                border: '2px solid #3f3f46'
+                border: '2px solid #3A3937'
               }}>
                 <img 
                   src={imagePreview} 
@@ -410,7 +410,7 @@ export default function Feed({ token }) {
                     borderRadius: '50%',
                     backgroundColor: 'rgba(0,0,0,0.7)',
                     border: 'none',
-                    color: '#fafafa',
+                    color: '#F5F4EE',
                     fontSize: '18px',
                     cursor: 'pointer',
                     display: 'flex',
@@ -426,8 +426,8 @@ export default function Feed({ token }) {
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <label style={{
                 padding: '10px 16px',
-                backgroundColor: '#3f3f46',
-                color: '#fafafa',
+                backgroundColor: '#3A3937',
+                color: '#F5F4EE',
                 border: 'none',
                 borderRadius: '10px',
                 fontSize: '14px',
@@ -438,8 +438,8 @@ export default function Feed({ token }) {
                 alignItems: 'center',
                 gap: '6px'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#52525b'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3f3f46'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4C4A46'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3A3937'}
               >
                 <Icon name="camera" size={16} /> Add Photo
                 <input 
@@ -455,8 +455,8 @@ export default function Feed({ token }) {
                 style={{
                   flex: 1,
                   padding: '10px 16px',
-                  backgroundColor: '#D0FD3E',
-                  color: '#18181b',
+                  backgroundColor: '#D97757',
+                  color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '9999px',
                   fontSize: '14px',
@@ -465,11 +465,11 @@ export default function Feed({ token }) {
                   transition: 'all 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#c4ed38'
+                  e.target.style.backgroundColor = '#C4664A'
                   e.target.style.transform = 'translateY(-1px)'
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#D0FD3E'
+                  e.target.style.backgroundColor = '#D97757'
                   e.target.style.transform = 'translateY(0)'
                 }}
                 title="Post"

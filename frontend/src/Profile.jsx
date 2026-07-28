@@ -128,16 +128,16 @@ export default function Profile({ token, profile, onUpdate }) {
   return (
     <div style={{ 
       minHeight: '100vh',
-      backgroundColor: '#18181b',
+      backgroundColor: '#1F1E1D',
       padding: '24px'
     }}>
       {/* Header Section with Avatar */}
       <div style={{
-        backgroundColor: '#27272a',
+        backgroundColor: '#262624',
         borderRadius: '20px',
         padding: '40px',
         marginBottom: '24px',
-        border: '1px solid #3f3f46',
+        border: '1px solid #3A3937',
         textAlign: 'center'
       }}>
         {/* Large Circular Avatar */}
@@ -154,8 +154,8 @@ export default function Profile({ token, profile, onUpdate }) {
               height: '160px',
               borderRadius: '50%',
               objectFit: 'cover',
-              border: '4px solid #D0FD3E',
-              boxShadow: '0 8px 24px rgba(208, 253, 62, 0.2)'
+              border: '4px solid #D97757',
+              boxShadow: '0 8px 24px rgba(217, 119, 87, 0.2)'
             }}
           />
           
@@ -166,13 +166,13 @@ export default function Profile({ token, profile, onUpdate }) {
             right: '8px',
             width: '40px',
             height: '40px',
-            backgroundColor: '#D0FD3E',
+            backgroundColor: '#D97757',
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            border: '3px solid #27272a',
+            border: '3px solid #262624',
             boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
             transition: 'transform 0.2s'
           }}
@@ -188,7 +188,7 @@ export default function Profile({ token, profile, onUpdate }) {
         <h1 style={{
           fontSize: '32px',
           fontWeight: '800',
-          color: '#fafafa',
+          color: '#F5F4EE',
           marginBottom: '8px'
         }}>
           @{name || profile?.email?.split('@')[0] || 'User'}
@@ -199,8 +199,8 @@ export default function Profile({ token, profile, onUpdate }) {
           display: 'inline-block',
           padding: '6px 16px',
           backgroundColor: user.role === 'owner' ? '#dc2626' : 
-                          user.role === 'trainer' ? '#f59e0b' : '#D0FD3E',
-          color: user.role === 'owner' || user.role === 'trainer' ? '#fafafa' : '#18181b',
+                          user.role === 'trainer' ? '#f59e0b' : '#D97757',
+          color: user.role === 'owner' || user.role === 'trainer' ? '#F5F4EE' : '#1F1E1D',
           borderRadius: '20px',
           fontSize: '13px',
           fontWeight: '700',
@@ -228,13 +228,13 @@ export default function Profile({ token, profile, onUpdate }) {
             <span style={{
               fontSize: '18px',
               fontWeight: '700',
-              color: '#fafafa'
+              color: '#F5F4EE'
             }}>
               {trainerRating}
             </span>
             <span style={{
               fontSize: '14px',
-              color: '#a1a1aa'
+              color: '#A6A29A'
             }}>
               ({followers.count} followers)
             </span>
@@ -247,8 +247,8 @@ export default function Profile({ token, profile, onUpdate }) {
           style={{
             marginTop: '20px',
             padding: '12px 32px',
-            backgroundColor: isEditing ? '#3f3f46' : '#D0FD3E',
-            color: isEditing ? '#fafafa' : '#18181b',
+            backgroundColor: isEditing ? '#3A3937' : '#D97757',
+            color: isEditing ? '#F5F4EE' : '#1F1E1D',
             border: 'none',
             borderRadius: '9999px',
             fontSize: '14px',
@@ -287,16 +287,16 @@ export default function Profile({ token, profile, onUpdate }) {
       {/* Edit Form (Conditional) */}
       {isEditing && (
         <div style={{
-          backgroundColor: '#27272a',
+          backgroundColor: '#262624',
           borderRadius: '20px',
           padding: '32px',
           marginBottom: '24px',
-          border: '1px solid #3f3f46'
+          border: '1px solid #3A3937'
         }}>
           <h2 style={{
             fontSize: '24px',
             fontWeight: '800',
-            color: '#D0FD3E',
+            color: '#D97757',
             marginBottom: '24px'
           }}>
             Edit Profile
@@ -309,7 +309,7 @@ export default function Profile({ token, profile, onUpdate }) {
                 display: 'block',
                 fontSize: '14px',
                 fontWeight: '600',
-                color: '#a1a1aa',
+                color: '#A6A29A',
                 marginBottom: '8px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
@@ -323,16 +323,16 @@ export default function Profile({ token, profile, onUpdate }) {
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  backgroundColor: '#18181b',
-                  color: '#fafafa',
-                  border: '2px solid #3f3f46',
+                  backgroundColor: '#1F1E1D',
+                  color: '#F5F4EE',
+                  border: '2px solid #3A3937',
                   borderRadius: '12px',
                   fontSize: '15px',
                   outline: 'none',
                   transition: 'border-color 0.2s'
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#D0FD3E'}
-                onBlur={(e) => e.target.style.borderColor = '#3f3f46'}
+                onFocus={(e) => e.target.style.borderColor = '#D97757'}
+                onBlur={(e) => e.target.style.borderColor = '#3A3937'}
               />
             </div>
 
@@ -342,7 +342,7 @@ export default function Profile({ token, profile, onUpdate }) {
                 display: 'block',
                 fontSize: '14px',
                 fontWeight: '600',
-                color: '#a1a1aa',
+                color: '#A6A29A',
                 marginBottom: '8px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
@@ -355,17 +355,17 @@ export default function Profile({ token, profile, onUpdate }) {
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  backgroundColor: '#18181b',
-                  color: '#fafafa',
-                  border: '2px solid #3f3f46',
+                  backgroundColor: '#1F1E1D',
+                  color: '#F5F4EE',
+                  border: '2px solid #3A3937',
                   borderRadius: '12px',
                   fontSize: '15px',
                   cursor: 'pointer',
                   outline: 'none',
                   transition: 'border-color 0.2s'
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#D0FD3E'}
-                onBlur={(e) => e.target.style.borderColor = '#3f3f46'}
+                onFocus={(e) => e.target.style.borderColor = '#D97757'}
+                onBlur={(e) => e.target.style.borderColor = '#3A3937'}
               >
                 <option value="">-- Select your gym --</option>
                 {gyms.map(g => (
@@ -382,7 +382,7 @@ export default function Profile({ token, profile, onUpdate }) {
                 display: 'block',
                 fontSize: '14px',
                 fontWeight: '600',
-                color: '#a1a1aa',
+                color: '#A6A29A',
                 marginBottom: '8px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
@@ -397,9 +397,9 @@ export default function Profile({ token, profile, onUpdate }) {
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  backgroundColor: '#18181b',
-                  color: '#fafafa',
-                  border: '2px solid #3f3f46',
+                  backgroundColor: '#1F1E1D',
+                  color: '#F5F4EE',
+                  border: '2px solid #3A3937',
                   borderRadius: '12px',
                   fontSize: '15px',
                   outline: 'none',
@@ -408,8 +408,8 @@ export default function Profile({ token, profile, onUpdate }) {
                   fontFamily: 'inherit',
                   lineHeight: '1.5'
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#D0FD3E'}
-                onBlur={(e) => e.target.style.borderColor = '#3f3f46'}
+                onFocus={(e) => e.target.style.borderColor = '#D97757'}
+                onBlur={(e) => e.target.style.borderColor = '#3A3937'}
               />
             </div>
 
@@ -419,9 +419,9 @@ export default function Profile({ token, profile, onUpdate }) {
               alignItems: 'center',
               gap: '12px',
               padding: '16px',
-              backgroundColor: '#18181b',
+              backgroundColor: '#1F1E1D',
               borderRadius: '12px',
-              border: '1px solid #3f3f46'
+              border: '1px solid #3A3937'
             }}>
               <input
                 type="checkbox"
@@ -431,12 +431,12 @@ export default function Profile({ token, profile, onUpdate }) {
                   width: '20px',
                   height: '20px',
                   cursor: 'pointer',
-                  accentColor: '#D0FD3E'
+                  accentColor: '#D97757'
                 }}
               />
               <label style={{
                 fontSize: '14px',
-                color: '#d4d4d8',
+                color: '#D9D5CC',
                 cursor: 'pointer'
               }}>
                 Allow followers to see my calorie intake
@@ -448,8 +448,8 @@ export default function Profile({ token, profile, onUpdate }) {
               type="submit"
               style={{
                 padding: '14px',
-                backgroundColor: '#D0FD3E',
-                color: '#18181b',
+                backgroundColor: '#D97757',
+                color: '#FFFFFF',
                 border: 'none',
                 borderRadius: '9999px',
                 fontSize: '16px',
@@ -459,11 +459,11 @@ export default function Profile({ token, profile, onUpdate }) {
                 marginTop: '8px'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#c4ed38'
+                e.target.style.backgroundColor = '#C4664A'
                 e.target.style.transform = 'translateY(-2px)'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#D0FD3E'
+                e.target.style.backgroundColor = '#D97757'
                 e.target.style.transform = 'translateY(0)'
               }}
             >
@@ -475,16 +475,16 @@ export default function Profile({ token, profile, onUpdate }) {
 
       {/* About Card */}
       <div style={{
-        backgroundColor: '#27272a',
+        backgroundColor: '#262624',
         borderRadius: '20px',
         padding: '32px',
         marginBottom: '24px',
-        border: '1px solid #3f3f46'
+        border: '1px solid #3A3937'
       }}>
         <h2 style={{
           fontSize: '24px',
           fontWeight: '800',
-          color: '#D0FD3E',
+          color: '#D97757',
           marginBottom: '16px'
         }}>
           About
@@ -492,7 +492,7 @@ export default function Profile({ token, profile, onUpdate }) {
         <p style={{
           fontSize: '15px',
           lineHeight: '1.7',
-          color: '#d4d4d8',
+          color: '#D9D5CC',
           margin: 0
         }}>
           {bio || 'No bio yet. Click "Edit Profile" to add information about yourself!'}
@@ -501,15 +501,15 @@ export default function Profile({ token, profile, onUpdate }) {
 
       {/* Stats Card */}
       <div style={{
-        backgroundColor: '#27272a',
+        backgroundColor: '#262624',
         borderRadius: '20px',
         padding: '32px',
-        border: '1px solid #3f3f46'
+        border: '1px solid #3A3937'
       }}>
         <h2 style={{
           fontSize: '24px',
           fontWeight: '800',
-          color: '#D0FD3E',
+          color: '#D97757',
           marginBottom: '24px'
         }}>
           Stats
@@ -522,24 +522,24 @@ export default function Profile({ token, profile, onUpdate }) {
         }}>
           {/* Gym Streak */}
           <div style={{
-            backgroundColor: '#18181b',
+            backgroundColor: '#1F1E1D',
             padding: '20px',
             borderRadius: '16px',
-            border: '1px solid #3f3f46',
+            border: '1px solid #3A3937',
             textAlign: 'center'
           }}>
-            <div style={{ marginBottom: '8px' }}><Icon name="flame" size={30} color="#D0FD3E" /></div>
+            <div style={{ marginBottom: '8px' }}><Icon name="flame" size={30} color="#D97757" /></div>
             <div style={{
               fontSize: '28px',
               fontWeight: '800',
-              color: '#fafafa',
+              color: '#F5F4EE',
               marginBottom: '4px'
             }}>
               {streaks.gym_streak ?? 0}
             </div>
             <div style={{
               fontSize: '13px',
-              color: '#a1a1aa',
+              color: '#A6A29A',
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
               fontWeight: '600'
@@ -550,24 +550,24 @@ export default function Profile({ token, profile, onUpdate }) {
 
           {/* Diet Streak */}
           <div style={{
-            backgroundColor: '#18181b',
+            backgroundColor: '#1F1E1D',
             padding: '20px',
             borderRadius: '16px',
-            border: '1px solid #3f3f46',
+            border: '1px solid #3A3937',
             textAlign: 'center'
           }}>
-            <div style={{ marginBottom: '8px' }}><Icon name="diet" size={30} color="#D0FD3E" /></div>
+            <div style={{ marginBottom: '8px' }}><Icon name="diet" size={30} color="#D97757" /></div>
             <div style={{
               fontSize: '28px',
               fontWeight: '800',
-              color: '#fafafa',
+              color: '#F5F4EE',
               marginBottom: '4px'
             }}>
               {streaks.diet_streak ?? 0}
             </div>
             <div style={{
               fontSize: '13px',
-              color: '#a1a1aa',
+              color: '#A6A29A',
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
               fontWeight: '600'
@@ -578,24 +578,24 @@ export default function Profile({ token, profile, onUpdate }) {
 
           {/* Reward Points */}
           <div style={{
-            backgroundColor: '#18181b',
+            backgroundColor: '#1F1E1D',
             padding: '20px',
             borderRadius: '16px',
-            border: '1px solid #3f3f46',
+            border: '1px solid #3A3937',
             textAlign: 'center'
           }}>
-            <div style={{ marginBottom: '8px' }}><Icon name="trophy" size={30} color="#D0FD3E" /></div>
+            <div style={{ marginBottom: '8px' }}><Icon name="trophy" size={30} color="#D97757" /></div>
             <div style={{
               fontSize: '28px',
               fontWeight: '800',
-              color: '#D0FD3E',
+              color: '#D97757',
               marginBottom: '4px'
             }}>
               {points}
             </div>
             <div style={{
               fontSize: '13px',
-              color: '#a1a1aa',
+              color: '#A6A29A',
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
               fontWeight: '600'
@@ -606,24 +606,24 @@ export default function Profile({ token, profile, onUpdate }) {
 
           {/* Followers */}
           <div style={{
-            backgroundColor: '#18181b',
+            backgroundColor: '#1F1E1D',
             padding: '20px',
             borderRadius: '16px',
-            border: '1px solid #3f3f46',
+            border: '1px solid #3A3937',
             textAlign: 'center'
           }}>
-            <div style={{ marginBottom: '8px' }}><Icon name="users" size={30} color="#D0FD3E" /></div>
+            <div style={{ marginBottom: '8px' }}><Icon name="users" size={30} color="#D97757" /></div>
             <div style={{
               fontSize: '28px',
               fontWeight: '800',
-              color: '#fafafa',
+              color: '#F5F4EE',
               marginBottom: '4px'
             }} onClick={() => setFollowers(prev => ({ ...prev, open: !prev.open }))}>
               {followers.count}
             </div>
             <div style={{
               fontSize: '13px',
-              color: '#a1a1aa',
+              color: '#A6A29A',
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
               fontWeight: '600'
@@ -633,9 +633,9 @@ export default function Profile({ token, profile, onUpdate }) {
             {followers.open && (
               <div style={{ textAlign: 'left', marginTop: 12, maxHeight: 220, overflow: 'auto', display: 'grid', gap: 8 }}>
                 {followers.list.map(u => (
-                  <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#0f0f10', border: '1px solid #3f3f46', borderRadius: 12, padding: 10 }}>
+                  <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#0f0f10', border: '1px solid #3A3937', borderRadius: 12, padding: 10 }}>
                     <img src={u.avatar_url ? (u.avatar_url.startsWith('http') ? u.avatar_url : `${API_BASE}${u.avatar_url.startsWith('/') ? '' : '/'}${u.avatar_url}`) : 'https://via.placeholder.com/32'} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
-                    <div style={{ flex: 1, color: '#fafafa', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name || `User #${u.id}`}</div>
+                    <div style={{ flex: 1, color: '#F5F4EE', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name || `User #${u.id}`}</div>
                     <button onClick={() => removeFollower(u.id)} className="btn-secondary rounded-full" style={{ padding: '6px 10px' }}>Remove</button>
                   </div>
                 ))}
@@ -646,24 +646,24 @@ export default function Profile({ token, profile, onUpdate }) {
 
           {/* Following */}
           <div style={{
-            backgroundColor: '#18181b',
+            backgroundColor: '#1F1E1D',
             padding: '20px',
             borderRadius: '16px',
-            border: '1px solid #3f3f46',
+            border: '1px solid #3A3937',
             textAlign: 'center'
           }}>
-            <div style={{ marginBottom: '8px' }}><Icon name="heart" size={30} color="#D0FD3E" /></div>
+            <div style={{ marginBottom: '8px' }}><Icon name="heart" size={30} color="#D97757" /></div>
             <div style={{
               fontSize: '28px',
               fontWeight: '800',
-              color: '#fafafa',
+              color: '#F5F4EE',
               marginBottom: '4px'
             }} onClick={() => setFollowing(prev => ({ ...prev, open: !prev.open }))}>
               {following.count}
             </div>
             <div style={{
               fontSize: '13px',
-              color: '#a1a1aa',
+              color: '#A6A29A',
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
               fontWeight: '600'
@@ -673,9 +673,9 @@ export default function Profile({ token, profile, onUpdate }) {
             {following.open && (
               <div style={{ textAlign: 'left', marginTop: 12, maxHeight: 220, overflow: 'auto', display: 'grid', gap: 8 }}>
                 {following.list.map(u => (
-                  <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#0f0f10', border: '1px solid #3f3f46', borderRadius: 12, padding: 10 }}>
+                  <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#0f0f10', border: '1px solid #3A3937', borderRadius: 12, padding: 10 }}>
                     <img src={u.avatar_url ? (u.avatar_url.startsWith('http') ? u.avatar_url : `${API_BASE}${u.avatar_url.startsWith('/') ? '' : '/'}${u.avatar_url}`) : 'https://via.placeholder.com/32'} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
-                    <div style={{ flex: 1, color: '#fafafa', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name || `User #${u.id}`}</div>
+                    <div style={{ flex: 1, color: '#F5F4EE', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name || `User #${u.id}`}</div>
                     <button onClick={() => unfollowUser(u.id)} className="btn-secondary rounded-full" style={{ padding: '6px 10px' }}>Unfollow</button>
                   </div>
                 ))}
@@ -687,13 +687,13 @@ export default function Profile({ token, profile, onUpdate }) {
           {/* Experience (for trainers) */}
           {isTrainer && (
             <div style={{
-              backgroundColor: '#18181b',
+              backgroundColor: '#1F1E1D',
               padding: '20px',
               borderRadius: '16px',
-              border: '1px solid #3f3f46',
+              border: '1px solid #3A3937',
               textAlign: 'center'
             }}>
-              <div style={{ marginBottom: '8px' }}><Icon name="star" size={30} color="#D0FD3E" /></div>
+              <div style={{ marginBottom: '8px' }}><Icon name="star" size={30} color="#D97757" /></div>
               <div style={{
                 fontSize: '28px',
                 fontWeight: '800',
@@ -704,7 +704,7 @@ export default function Profile({ token, profile, onUpdate }) {
               </div>
               <div style={{
                 fontSize: '13px',
-                color: '#a1a1aa',
+                color: '#A6A29A',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
                 fontWeight: '600'

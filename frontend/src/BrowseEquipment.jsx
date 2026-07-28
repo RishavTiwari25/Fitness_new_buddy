@@ -211,7 +211,7 @@ export default function BrowseEquipment({ token }) {
   return (
     <div style={{ 
       minHeight: '100vh',
-      backgroundColor: '#18181b',
+      backgroundColor: '#1F1E1D',
       padding: '24px',
     }}>
       {/* Header */}
@@ -219,46 +219,46 @@ export default function BrowseEquipment({ token }) {
         <h2 style={{ 
           fontSize: '32px', 
           fontWeight: '800', 
-          color: '#fafafa',
+          color: '#F5F4EE',
           marginBottom: '8px' 
         }}>
           Discover
         </h2>
-        <p style={{ color: '#a1a1aa', fontSize: '16px' }}>
+        <p style={{ color: '#A6A29A', fontSize: '16px' }}>
           Find the perfect gym or browse available equipment.
         </p>
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24, borderBottom: '1px solid #3f3f46', paddingBottom: 12 }}>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 24, borderBottom: '1px solid #3A3937', paddingBottom: 12 }}>
         <button 
           onClick={() => setActiveTab('gyms')}
-          style={{ background: activeTab === 'gyms' ? '#D0FD3E' : 'transparent', color: activeTab === 'gyms' ? '#18181b' : '#fafafa', padding: '10px 20px', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 15 }}
+          style={{ background: activeTab === 'gyms' ? '#D97757' : 'transparent', color: activeTab === 'gyms' ? '#1F1E1D' : '#F5F4EE', padding: '10px 20px', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 15 }}
         >Gyms</button>
         <button 
           onClick={() => setActiveTab('equipment')}
-          style={{ background: activeTab === 'equipment' ? '#D0FD3E' : 'transparent', color: activeTab === 'equipment' ? '#18181b' : '#fafafa', padding: '10px 20px', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 15 }}
+          style={{ background: activeTab === 'equipment' ? '#D97757' : 'transparent', color: activeTab === 'equipment' ? '#1F1E1D' : '#F5F4EE', padding: '10px 20px', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 15 }}
         >Equipment</button>
       </div>
 
       {activeTab === 'gyms' ? (
         <div>
           {gyms.length === 0 ? (
-            <div style={{ color: '#a1a1aa', textAlign: 'center', padding: 40 }}>No gyms available right now.</div>
+            <div style={{ color: '#A6A29A', textAlign: 'center', padding: 40 }}>No gyms available right now.</div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 24 }}>
               {gyms.map(gym => (
-                <div key={gym.id} onClick={() => setSelectedGymForDetails(gym.id)} style={{ backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 24, cursor: 'pointer', transition: 'transform 0.2s, borderColor 0.2s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = '#D0FD3E' }} onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = '#3f3f46' }}>
+                <div key={gym.id} onClick={() => setSelectedGymForDetails(gym.id)} style={{ backgroundColor: '#262624', border: '1px solid #3A3937', borderRadius: 16, padding: 24, cursor: 'pointer', transition: 'transform 0.2s, borderColor 0.2s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = '#D97757' }} onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = '#3A3937' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
                     <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--neu-base)', boxShadow: 'var(--neu-raised-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Icon name="dumbbell" size={22} color="#D0FD3E" />
+                      <Icon name="dumbbell" size={22} color="#D97757" />
                     </div>
                     <div>
-                      <h3 style={{ margin: 0, color: '#fafafa', fontSize: 18 }}>{gym.name}</h3>
-                      <div style={{ color: '#a1a1aa', fontSize: 14 }}>{gym.location || 'Unknown location'}</div>
+                      <h3 style={{ margin: 0, color: '#F5F4EE', fontSize: 18 }}>{gym.name}</h3>
+                      <div style={{ color: '#A6A29A', fontSize: 14 }}>{gym.location || 'Unknown location'}</div>
                     </div>
                   </div>
-                  <button style={{ width: '100%', background: '#3f3f46', color: '#fafafa', border: 'none', padding: '12px', borderRadius: 10, cursor: 'pointer', fontWeight: 600 }}>
+                  <button style={{ width: '100%', background: '#3A3937', color: '#F5F4EE', border: 'none', padding: '12px', borderRadius: 10, cursor: 'pointer', fontWeight: 600 }}>
                     View Details
                   </button>
                 </div>
@@ -272,7 +272,7 @@ export default function BrowseEquipment({ token }) {
       <div style={{ marginBottom: '24px' }}>
         <label style={{ 
           display: 'block', 
-          color: '#D0FD3E', 
+          color: '#D97757', 
           fontWeight: '600',
           marginBottom: '8px',
           fontSize: '14px'
@@ -286,9 +286,9 @@ export default function BrowseEquipment({ token }) {
             width: '100%',
             maxWidth: '400px',
             padding: '12px 16px',
-            backgroundColor: '#27272a',
-            color: '#fafafa',
-            border: '2px solid #3f3f46',
+            backgroundColor: '#262624',
+            color: '#F5F4EE',
+            border: '2px solid #3A3937',
             borderRadius: '12px',
             fontSize: '15px',
             fontWeight: '500',
@@ -296,8 +296,8 @@ export default function BrowseEquipment({ token }) {
             outline: 'none',
             transition: 'border-color 0.2s',
           }}
-          onFocus={(e) => e.target.style.borderColor = '#D0FD3E'}
-          onBlur={(e) => e.target.style.borderColor = '#3f3f46'}
+          onFocus={(e) => e.target.style.borderColor = '#D97757'}
+          onBlur={(e) => e.target.style.borderColor = '#3A3937'}
         >
           <option value="">-- Select a gym --</option>
           {gyms.map(gym => (
@@ -311,8 +311,8 @@ export default function BrowseEquipment({ token }) {
       {/* AI Tools — semantic search (F3) + natural-language booking (F2) */}
       <div className="card" style={{ padding: 18, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <span className="neu-badge" style={{ width: 34, height: 34, borderRadius: 9 }}><Icon name="robot" size={17} color="#D0FD3E" /></span>
-          <div className="font-display" style={{ color: '#fafafa', fontWeight: 600, fontSize: 15 }}>AI Tools</div>
+          <span className="neu-badge" style={{ width: 34, height: 34, borderRadius: 9 }}><Icon name="robot" size={17} color="#D97757" /></span>
+          <div className="font-display" style={{ color: '#F5F4EE', fontWeight: 600, fontSize: 15 }}>AI Tools</div>
         </div>
         <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
           <input
@@ -320,9 +320,9 @@ export default function BrowseEquipment({ token }) {
             onChange={e => setAiQuery(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') runSemantic() }}
             placeholder="Smart search — e.g. “something for my chest” or “low-impact cardio”"
-            style={{ flex: '1 1 280px', padding: '11px 15px', background: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10, fontSize: 14, outline: 'none' }}
+            style={{ flex: '1 1 280px', padding: '11px 15px', background: '#1F1E1D', color: '#F5F4EE', border: '1px solid #3A3937', borderRadius: 10, fontSize: 14, outline: 'none' }}
           />
-          <button onClick={runSemantic} disabled={aiSearching || !aiQuery.trim()} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '0 16px', borderRadius: 10, border: 'none', background: aiSearching || !aiQuery.trim() ? '#52525b' : '#D0FD3E', color: '#0a0a0a', fontWeight: 700, fontSize: 13.5, cursor: aiSearching ? 'wait' : 'pointer' }}>
+          <button onClick={runSemantic} disabled={aiSearching || !aiQuery.trim()} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '0 16px', borderRadius: 10, border: 'none', background: aiSearching || !aiQuery.trim() ? '#4C4A46' : '#D97757', color: '#FFFFFF', fontWeight: 700, fontSize: 13.5, cursor: aiSearching ? 'wait' : 'pointer' }}>
             <Icon name="search" size={15} /> {aiSearching ? 'Ranking…' : 'Smart search'}
           </button>
           {semanticScores && (
@@ -335,18 +335,18 @@ export default function BrowseEquipment({ token }) {
             onChange={e => setAiBookText(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') runBooking() }}
             placeholder="Book in plain English — e.g. “book the treadmill tomorrow at 7am”"
-            style={{ flex: '1 1 280px', padding: '11px 15px', background: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10, fontSize: 14, outline: 'none' }}
+            style={{ flex: '1 1 280px', padding: '11px 15px', background: '#1F1E1D', color: '#F5F4EE', border: '1px solid #3A3937', borderRadius: 10, fontSize: 14, outline: 'none' }}
           />
-          <button onClick={runBooking} disabled={aiBookBusy || !aiBookText.trim()} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '0 16px', borderRadius: 10, border: '1px solid rgba(208,253,62,0.3)', background: 'rgba(208,253,62,0.1)', color: '#D0FD3E', fontWeight: 700, fontSize: 13.5, cursor: aiBookBusy ? 'wait' : 'pointer' }}>
+          <button onClick={runBooking} disabled={aiBookBusy || !aiBookText.trim()} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '0 16px', borderRadius: 10, border: '1px solid rgba(217,119,87,0.3)', background: 'rgba(217,119,87,0.1)', color: '#D97757', fontWeight: 700, fontSize: 13.5, cursor: aiBookBusy ? 'wait' : 'pointer' }}>
             <Icon name="calendar" size={15} /> {aiBookBusy ? 'Parsing…' : 'AI book'}
           </button>
         </div>
         {aiError && <div style={{ marginTop: 10, color: '#fca5a5', fontSize: 13 }}>{aiError}</div>}
         {aiIntent && (
-          <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '10px 14px', borderRadius: 10, background: 'rgba(208,253,62,0.06)', border: '1px solid rgba(208,253,62,0.2)' }}>
-            <span style={{ color: '#e9e9ea', fontSize: 13.5 }}>{aiIntent.summary || 'Parsed your request.'}</span>
+          <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '10px 14px', borderRadius: 10, background: 'rgba(217,119,87,0.06)', border: '1px solid rgba(217,119,87,0.2)' }}>
+            <span style={{ color: '#EDEAE3', fontSize: 13.5 }}>{aiIntent.summary || 'Parsed your request.'}</span>
             {aiIntent.equipment && (
-              <button onClick={openMatchedEquipment} style={{ padding: '6px 12px', borderRadius: 9999, border: 'none', background: '#D0FD3E', color: '#0a0a0a', fontWeight: 700, fontSize: 12.5, cursor: 'pointer' }}>
+              <button onClick={openMatchedEquipment} style={{ padding: '6px 12px', borderRadius: 9999, border: 'none', background: '#D97757', color: '#FFFFFF', fontWeight: 700, fontSize: 12.5, cursor: 'pointer' }}>
                 Open {aiIntent.equipment} →
               </button>
             )}
@@ -372,16 +372,16 @@ export default function BrowseEquipment({ token }) {
             style={{
               width: '100%',
               padding: '12px 16px',
-              backgroundColor: '#27272a',
-              color: '#fafafa',
-              border: '2px solid #3f3f46',
+              backgroundColor: '#262624',
+              color: '#F5F4EE',
+              border: '2px solid #3A3937',
               borderRadius: '12px',
               fontSize: '15px',
               outline: 'none',
               transition: 'border-color 0.2s',
             }}
-            onFocus={(e) => e.target.style.borderColor = '#D0FD3E'}
-            onBlur={(e) => e.target.style.borderColor = '#3f3f46'}
+            onFocus={(e) => e.target.style.borderColor = '#D97757'}
+            onBlur={(e) => e.target.style.borderColor = '#3A3937'}
           />
         </div>
 
@@ -390,8 +390,8 @@ export default function BrowseEquipment({ token }) {
           onClick={() => setShowFilters(!showFilters)}
           style={{
             padding: '12px 24px',
-            backgroundColor: showFilters ? '#D0FD3E' : '#3f3f46',
-            color: showFilters ? '#18181b' : '#fafafa',
+            backgroundColor: showFilters ? '#D97757' : '#3A3937',
+            color: showFilters ? '#1F1E1D' : '#F5F4EE',
             border: 'none',
             borderRadius: '24px',
             fontSize: '14px',
@@ -404,12 +404,12 @@ export default function BrowseEquipment({ token }) {
           }}
           onMouseEnter={(e) => {
             if (!showFilters) {
-              e.target.style.backgroundColor = '#52525b'
+              e.target.style.backgroundColor = '#4C4A46'
             }
           }}
           onMouseLeave={(e) => {
             if (!showFilters) {
-              e.target.style.backgroundColor = '#3f3f46'
+              e.target.style.backgroundColor = '#3A3937'
             }
           }}
         >
@@ -421,8 +421,8 @@ export default function BrowseEquipment({ token }) {
           onClick={() => setShowSort(!showSort)}
           style={{
             padding: '12px 24px',
-            backgroundColor: showSort ? '#D0FD3E' : '#3f3f46',
-            color: showSort ? '#18181b' : '#fafafa',
+            backgroundColor: showSort ? '#D97757' : '#3A3937',
+            color: showSort ? '#1F1E1D' : '#F5F4EE',
             border: 'none',
             borderRadius: '24px',
             fontSize: '14px',
@@ -435,12 +435,12 @@ export default function BrowseEquipment({ token }) {
           }}
           onMouseEnter={(e) => {
             if (!showSort) {
-              e.target.style.backgroundColor = '#52525b'
+              e.target.style.backgroundColor = '#4C4A46'
             }
           }}
           onMouseLeave={(e) => {
             if (!showSort) {
-              e.target.style.backgroundColor = '#3f3f46'
+              e.target.style.backgroundColor = '#3A3937'
             }
           }}
         >
@@ -451,13 +451,13 @@ export default function BrowseEquipment({ token }) {
       {/* Filters Dropdown */}
       {showFilters && (
         <div style={{
-          backgroundColor: '#27272a',
+          backgroundColor: '#262624',
           padding: '20px',
           borderRadius: '16px',
           marginBottom: '24px',
-          border: '1px solid #3f3f46'
+          border: '1px solid #3A3937'
         }}>
-          <h4 className="font-display" style={{ color: '#D0FD3E', marginBottom: '16px', fontWeight: '600' }}>
+          <h4 className="font-display" style={{ color: '#D97757', marginBottom: '16px', fontWeight: '600' }}>
             Filter Options
           </h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', alignItems: 'flex-end' }}>
@@ -474,8 +474,8 @@ export default function BrowseEquipment({ token }) {
                       style={{
                         padding: '7px 14px', borderRadius: 9999, fontSize: 13, fontWeight: 600, cursor: 'pointer',
                         border: '1px solid ' + (active ? 'transparent' : 'rgba(255,255,255,0.12)'),
-                        background: active ? '#D0FD3E' : 'transparent',
-                        color: active ? '#0a0a0a' : 'rgba(255,255,255,0.7)',
+                        background: active ? '#D97757' : 'transparent',
+                        color: active ? '#FFFFFF' : 'rgba(255,255,255,0.7)',
                       }}
                     >{d}</button>
                   )
@@ -504,13 +504,13 @@ export default function BrowseEquipment({ token }) {
       {/* Sort Dropdown */}
       {showSort && (
         <div style={{
-          backgroundColor: '#27272a',
+          backgroundColor: '#262624',
           padding: '20px',
           borderRadius: '16px',
           marginBottom: '24px',
-          border: '1px solid #3f3f46'
+          border: '1px solid #3A3937'
         }}>
-          <h4 style={{ color: '#D0FD3E', marginBottom: '16px', fontWeight: '600' }}>
+          <h4 style={{ color: '#D97757', marginBottom: '16px', fontWeight: '600' }}>
             Sort By
           </h4>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -518,8 +518,8 @@ export default function BrowseEquipment({ token }) {
               onClick={() => setSortBy('name')}
               style={{
                 padding: '8px 16px',
-                backgroundColor: sortBy === 'name' ? '#D0FD3E' : '#3f3f46',
-                color: sortBy === 'name' ? '#18181b' : '#fafafa',
+                backgroundColor: sortBy === 'name' ? '#D97757' : '#3A3937',
+                color: sortBy === 'name' ? '#1F1E1D' : '#F5F4EE',
                 border: 'none',
                 borderRadius: '20px',
                 fontSize: '13px',
@@ -533,8 +533,8 @@ export default function BrowseEquipment({ token }) {
               onClick={() => setSortBy('quantity')}
               style={{
                 padding: '8px 16px',
-                backgroundColor: sortBy === 'quantity' ? '#D0FD3E' : '#3f3f46',
-                color: sortBy === 'quantity' ? '#18181b' : '#fafafa',
+                backgroundColor: sortBy === 'quantity' ? '#D97757' : '#3A3937',
+                color: sortBy === 'quantity' ? '#1F1E1D' : '#F5F4EE',
                 border: 'none',
                 borderRadius: '20px',
                 fontSize: '13px',
@@ -551,7 +551,7 @@ export default function BrowseEquipment({ token }) {
       {/* Loading State */}
       {loading && (
         <div style={{ textAlign: 'center', padding: '40px' }}>
-          <div style={{ color: '#D0FD3E', fontSize: '18px', fontWeight: '600' }}>
+          <div style={{ color: '#D97757', fontSize: '18px', fontWeight: '600' }}>
             Loading equipment...
           </div>
         </div>
@@ -562,15 +562,15 @@ export default function BrowseEquipment({ token }) {
         <div style={{ 
           textAlign: 'center', 
           padding: '60px 20px',
-          backgroundColor: '#27272a',
+          backgroundColor: '#262624',
           borderRadius: '16px',
-          border: '2px dashed #3f3f46'
+          border: '2px dashed #3A3937'
         }}>
-          <div style={{ marginBottom: '16px' }}><Icon name="dumbbell" size={40} color="#D0FD3E" /></div>
-          <h3 style={{ color: '#fafafa', marginBottom: '8px', fontWeight: '700' }}>
+          <div style={{ marginBottom: '16px' }}><Icon name="dumbbell" size={40} color="#D97757" /></div>
+          <h3 style={{ color: '#F5F4EE', marginBottom: '8px', fontWeight: '700' }}>
             Select a Gym to Browse
           </h3>
-          <p style={{ color: '#a1a1aa', fontSize: '15px' }}>
+          <p style={{ color: '#A6A29A', fontSize: '15px' }}>
             Choose a gym from the dropdown above to see available equipment
           </p>
         </div>
@@ -594,16 +594,16 @@ export default function BrowseEquipment({ token }) {
                 key={eq.id}
                 onClick={() => setSelectedEquipment(eq)}
                 style={{
-                  backgroundColor: '#27272a',
+                  backgroundColor: '#262624',
                   borderRadius: '16px',
                   overflow: 'hidden',
-                  border: '1px solid #3f3f46',
+                  border: '1px solid #3A3937',
                   transition: 'transform 0.2s, box-shadow 0.2s',
                   cursor: 'pointer',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-4px)'
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(208, 253, 62, 0.15)'
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(217, 119, 87, 0.15)'
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)'
@@ -614,14 +614,14 @@ export default function BrowseEquipment({ token }) {
                 <div style={{
                   width: '100%',
                   height: '180px',
-                  backgroundColor: '#3f3f46',
+                  backgroundColor: '#3A3937',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '64px',
-                  background: 'linear-gradient(135deg, #3f3f46 0%, #27272a 100%)',
+                  background: 'linear-gradient(135deg, #3A3937 0%, #262624 100%)',
                 }}>
-                  <Icon name="dumbbell" size={56} color="#D0FD3E" />
+                  <Icon name="dumbbell" size={56} color="#D97757" />
                 </div>
 
                 {/* Equipment Details */}
@@ -630,7 +630,7 @@ export default function BrowseEquipment({ token }) {
                   <h3 style={{
                     fontSize: '18px',
                     fontWeight: '700',
-                    color: '#fafafa',
+                    color: '#F5F4EE',
                     marginBottom: '12px',
                     lineHeight: '1.3'
                   }}>
@@ -647,8 +647,8 @@ export default function BrowseEquipment({ token }) {
                     {/* Time Tag */}
                     <span style={{
                       padding: '4px 12px',
-                      backgroundColor: '#3f3f46',
-                      color: '#fafafa',
+                      backgroundColor: '#3A3937',
+                      color: '#F5F4EE',
                       borderRadius: '12px',
                       fontSize: '12px',
                       fontWeight: '600',
@@ -662,8 +662,8 @@ export default function BrowseEquipment({ token }) {
                     {/* Muscles Tag */}
                     <span style={{
                       padding: '4px 12px',
-                      backgroundColor: '#3f3f46',
-                      color: '#fafafa',
+                      backgroundColor: '#3A3937',
+                      color: '#F5F4EE',
                       borderRadius: '12px',
                       fontSize: '12px',
                       fontWeight: '600',
@@ -679,7 +679,7 @@ export default function BrowseEquipment({ token }) {
                       padding: '4px 12px',
                       backgroundColor: meta.difficulty === 'Hard' ? '#dc2626' : 
                                        meta.difficulty === 'Medium' ? '#f59e0b' : '#22c55e',
-                      color: '#18181b',
+                      color: '#1F1E1D',
                       borderRadius: '12px',
                       fontSize: '12px',
                       fontWeight: '600',
@@ -698,8 +698,8 @@ export default function BrowseEquipment({ token }) {
                     alignItems: 'center',
                     marginBottom: '12px'
                   }}>
-                    <div style={{ fontSize: '13px', color: '#a1a1aa' }}>
-                      Qty: <span style={{ color: '#fafafa', fontWeight: '600' }}>
+                    <div style={{ fontSize: '13px', color: '#A6A29A' }}>
+                      Qty: <span style={{ color: '#F5F4EE', fontWeight: '600' }}>
                         {eq.quantity || 1}
                       </span>
                     </div>
@@ -719,7 +719,7 @@ export default function BrowseEquipment({ token }) {
                   {eq.notes && (
                     <p style={{
                       fontSize: '13px',
-                      color: '#a1a1aa',
+                      color: '#A6A29A',
                       marginBottom: '16px',
                       lineHeight: '1.5'
                     }}>
@@ -732,8 +732,8 @@ export default function BrowseEquipment({ token }) {
                     style={{
                       width: '100%',
                       padding: '12px',
-                      backgroundColor: isBooked && !bookedByMe ? '#3f3f46' : '#D0FD3E',
-                      color: isBooked && !bookedByMe ? '#a1a1aa' : '#18181b',
+                      backgroundColor: isBooked && !bookedByMe ? '#3A3937' : '#D97757',
+                      color: isBooked && !bookedByMe ? '#A6A29A' : '#1F1E1D',
                       border: 'none',
                       borderRadius: '10px',
                       fontSize: '14px',
@@ -744,12 +744,12 @@ export default function BrowseEquipment({ token }) {
                     disabled={isBooked && !bookedByMe}
                     onMouseEnter={(e) => {
                       if (!(isBooked && !bookedByMe)) {
-                        e.target.style.backgroundColor = '#c4ed38'
+                        e.target.style.backgroundColor = '#C4664A'
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (!(isBooked && !bookedByMe)) {
-                        e.target.style.backgroundColor = '#D0FD3E'
+                        e.target.style.backgroundColor = '#D97757'
                       }
                     }}
                   >
@@ -769,15 +769,15 @@ export default function BrowseEquipment({ token }) {
         <div style={{ 
           textAlign: 'center', 
           padding: '60px 20px',
-          backgroundColor: '#27272a',
+          backgroundColor: '#262624',
           borderRadius: '16px',
-          border: '2px dashed #3f3f46'
+          border: '2px dashed #3A3937'
         }}>
-          <div style={{ marginBottom: '16px' }}><Icon name="search" size={40} color="#D0FD3E" /></div>
-          <h3 style={{ color: '#fafafa', marginBottom: '8px', fontWeight: '700' }}>
+          <div style={{ marginBottom: '16px' }}><Icon name="search" size={40} color="#D97757" /></div>
+          <h3 style={{ color: '#F5F4EE', marginBottom: '8px', fontWeight: '700' }}>
             No Equipment Found
           </h3>
-          <p style={{ color: '#a1a1aa', fontSize: '15px' }}>
+          <p style={{ color: '#A6A29A', fontSize: '15px' }}>
             Try adjusting your search query or filters
           </p>
         </div>
@@ -788,15 +788,15 @@ export default function BrowseEquipment({ token }) {
         <div style={{ 
           textAlign: 'center', 
           padding: '60px 20px',
-          backgroundColor: '#27272a',
+          backgroundColor: '#262624',
           borderRadius: '16px',
-          border: '2px dashed #3f3f46'
+          border: '2px dashed #3A3937'
         }}>
-          <div style={{ marginBottom: '16px' }}><Icon name="box" size={40} color="#D0FD3E" /></div>
-          <h3 style={{ color: '#fafafa', marginBottom: '8px', fontWeight: '700' }}>
+          <div style={{ marginBottom: '16px' }}><Icon name="box" size={40} color="#D97757" /></div>
+          <h3 style={{ color: '#F5F4EE', marginBottom: '8px', fontWeight: '700' }}>
             No Equipment Available
           </h3>
-          <p style={{ color: '#a1a1aa', fontSize: '15px' }}>
+          <p style={{ color: '#A6A29A', fontSize: '15px' }}>
             This gym doesn't have any equipment listed yet
           </p>
         </div>

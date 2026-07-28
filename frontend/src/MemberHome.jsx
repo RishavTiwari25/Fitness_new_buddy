@@ -164,15 +164,15 @@ export default function MemberHome({ token, defaultGymId }) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div>
-            <h1 className="font-display" style={{ color: '#fafafa', fontSize: 28, fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: 12 }}><span className="neu-badge" style={{ width: 40, height: 40 }}><Icon name="user" size={20} color="#D0FD3E" /></span> Member Home</h1>
-            <div style={{ color: '#a1a1aa', fontSize: 14 }}>Scan to check in, or choose a gym and manage equipment</div>
+            <h1 className="font-display" style={{ color: '#F5F4EE', fontSize: 28, fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: 12 }}><span className="neu-badge" style={{ width: 40, height: 40 }}><Icon name="user" size={20} color="#D97757" /></span> Member Home</h1>
+            <div style={{ color: '#A6A29A', fontSize: 14 }}>Scan to check in, or choose a gym and manage equipment</div>
           </div>
           <div>
             <button
               onClick={scanning ? stopScan : startScan}
-              style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: '9999px', padding: '12px 18px', border: 'none', cursor: 'pointer', fontWeight: 700 }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c4ed38'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#D0FD3E'}
+              style={{ backgroundColor: '#D97757', color: '#FFFFFF', borderRadius: '9999px', padding: '12px 18px', border: 'none', cursor: 'pointer', fontWeight: 700 }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#C4664A'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#D97757'}
             >
               {scanning ? 'Stop Scanner' : 'Check-in / Check-out (Scan QR)'}
             </button>
@@ -180,7 +180,7 @@ export default function MemberHome({ token, defaultGymId }) {
         </div>
 
         {/* Scanner */}
-        <div id="qr-reader" style={{ width: 360, height: scanning ? 360 : 0, overflow: 'hidden', border: scanning ? '1px solid #3f3f46' : 'none', borderRadius: 12 }} />
+        <div id="qr-reader" style={{ width: 360, height: scanning ? 360 : 0, overflow: 'hidden', border: scanning ? '1px solid #3A3937' : 'none', borderRadius: 12 }} />
 
         {/* Status */}
         {status && (
@@ -190,19 +190,19 @@ export default function MemberHome({ token, defaultGymId }) {
         )}
 
         {/* Manual Check-in Card */}
-        <div style={{ marginTop: 16, backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 16, padding: 16 }}>
-          <div style={{ color: '#d4d4d8', fontWeight: 700, marginBottom: 8 }}>Or select a gym to toggle check-in/out:</div>
+        <div style={{ marginTop: 16, backgroundColor: '#262624', border: '1px solid #3A3937', borderRadius: 16, padding: 16 }}>
+          <div style={{ color: '#D9D5CC', fontWeight: 700, marginBottom: 8 }}>Or select a gym to toggle check-in/out:</div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <select
               value={gymId || ''}
               onChange={e => setGymId(e.target.value ? parseInt(e.target.value, 10) : null)}
-              style={{ backgroundColor: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10, padding: '10px 12px', minWidth: 220 }}
+              style={{ backgroundColor: '#1F1E1D', color: '#F5F4EE', border: '1px solid #3A3937', borderRadius: 10, padding: '10px 12px', minWidth: 220 }}
             >
               <option value="">-- Select Gym --</option>
               {gyms.map(g => <option key={g.id} value={g.id}>{g.name}{g.location ? ` (${g.location})` : ''}</option>)}
             </select>
             <button
-              style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: '9999px', padding: '10px 16px', border: 'none', cursor: 'pointer', fontWeight: 700 }}
+              style={{ backgroundColor: '#D97757', color: '#FFFFFF', borderRadius: '9999px', padding: '10px 16px', border: 'none', cursor: 'pointer', fontWeight: 700 }}
               onClick={() => toggleCheckIn(gymId)}
               disabled={!gymId}
             >
@@ -214,20 +214,20 @@ export default function MemberHome({ token, defaultGymId }) {
         {/* Occupancy */}
         {gymId && (
           <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ backgroundColor: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', padding: '8px 12px', borderRadius: 9999, fontWeight: 700 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Icon name="users" size={16} color="#D0FD3E" /> People currently at {gymName || `Gym #${gymId}`}: {count ?? '—'}</span>
+            <div style={{ backgroundColor: '#1F1E1D', color: '#F5F4EE', border: '1px solid #3A3937', padding: '8px 12px', borderRadius: 9999, fontWeight: 700 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Icon name="users" size={16} color="#D97757" /> People currently at {gymName || `Gym #${gymId}`}: {count ?? '—'}</span>
             </div>
           </div>
         )}
 
         {!gymId && (
-          <p style={{ color: '#a1a1aa', marginTop: 12 }}>Scan a gym QR or choose a gym to get started.</p>
+          <p style={{ color: '#A6A29A', marginTop: 12 }}>Scan a gym QR or choose a gym to get started.</p>
         )}
 
         {/* Equipment List */}
         {gymId && (
           <div style={{ marginTop: 18 }}>
-            <h2 className="font-display" style={{ color: '#fafafa', fontSize: 18, fontWeight: 700, margin: '6px 0 12px', display: 'flex', alignItems: 'center', gap: 10 }}><Icon name="box" size={18} color="#D0FD3E" /> Equipment at this gym</h2>
+            <h2 className="font-display" style={{ color: '#F5F4EE', fontSize: 18, fontWeight: 700, margin: '6px 0 12px', display: 'flex', alignItems: 'center', gap: 10 }}><Icon name="box" size={18} color="#D97757" /> Equipment at this gym</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {equipment.map(eq => {
                 const activeCount = Number(eq.active_count || 0)
@@ -236,30 +236,30 @@ export default function MemberHome({ token, defaultGymId }) {
                 const bookedByMe = !!eq.booked_by_me
                 const iHaveBooking = myBookings && myBookings.length > 0
                 return (
-                  <div key={eq.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: 14, padding: '12px 14px' }}>
+                  <div key={eq.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#1F1E1D', border: '1px solid #3A3937', borderRadius: 14, padding: '12px 14px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ color: '#fafafa', fontWeight: 700, fontSize: 16 }}>{eq.name} {qty ? `x${qty}` : ''}</div>
+                      <div style={{ color: '#F5F4EE', fontWeight: 700, fontSize: 16 }}>{eq.name} {qty ? `x${qty}` : ''}</div>
                       <div style={{ fontSize: 12, color: available > 0 ? '#22c55e' : '#f87171', fontWeight: 700 }}>
                         {available > 0 ? `Available (${available}/${qty})` : 'Fully booked'}
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {available > 0 && !iHaveBooking && !bookedByMe && (
-                        <button onClick={() => bookEquipment(eq.id)} style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: 9999, padding: '8px 14px', border: 'none', cursor: 'pointer', fontWeight: 700 }}>Book</button>
+                        <button onClick={() => bookEquipment(eq.id)} style={{ backgroundColor: '#D97757', color: '#FFFFFF', borderRadius: 9999, padding: '8px 14px', border: 'none', cursor: 'pointer', fontWeight: 700 }}>Book</button>
                       )}
                       {bookedByMe && (
-                        <button onClick={() => releaseEquipment(eq.id)} style={{ backgroundColor: '#3f3f46', color: '#fafafa', borderRadius: 9999, padding: '8px 14px', border: 'none', cursor: 'pointer', fontWeight: 700 }}>Release</button>
+                        <button onClick={() => releaseEquipment(eq.id)} style={{ backgroundColor: '#3A3937', color: '#F5F4EE', borderRadius: 9999, padding: '8px 14px', border: 'none', cursor: 'pointer', fontWeight: 700 }}>Release</button>
                       )}
-                      <button style={{ backgroundColor: '#3f3f46', color: '#fafafa', borderRadius: 9999, padding: '8px 14px', border: 'none', cursor: 'pointer', fontWeight: 700 }} onClick={() => setShowSlotsFor(eq)}>View Time Slots</button>
+                      <button style={{ backgroundColor: '#3A3937', color: '#F5F4EE', borderRadius: 9999, padding: '8px 14px', border: 'none', cursor: 'pointer', fontWeight: 700 }} onClick={() => setShowSlotsFor(eq)}>View Time Slots</button>
                     </div>
                   </div>
                 )
               })}
-              {equipment.length === 0 && <div style={{ color: '#a1a1aa' }}>No equipment listed for this gym.</div>}
+              {equipment.length === 0 && <div style={{ color: '#A6A29A' }}>No equipment listed for this gym.</div>}
             </div>
 
             {myBookings.length > 0 && (
-              <div style={{ marginTop: 12, backgroundColor: '#27272a', border: '1px solid #3f3f46', borderRadius: 12, padding: 12, color: '#fafafa' }}>
+              <div style={{ marginTop: 12, backgroundColor: '#262624', border: '1px solid #3A3937', borderRadius: 12, padding: 12, color: '#F5F4EE' }}>
                 <div style={{ fontWeight: 800, marginBottom: 6 }}>Your active booking:</div>
                 {myBookings.map(b => (
                   <div key={b.id} style={{ fontSize: 14 }}>• {b.equipment_name} at {b.gym_name} since {b.started_at}</div>
@@ -272,12 +272,12 @@ export default function MemberHome({ token, defaultGymId }) {
         {/* Slots Modal */}
         {showSlotsFor && (
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }} onClick={() => setShowSlotsFor(null)}>
-            <div style={{ background: '#27272a', border: '1px solid #3f3f46', color: '#fafafa', padding: 16, width: 640, maxHeight: '80vh', overflow: 'auto', borderRadius: 16 }} onClick={e => e.stopPropagation()}>
+            <div style={{ background: '#262624', border: '1px solid #3A3937', color: '#F5F4EE', padding: 16, width: 640, maxHeight: '80vh', overflow: 'auto', borderRadius: 16 }} onClick={e => e.stopPropagation()}>
               <h3 style={{ marginTop: 0, fontWeight: 800 }}>{showSlotsFor.name}</h3>
-              <p style={{ color: '#a1a1aa' }}>Book a 15-minute time slot, join waitlist when full, or take an idle slot after start.</p>
+              <p style={{ color: '#A6A29A' }}>Book a 15-minute time slot, join waitlist when full, or take an idle slot after start.</p>
               <EquipmentSlots token={token} equipment={showSlotsFor} onBooked={() => { loadMyBookings(); }} />
               <div style={{ textAlign: 'right', marginTop: 10 }}>
-                <button onClick={() => setShowSlotsFor(null)} style={{ backgroundColor: '#D0FD3E', color: '#18181b', borderRadius: '9999px', padding: '12px 24px', border: 'none', cursor: 'pointer', fontWeight: 700 }}>Close</button>
+                <button onClick={() => setShowSlotsFor(null)} style={{ backgroundColor: '#D97757', color: '#FFFFFF', borderRadius: '9999px', padding: '12px 24px', border: 'none', cursor: 'pointer', fontWeight: 700 }}>Close</button>
               </div>
             </div>
           </div>

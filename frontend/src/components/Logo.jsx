@@ -13,7 +13,7 @@ export default function Logo({ size = 28, withText = true }) {
         onError={(e) => { e.currentTarget.style.display = 'none' }}
       />
       {withText && (
-        <span style={{ color: '#fafafa', fontSize: size * 0.8, fontWeight: 800 }}>
+        <span className="font-display" style={{ color: '#F5F4EE', fontSize: size * 0.85, fontWeight: 600 }}>
           {APP_NAME}
         </span>
       )}

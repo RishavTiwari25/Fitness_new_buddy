@@ -56,7 +56,7 @@ export default function App() {
   return (
     <div style={{ 
       minHeight: '100vh',  // Full screen height
-      backgroundColor: '#18181b', // Dark background
+      backgroundColor: '#1F1E1D', // Dark background
       display: 'flex',
       flexDirection: 'column'
     }}>
@@ -77,20 +77,20 @@ export default function App() {
         <div style={{ padding: '40px 0' }}>
           <div style={{ marginBottom: '24px' }}>
             {/* Main headline */}
-            <h1 style={{ 
-              fontSize: '56px', 
-              fontWeight: '800', 
-              color: '#fafafa',
+            <h1 className="font-display" style={{
+              fontSize: '60px',
+              fontWeight: '600',
+              color: '#F5F4EE',
               marginBottom: '16px',
-              lineHeight: '1.1'
+              lineHeight: '1.08'
             }}>
-              Your Fitness Journey<br />
-              <span style={{ color: '#D0FD3E' }}>Starts Here</span> {/* Accent color for "Starts Here" */}
+              Your fitness journey<br />
+              <span style={{ color: '#D97757', fontStyle: 'italic' }}>starts here.</span>
             </h1>
             {/* Subheading with feature description */}
             <p style={{ 
               fontSize: '20px', 
-              color: '#a1a1aa',
+              color: '#A6A29A',
               lineHeight: '1.6',
               marginBottom: '32px'
             }}>
@@ -105,55 +105,55 @@ export default function App() {
             {/* Feature 1: Track Progress */}
             <div style={{
               padding: '20px',
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               borderRadius: '16px',
-              border: '1px solid #3f3f46'
+              border: '1px solid #3A3937'
             }}>
-              <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>Track Progress</div>
-              <div style={{ color: '#a1a1aa', fontSize: '13px' }}>Monitor your gym streaks and achievements</div>
+              <div style={{ color: '#F5F4EE', fontWeight: '600', marginBottom: '4px' }}>Track Progress</div>
+              <div style={{ color: '#A6A29A', fontSize: '13px' }}>Monitor your gym streaks and achievements</div>
             </div>
             
             {/* Feature 2: Book Equipment */}
             <div style={{
               padding: '20px',
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               borderRadius: '16px',
-              border: '1px solid #3f3f46'
+              border: '1px solid #3A3937'
             }}>
-              <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>Book Equipment</div>
-              <div style={{ color: '#a1a1aa', fontSize: '13px' }}>Reserve gym equipment by time slots</div>
+              <div style={{ color: '#F5F4EE', fontWeight: '600', marginBottom: '4px' }}>Book Equipment</div>
+              <div style={{ color: '#A6A29A', fontSize: '13px' }}>Reserve gym equipment by time slots</div>
             </div>
             
             {/* Feature 3: AI Diet Analysis */}
             <div style={{
               padding: '20px',
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               borderRadius: '16px',
-              border: '1px solid #3f3f46'
+              border: '1px solid #3A3937'
             }}>
-              <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>AI Diet Analysis</div>
-              <div style={{ color: '#a1a1aa', fontSize: '13px' }}>Scan meals and get instant nutrition info</div>
+              <div style={{ color: '#F5F4EE', fontWeight: '600', marginBottom: '4px' }}>AI Diet Analysis</div>
+              <div style={{ color: '#A6A29A', fontSize: '13px' }}>Scan meals and get instant nutrition info</div>
             </div>
             
             {/* Feature 4: Earn Rewards */}
             <div style={{
               padding: '20px',
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               borderRadius: '16px',
-              border: '1px solid #3f3f46'
+              border: '1px solid #3A3937'
             }}>
-              <div style={{ color: '#fafafa', fontWeight: '600', marginBottom: '4px' }}>Earn Rewards</div>
-              <div style={{ color: '#a1a1aa', fontSize: '13px' }}>Get points and redeem gym perks</div>
+              <div style={{ color: '#F5F4EE', fontWeight: '600', marginBottom: '4px' }}>Earn Rewards</div>
+              <div style={{ color: '#A6A29A', fontSize: '13px' }}>Get points and redeem gym perks</div>
             </div>
           </div>
         </div>
 
         {/* ===== RIGHT SIDE: AUTHENTICATION FORM ===== */}
         <div style={{
-          backgroundColor: '#27272a',
+          backgroundColor: '#262624',
           borderRadius: '24px',
           padding: '48px',
-          border: '1px solid #3f3f46',
+          border: '1px solid #3A3937',
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)'
         }}>
           {/* Auth form header */}
@@ -161,10 +161,10 @@ export default function App() {
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
               <Logo size={36} withText={false} /> {/* App logo */}
             </div>
-            <h2 style={{ fontSize: '32px', fontWeight: '700', color: '#fafafa', marginBottom: '8px' }}>
+            <h2 className="font-display" style={{ fontSize: '32px', fontWeight: '600', color: '#F5F4EE', marginBottom: '8px' }}>
               {APP_NAME} {/* App name from branding */}
             </h2>
-            <p style={{ color: '#a1a1aa', fontSize: '14px' }}>Join thousands achieving their fitness goals</p>
+            <p style={{ color: '#A6A29A', fontSize: '14px' }}>Join thousands achieving their fitness goals</p>
           </div>
 
           {/* ===== LOGIN/SIGNUP TOGGLE BUTTONS ===== */}
@@ -180,8 +180,8 @@ export default function App() {
                 fontWeight: '600',
                 border: 'none',
                 cursor: 'pointer',
-                backgroundColor: view === 'login' ? '#D0FD3E' : '#3f3f46', // Highlight if active
-                color: view === 'login' ? '#000' : '#a1a1aa',
+                backgroundColor: view === 'login' ? '#D97757' : '#3A3937', // Highlight if active
+                color: view === 'login' ? '#FFFFFF' : '#A6A29A',
                 transition: 'all 0.3s ease'
               }}
             >
@@ -199,8 +199,8 @@ export default function App() {
                 fontWeight: '600',
                 border: 'none',
                 cursor: 'pointer',
-                backgroundColor: view === 'signup' ? '#D0FD3E' : '#3f3f46', // Highlight if active
-                color: view === 'signup' ? '#000' : '#a1a1aa',
+                backgroundColor: view === 'signup' ? '#D97757' : '#3A3937', // Highlight if active
+                color: view === 'signup' ? '#FFFFFF' : '#A6A29A',
                 transition: 'all 0.3s ease'
               }}
             >
@@ -217,16 +217,16 @@ export default function App() {
       {/* ===== ABOUT SECTION ===== */}
       {/* Features showcase and footer */}
       <div style={{
-        backgroundColor: '#27272a',
-        borderTop: '1px solid #3f3f46',
+        backgroundColor: '#262624',
+        borderTop: '1px solid #3A3937',
         padding: '64px 48px'
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-            <h2 style={{ fontSize: '36px', fontWeight: '700', color: '#fafafa', marginBottom: '16px' }}>
-              Why Choose {APP_NAME}?
+            <h2 className="font-display" style={{ fontSize: '36px', fontWeight: '600', color: '#F5F4EE', marginBottom: '16px' }}>
+              Why choose {APP_NAME}?
             </h2>
-            <p style={{ fontSize: '18px', color: '#a1a1aa', maxWidth: '600px', margin: '0 auto' }}>
+            <p style={{ fontSize: '18px', color: '#A6A29A', maxWidth: '600px', margin: '0 auto' }}>
               Everything you need to transform your fitness journey, all in one place
             </p>
           </div>
@@ -250,12 +250,12 @@ export default function App() {
                 justifyContent: 'center',
                 margin: '0 auto 20px'
               }}>
-                <Icon name="phone" size={34} color="#D0FD3E" strokeWidth={1.8} />
+                <Icon name="phone" size={34} color="#D97757" strokeWidth={1.8} />
               </div>
-              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#fafafa', marginBottom: '12px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#F5F4EE', marginBottom: '12px' }}>
                 Smart Gym Management
               </h3>
-              <p style={{ color: '#a1a1aa', fontSize: '14px', lineHeight: '1.6' }}>
+              <p style={{ color: '#A6A29A', fontSize: '14px', lineHeight: '1.6' }}>
                 Check real-time gym occupancy, book equipment slots, and scan QR codes for seamless check-ins. 
                 Never wait for equipment again!
               </p>
@@ -274,12 +274,12 @@ export default function App() {
                 justifyContent: 'center',
                 margin: '0 auto 20px'
               }}>
-                <Icon name="robot" size={34} color="#D0FD3E" strokeWidth={1.8} />
+                <Icon name="robot" size={34} color="#D97757" strokeWidth={1.8} />
               </div>
-              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#fafafa', marginBottom: '12px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#F5F4EE', marginBottom: '12px' }}>
                 AI-Powered Nutrition
               </h3>
-              <p style={{ color: '#a1a1aa', fontSize: '14px', lineHeight: '1.6' }}>
+              <p style={{ color: '#A6A29A', fontSize: '14px', lineHeight: '1.6' }}>
                 Snap a photo of your meal and get instant calorie breakdown with macros. 
                 Track your diet effortlessly with Google Gemini AI.
               </p>
@@ -298,12 +298,12 @@ export default function App() {
                 justifyContent: 'center',
                 margin: '0 auto 20px'
               }}>
-                <Icon name="activity" size={34} color="#D0FD3E" strokeWidth={1.8} />
+                <Icon name="activity" size={34} color="#D97757" strokeWidth={1.8} />
               </div>
-              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#fafafa', marginBottom: '12px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#F5F4EE', marginBottom: '12px' }}>
                 Stay Motivated
               </h3>
-              <p style={{ color: '#a1a1aa', fontSize: '14px', lineHeight: '1.6' }}>
+              <p style={{ color: '#A6A29A', fontSize: '14px', lineHeight: '1.6' }}>
                 Build streaks, earn reward points, compete on social feeds, and get personalized home workouts. 
                 Your fitness companion 24/7.
               </p>
@@ -314,9 +314,9 @@ export default function App() {
           <div style={{
             textAlign: 'center',
             paddingTop: '32px',
-            borderTop: '1px solid #3f3f46'
+            borderTop: '1px solid #3A3937'
           }}>
-            <p style={{ color: '#a1a1aa', fontSize: '14px' }}>
+            <p style={{ color: '#A6A29A', fontSize: '14px' }}>
               © 2025 {APP_NAME}. Built for gym owners, trainers, and fitness enthusiasts.
             </p>
           </div>

@@ -121,7 +121,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
         marginBottom: '16px'
       }}>
         <h4 style={{
-          color: '#fafafa',
+          color: '#F5F4EE',
           fontSize: '18px',
           fontWeight: '700',
           margin: 0
@@ -133,9 +133,9 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
           disabled={loadingAlts}
           style={{
             padding: '8px 16px',
-            backgroundColor: '#3f3f46',
-            color: '#D0FD3E',
-            border: '1px solid #D0FD3E',
+            backgroundColor: '#3A3937',
+            color: '#D97757',
+            border: '1px solid #D97757',
             borderRadius: '8px',
             fontSize: '13px',
             fontWeight: '600',
@@ -147,11 +147,11 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
           }}
           onMouseEnter={(e) => {
             if (!loadingAlts) {
-              e.target.style.backgroundColor = '#52525b'
+              e.target.style.backgroundColor = '#4C4A46'
             }
           }}
           onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#3f3f46'
+            e.target.style.backgroundColor = '#3A3937'
           }}
         >
           {loadingAlts ? 'Loading…' : 'View Alternatives'}
@@ -175,8 +175,8 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
             <div 
               key={s.slotTime} 
               style={{ 
-                backgroundColor: '#27272a',
-                border: '1px solid #3f3f46',
+                backgroundColor: '#262624',
+                border: '1px solid #3A3937',
                 borderRadius: '12px',
                 padding: '16px',
                 display: 'flex',
@@ -189,7 +189,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
               <div style={{
                 fontSize: '16px',
                 fontWeight: '700',
-                color: '#fafafa'
+                color: '#F5F4EE'
               }}>
                 {label}
               </div>
@@ -221,7 +221,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                 {haveActive && (
                   <div style={{
                     fontSize: '12px',
-                    color: '#a1a1aa',
+                    color: '#A6A29A',
                     fontStyle: 'italic',
                     textAlign: 'center',
                     padding: '8px'
@@ -237,8 +237,8 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                     style={{
                       width: '100%',
                       padding: '10px 16px',
-                      backgroundColor: '#D0FD3E',
-                      color: '#18181b',
+                      backgroundColor: '#D97757',
+                      color: '#FFFFFF',
                       border: 'none',
                       borderRadius: '8px',
                       fontSize: '14px',
@@ -251,11 +251,11 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       gap: '6px'
                     }}
                     onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#c4ed38'
+                      e.target.style.backgroundColor = '#C4664A'
                       e.target.style.transform = 'translateY(-1px)'
                     }}
                     onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#D0FD3E'
+                      e.target.style.backgroundColor = '#D97757'
                       e.target.style.transform = 'translateY(0)'
                     }}
                   >
@@ -270,8 +270,8 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                     style={{
                       width: '100%',
                       padding: '10px 16px',
-                      backgroundColor: '#3f3f46',
-                      color: '#fafafa',
+                      backgroundColor: '#3A3937',
+                      color: '#F5F4EE',
                       border: 'none',
                       borderRadius: '8px',
                       fontSize: '14px',
@@ -284,11 +284,11 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       gap: '6px'
                     }}
                     onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#52525b'
+                      e.target.style.backgroundColor = '#4C4A46'
                       e.target.style.transform = 'translateY(-1px)'
                     }}
                     onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#3f3f46'
+                      e.target.style.backgroundColor = '#3A3937'
                       e.target.style.transform = 'translateY(0)'
                     }}
                   >
@@ -304,8 +304,8 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       width: '100%',
                       padding: '10px 16px',
                       backgroundColor: 'transparent',
-                      color: '#D0FD3E',
-                      border: '2px solid #D0FD3E',
+                      color: '#D97757',
+                      border: '2px solid #D97757',
                       borderRadius: '8px',
                       fontSize: '14px',
                       fontWeight: '700',
@@ -317,7 +317,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       gap: '6px'
                     }}
                     onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = 'rgba(208, 253, 62, 0.1)'
+                      e.target.style.backgroundColor = 'rgba(217, 119, 87, 0.1)'
                       e.target.style.transform = 'translateY(-1px)'
                     }}
                     onMouseLeave={(e) => {
@@ -336,9 +336,9 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                     style={{
                       width: '100%',
                       padding: '10px 16px',
-                      backgroundColor: '#3f3f46',
-                      color: '#fafafa',
-                      border: '1px solid #52525b',
+                      backgroundColor: '#3A3937',
+                      color: '#F5F4EE',
+                      border: '1px solid #4C4A46',
                       borderRadius: '8px',
                       fontSize: '13px',
                       fontWeight: '600',
@@ -350,10 +350,10 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       gap: '6px'
                     }}
                     onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#52525b'
+                      e.target.style.backgroundColor = '#4C4A46'
                     }}
                     onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#3f3f46'
+                      e.target.style.backgroundColor = '#3A3937'
                     }}
                   >
                     <Icon name="bolt" size={12} style={{ verticalAlign: '-1px', marginRight: 4 }} />Take Idle Slot
@@ -383,12 +383,12 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
         <div style={{
           textAlign: 'center',
           padding: '40px 20px',
-          backgroundColor: '#27272a',
+          backgroundColor: '#262624',
           borderRadius: '12px',
-          border: '1px solid #3f3f46'
+          border: '1px solid #3A3937'
         }}>
-          <div style={{ marginBottom: '12px' }}><Icon name="calendar" size={28} color="#D0FD3E" /></div>
-          <div style={{ color: '#a1a1aa', fontSize: '14px' }}>
+          <div style={{ marginBottom: '12px' }}><Icon name="calendar" size={28} color="#D97757" /></div>
+          <div style={{ color: '#A6A29A', fontSize: '14px' }}>
             No upcoming time slots available
           </div>
         </div>
@@ -417,7 +417,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
               left: 0,
               right: 0,
               maxHeight: '80vh',
-              backgroundColor: '#27272a',
+              backgroundColor: '#262624',
               borderTopLeftRadius: '24px',
               borderTopRightRadius: '24px',
               zIndex: 1000,
@@ -430,7 +430,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
             {/* Modal Header */}
             <div style={{
               padding: '24px',
-              borderBottom: '1px solid #3f3f46',
+              borderBottom: '1px solid #3A3937',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center'
@@ -439,14 +439,14 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                 <h3 style={{
                   fontSize: '24px',
                   fontWeight: '800',
-                  color: '#D0FD3E',
+                  color: '#D97757',
                   margin: '0 0 4px 0'
                 }}>
                   Alternative Exercises
                 </h3>
                 <p style={{
                   fontSize: '14px',
-                  color: '#a1a1aa',
+                  color: '#A6A29A',
                   margin: 0
                 }}>
                   Try these exercises while {equipment.name} is busy
@@ -458,9 +458,9 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                   width: '36px',
                   height: '36px',
                   borderRadius: '50%',
-                  backgroundColor: '#3f3f46',
+                  backgroundColor: '#3A3937',
                   border: 'none',
-                  color: '#fafafa',
+                  color: '#F5F4EE',
                   fontSize: '20px',
                   cursor: 'pointer',
                   display: 'flex',
@@ -468,8 +468,8 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                   justifyContent: 'center',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#52525b'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#3f3f46'}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#4C4A46'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#3A3937'}
               >
                 ×
               </button>
@@ -485,9 +485,9 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                 <div style={{
                   textAlign: 'center',
                   padding: '40px 20px',
-                  color: '#a1a1aa'
+                  color: '#A6A29A'
                 }}>
-                  <div style={{ marginBottom: '16px' }}><Icon name="help" size={38} color="#D0FD3E" /></div>
+                  <div style={{ marginBottom: '16px' }}><Icon name="help" size={38} color="#D97757" /></div>
                   <div>No alternative exercises found</div>
                 </div>
               ) : (
@@ -500,19 +500,19 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                     <div
                       key={alt.id}
                       style={{
-                        backgroundColor: '#18181b',
+                        backgroundColor: '#1F1E1D',
                         borderRadius: '12px',
                         padding: '20px',
-                        border: '1px solid #3f3f46',
+                        border: '1px solid #3A3937',
                         transition: 'border-color 0.2s, transform 0.2s',
                         cursor: 'pointer'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = '#D0FD3E'
+                        e.currentTarget.style.borderColor = '#D97757'
                         e.currentTarget.style.transform = 'translateY(-2px)'
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = '#3f3f46'
+                        e.currentTarget.style.borderColor = '#3A3937'
                         e.currentTarget.style.transform = 'translateY(0)'
                       }}
                     >
@@ -521,21 +521,21 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                         width: '48px',
                         height: '48px',
                         borderRadius: '12px',
-                        backgroundColor: '#3f3f46',
+                        backgroundColor: '#3A3937',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '24px',
                         marginBottom: '12px'
                       }}>
-                        <Icon name="dumbbell" size={24} color="#D0FD3E" />
+                        <Icon name="dumbbell" size={24} color="#D97757" />
                       </div>
 
                       {/* Exercise Name */}
                       <h4 style={{
                         fontSize: '16px',
                         fontWeight: '700',
-                        color: '#fafafa',
+                        color: '#F5F4EE',
                         marginBottom: '8px',
                         lineHeight: '1.3'
                       }}>
@@ -546,8 +546,8 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       <div style={{
                         display: 'inline-block',
                         padding: '4px 12px',
-                        backgroundColor: '#D0FD3E',
-                        color: '#18181b',
+                        backgroundColor: '#D97757',
+                        color: '#FFFFFF',
                         borderRadius: '12px',
                         fontSize: '12px',
                         fontWeight: '600',
@@ -560,10 +560,10 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       {alt.equipment_needed && (
                         <div style={{
                           fontSize: '13px',
-                          color: '#a1a1aa',
+                          color: '#A6A29A',
                           marginBottom: '8px'
                         }}>
-                          Equipment: <span style={{ color: '#d4d4d8' }}>{alt.equipment_needed}</span>
+                          Equipment: <span style={{ color: '#D9D5CC' }}>{alt.equipment_needed}</span>
                         </div>
                       )}
 
@@ -571,7 +571,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
                       {alt.instructions && (
                         <p style={{
                           fontSize: '13px',
-                          color: '#a1a1aa',
+                          color: '#A6A29A',
                           lineHeight: '1.5',
                           margin: 0
                         }}>

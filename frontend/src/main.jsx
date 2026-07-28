@@ -6,7 +6,7 @@ import './index.css'
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThreeBackground accent="#D0FD3E" />
+    <ThreeBackground accent="#D97757" />
     <App />
   </React.StrictMode>
 )

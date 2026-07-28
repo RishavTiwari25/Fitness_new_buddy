@@ -19,7 +19,7 @@ import ContactFooter from './ContactFooter'
 import NotificationsBell from './NotificationsBell'
 import BrowseEquipment from './BrowseEquipment'
 
-const ACCENT = '#D0FD3E'
+const ACCENT = '#D97757'
 // Framewright easing: fast start, long decel to rest (easeOutExpo-ish)
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -96,7 +96,7 @@ function CircularProgress({ percentage, label, value, color = ACCENT }) {
         {/* Center value — sharp, level, still (framewright: readable content never moves) */}
         <div style={{
           position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 700, color: '#fafafa', letterSpacing: '-0.02em',
+          fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 700, color: '#F5F4EE', letterSpacing: '-0.02em',
         }}>
           {typeof value === 'number'
             ? <CountUp to={value} />
@@ -104,7 +104,7 @@ function CircularProgress({ percentage, label, value, color = ACCENT }) {
         </div>
       </div>
       <div style={{ textAlign: 'center' }}>
-        <div style={{ color: '#fafafa', fontSize: '14px', fontWeight: 600 }}>{label}</div>
+        <div style={{ color: '#F5F4EE', fontSize: '14px', fontWeight: 600 }}>{label}</div>
         <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12px', marginTop: 2 }}>{Math.round(Math.min(percentage, 100))}% of goal</div>
       </div>
     </div>
@@ -172,7 +172,7 @@ export default function Dashboard({ token, onLogout }) {
 
   const navButtonStyle = (isActive) => ({
     backgroundColor: isActive ? ACCENT : 'transparent',
-    color: isActive ? '#0a0a0a' : 'rgba(255,255,255,0.62)',
+    color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.62)',
     border: '1px solid ' + (isActive ? 'transparent' : 'transparent'),
     padding: '11px 14px',
     borderRadius: '10px',
@@ -188,7 +188,7 @@ export default function Dashboard({ token, onLogout }) {
   const navHover = (e, isActive) => {
     if (isActive) return
     e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
-    e.currentTarget.style.color = '#fafafa'
+    e.currentTarget.style.color = '#F5F4EE'
   }
   const navLeave = (e, isActive) => {
     if (isActive) return
@@ -212,7 +212,7 @@ export default function Dashboard({ token, onLogout }) {
         onMouseEnter={(e) => navHover(e, active)}
         onMouseLeave={(e) => navLeave(e, active)}
       >
-        <span style={{ display: 'inline-flex', width: 20, justifyContent: 'center', color: active ? '#0a0a0a' : ACCENT }}>
+        <span style={{ display: 'inline-flex', width: 20, justifyContent: 'center', color: active ? '#FFFFFF' : ACCENT }}>
           <Icon name={NAV_ICONS[id]} size={18} />
         </span>
         {children}
@@ -293,11 +293,11 @@ export default function Dashboard({ token, onLogout }) {
           >
             {/* Welcome Header */}
             <motion.div variants={itemVar} style={{ marginBottom: '30px' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 9999, background: 'rgba(208,253,62,0.10)', border: '1px solid rgba(208,253,62,0.22)', marginBottom: 16 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 9999, background: 'rgba(217,119,87,0.10)', border: '1px solid rgba(217,119,87,0.22)', marginBottom: 16 }}>
                 <span style={{ width: 6, height: 6, borderRadius: 9999, background: ACCENT, boxShadow: `0 0 8px ${ACCENT}` }} />
                 <span style={{ color: ACCENT, fontSize: 12, fontWeight: 600, letterSpacing: 0.3 }}>Today's session</span>
               </div>
-              <h1 className="font-display" style={{ fontSize: 'clamp(30px, 4vw, 44px)', fontWeight: 700, color: '#fafafa', marginBottom: '8px', lineHeight: 1.08 }}>
+              <h1 className="font-display" style={{ fontSize: 'clamp(30px, 4vw, 44px)', fontWeight: 700, color: '#F5F4EE', marginBottom: '8px', lineHeight: 1.08 }}>
                 Hello, {profile?.name || profile?.email?.split('@')[0] || 'there'}.
               </h1>
               <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '16px' }}>Ready to crush your fitness goals today?</p>
@@ -306,7 +306,7 @@ export default function Dashboard({ token, onLogout }) {
             {/* Progress Card */}
             <motion.div variants={itemVar} className="glass" style={{ borderRadius: '20px', padding: '28px', marginBottom: '22px' }}>
               <div style={{ marginBottom: '24px' }}>
-                <h3 className="font-display" style={{ fontSize: '19px', fontWeight: 600, color: '#fafafa', marginBottom: '4px' }}>Your Progress</h3>
+                <h3 className="font-display" style={{ fontSize: '19px', fontWeight: 600, color: '#F5F4EE', marginBottom: '4px' }}>Your Progress</h3>
                 <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13.5px' }}>Streaks and points, updated in real time</p>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '20px', justifyItems: 'center' }}>
@@ -319,7 +319,7 @@ export default function Dashboard({ token, onLogout }) {
             {/* Recent Bookings */}
             <motion.div variants={itemVar} className="glass" style={{ borderRadius: '20px', padding: '28px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-                <h3 className="font-display" style={{ fontSize: '19px', fontWeight: 600, color: '#fafafa' }}>Recent Bookings</h3>
+                <h3 className="font-display" style={{ fontSize: '19px', fontWeight: 600, color: '#F5F4EE' }}>Recent Bookings</h3>
                 <button onClick={() => setView('myBookingsNew')} style={{ background: 'transparent', color: ACCENT, border: 'none', fontSize: '14px', fontWeight: 600, cursor: 'pointer', padding: '6px 10px' }}>
                   See all →
                 </button>
@@ -337,7 +337,7 @@ export default function Dashboard({ token, onLogout }) {
                         style={{ padding: '14px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                       >
                         <div>
-                          <div style={{ color: '#fafafa', fontWeight: 600, marginBottom: '3px' }}>{booking.equipment_name || 'Equipment'}</div>
+                          <div style={{ color: '#F5F4EE', fontWeight: 600, marginBottom: '3px' }}>{booking.equipment_name || 'Equipment'}</div>
                           <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12.5px' }}>{booking.slot_date} at {booking.slot_time}</div>
                         </div>
                         {/* Status chip: dot + label, tinted border, meaning by colour */}

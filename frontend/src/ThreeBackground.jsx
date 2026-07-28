@@ -13,7 +13,7 @@ import * as THREE from 'three'
  * a sparse particle field. Fixed behind all content, non-interactive, low opacity.
  * Honours prefers-reduced-motion (renders a single still frame, no RAF loop).
  */
-export default function ThreeBackground({ accent = '#D0FD3E' }) {
+export default function ThreeBackground({ accent = '#D97757' }) {
   const mountRef = useRef(null)
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function ThreeBackground({ accent = '#D0FD3E' }) {
     const accentColor = new THREE.Color(accent)
 
     const scene = new THREE.Scene()
-    scene.fog = new THREE.FogExp2(0x0b0b0d, 0.055)
+    scene.fog = new THREE.FogExp2(0x14110f, 0.055) // warm smoke
 
     const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100)
     camera.position.set(0, 0, 9)
@@ -51,7 +51,7 @@ export default function ThreeBackground({ accent = '#D0FD3E' }) {
     // Faint solid shell for depth (dark, barely-there faces)
     const shell = new THREE.Mesh(
       icoGeo,
-      new THREE.MeshBasicMaterial({ color: 0x14140f, transparent: true, opacity: 0.35 })
+      new THREE.MeshBasicMaterial({ color: 0x241c17, transparent: true, opacity: 0.35 }) // warm clay shell
     )
 
     // Glowing core — reads as an energy source, additive so it never muddies
@@ -82,7 +82,7 @@ export default function ThreeBackground({ accent = '#D0FD3E' }) {
     pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     const particles = new THREE.Points(
       pGeo,
-      new THREE.PointsMaterial({ color: 0xffffff, size: 0.028, transparent: true, opacity: 0.32, sizeAttenuation: true })
+      new THREE.PointsMaterial({ color: 0xf3ead9, size: 0.028, transparent: true, opacity: 0.3, sizeAttenuation: true }) // warm ember dust
     )
     scene.add(particles)
 
