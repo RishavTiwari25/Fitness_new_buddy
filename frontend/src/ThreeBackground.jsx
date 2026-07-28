@@ -45,7 +45,7 @@ export default function ThreeBackground({ accent = '#D97757' }) {
     const icoGeo = new THREE.IcosahedronGeometry(2.7, 1)
     const wire = new THREE.LineSegments(
       new THREE.WireframeGeometry(icoGeo),
-      new THREE.LineBasicMaterial({ color: accentColor, transparent: true, opacity: 0.14 })
+      new THREE.LineBasicMaterial({ color: accentColor, transparent: true, opacity: 0.07 })
     )
 
     // Faint solid shell for depth (dark, barely-there faces)
@@ -169,7 +169,7 @@ export default function ThreeBackground({ accent = '#D97757' }) {
         inset: 0,
         zIndex: 0,
         pointerEvents: 'none',
-        opacity: 0.55,
+        opacity: 0.35,
       }}
     />
   )

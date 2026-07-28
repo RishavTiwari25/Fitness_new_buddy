@@ -260,7 +260,7 @@ export default function MemberHome({ token, defaultGymId }) {
 
             {myBookings.length > 0 && (
               <div style={{ marginTop: 12, backgroundColor: '#262624', border: '1px solid #3A3937', borderRadius: 12, padding: 12, color: '#F5F4EE' }}>
-                <div style={{ fontWeight: 800, marginBottom: 6 }}>Your active booking:</div>
+                <div style={{ fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 6 }}>Your active booking:</div>
                 {myBookings.map(b => (
                   <div key={b.id} style={{ fontSize: 14 }}>• {b.equipment_name} at {b.gym_name} since {b.started_at}</div>
                 ))}
@@ -273,7 +273,7 @@ export default function MemberHome({ token, defaultGymId }) {
         {showSlotsFor && (
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }} onClick={() => setShowSlotsFor(null)}>
             <div style={{ background: '#262624', border: '1px solid #3A3937', color: '#F5F4EE', padding: 16, width: 640, maxHeight: '80vh', overflow: 'auto', borderRadius: 16 }} onClick={e => e.stopPropagation()}>
-              <h3 style={{ marginTop: 0, fontWeight: 800 }}>{showSlotsFor.name}</h3>
+              <h3 style={{ marginTop: 0, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{showSlotsFor.name}</h3>
               <p style={{ color: '#A6A29A' }}>Book a 15-minute time slot, join waitlist when full, or take an idle slot after start.</p>
               <EquipmentSlots token={token} equipment={showSlotsFor} onBooked={() => { loadMyBookings(); }} />
               <div style={{ textAlign: 'right', marginTop: 10 }}>

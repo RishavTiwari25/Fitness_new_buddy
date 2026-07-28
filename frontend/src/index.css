@@ -77,10 +77,13 @@ body {
   font-weight: 400; /* the mock's serif headings sit at 400 */
 }
 
-/* Typography */
+/* Typography — headings render in the Newsreader serif (mock system) */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 500;
   color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
   margin: 0;
 }
 

@@ -187,7 +187,7 @@ export default function Profile({ token, profile, onUpdate }) {
         {/* Username */}
         <h1 style={{
           fontSize: '32px',
-          fontWeight: '800',
+          fontWeight: 600, fontFamily: 'var(--font-display)',
           color: '#F5F4EE',
           marginBottom: '8px'
         }}>
@@ -295,7 +295,7 @@ export default function Profile({ token, profile, onUpdate }) {
         }}>
           <h2 style={{
             fontSize: '24px',
-            fontWeight: '800',
+            fontWeight: 600, fontFamily: 'var(--font-display)',
             color: '#D97757',
             marginBottom: '24px'
           }}>
@@ -483,7 +483,7 @@ export default function Profile({ token, profile, onUpdate }) {
       }}>
         <h2 style={{
           fontSize: '24px',
-          fontWeight: '800',
+          fontWeight: 600, fontFamily: 'var(--font-display)',
           color: '#D97757',
           marginBottom: '16px'
         }}>
@@ -508,7 +508,7 @@ export default function Profile({ token, profile, onUpdate }) {
       }}>
         <h2 style={{
           fontSize: '24px',
-          fontWeight: '800',
+          fontWeight: 600, fontFamily: 'var(--font-display)',
           color: '#D97757',
           marginBottom: '24px'
         }}>
@@ -531,7 +531,7 @@ export default function Profile({ token, profile, onUpdate }) {
             <div style={{ marginBottom: '8px' }}><Icon name="flame" size={30} color="#D97757" /></div>
             <div style={{
               fontSize: '28px',
-              fontWeight: '800',
+              fontWeight: 600, fontFamily: 'var(--font-display)',
               color: '#F5F4EE',
               marginBottom: '4px'
             }}>
@@ -559,7 +559,7 @@ export default function Profile({ token, profile, onUpdate }) {
             <div style={{ marginBottom: '8px' }}><Icon name="diet" size={30} color="#D97757" /></div>
             <div style={{
               fontSize: '28px',
-              fontWeight: '800',
+              fontWeight: 600, fontFamily: 'var(--font-display)',
               color: '#F5F4EE',
               marginBottom: '4px'
             }}>
@@ -587,7 +587,7 @@ export default function Profile({ token, profile, onUpdate }) {
             <div style={{ marginBottom: '8px' }}><Icon name="trophy" size={30} color="#D97757" /></div>
             <div style={{
               fontSize: '28px',
-              fontWeight: '800',
+              fontWeight: 600, fontFamily: 'var(--font-display)',
               color: '#D97757',
               marginBottom: '4px'
             }}>
@@ -615,7 +615,7 @@ export default function Profile({ token, profile, onUpdate }) {
             <div style={{ marginBottom: '8px' }}><Icon name="users" size={30} color="#D97757" /></div>
             <div style={{
               fontSize: '28px',
-              fontWeight: '800',
+              fontWeight: 600, fontFamily: 'var(--font-display)',
               color: '#F5F4EE',
               marginBottom: '4px'
             }} onClick={() => setFollowers(prev => ({ ...prev, open: !prev.open }))}>
@@ -655,7 +655,7 @@ export default function Profile({ token, profile, onUpdate }) {
             <div style={{ marginBottom: '8px' }}><Icon name="heart" size={30} color="#D97757" /></div>
             <div style={{
               fontSize: '28px',
-              fontWeight: '800',
+              fontWeight: 600, fontFamily: 'var(--font-display)',
               color: '#F5F4EE',
               marginBottom: '4px'
             }} onClick={() => setFollowing(prev => ({ ...prev, open: !prev.open }))}>
@@ -696,7 +696,7 @@ export default function Profile({ token, profile, onUpdate }) {
               <div style={{ marginBottom: '8px' }}><Icon name="star" size={30} color="#D97757" /></div>
               <div style={{
                 fontSize: '28px',
-                fontWeight: '800',
+                fontWeight: 600, fontFamily: 'var(--font-display)',
                 color: '#fbbf24',
                 marginBottom: '4px'
               }}>

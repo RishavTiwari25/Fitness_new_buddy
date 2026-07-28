@@ -87,7 +87,7 @@ export default function Diet({ token }) {
           <div>
             <h1 style={{
               fontSize: '32px',
-              fontWeight: '800',
+              fontWeight: 600, fontFamily: 'var(--font-display)',
               color: '#F5F4EE',
               marginBottom: '8px'
             }}>
@@ -336,7 +336,7 @@ export default function Diet({ token }) {
                   </div>
                   <div style={{
                     fontSize: '48px',
-                    fontWeight: '800',
+                    fontWeight: 600, fontFamily: 'var(--font-display)',
                     color: '#D97757'
                   }}>
                     {analysis.calories ?? '—'}
@@ -570,7 +570,7 @@ export default function Diet({ token }) {
                 </div>
                 <div style={{
                   fontSize: '56px',
-                  fontWeight: '800',
+                  fontWeight: 600, fontFamily: 'var(--font-display)',
                   color: '#D97757',
                   lineHeight: '1'
                 }}>

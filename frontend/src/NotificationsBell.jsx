@@ -73,15 +73,15 @@ export default function NotificationsBell({ token }) {
     return () => document.removeEventListener('mousedown', onDocClick)
   }, [open])
 
+  // Mock's "Alerts" header button: panel bg, hairline border, icon + label
   const buttonStyle = {
     position: 'relative',
-    backgroundColor: '#262624',
-    color: '#F5F4EE',
-    border: '1px solid #3A3937',
-    borderRadius: '12px',
-    padding: '8px 12px',
-    cursor: 'pointer',
-    fontWeight: 700
+    display: 'flex', alignItems: 'center', gap: 8,
+    padding: '10px 14px', borderRadius: 11,
+    border: '1px solid rgba(255,255,255,0.08)',
+    background: '#262624', color: '#A6A29A',
+    fontSize: 13.5, fontWeight: 500, cursor: 'pointer',
+    boxShadow: '0 1px 0 rgba(255,255,255,0.05) inset',
   }
 
   return (
@@ -90,17 +90,20 @@ export default function NotificationsBell({ token }) {
         onClick={async () => { setOpen(!open); if (!open) await loadList() }}
         style={buttonStyle}
         title="Notifications"
+        onMouseEnter={e => e.currentTarget.style.color = '#F5F4EE'}
+        onMouseLeave={e => e.currentTarget.style.color = '#A6A29A'}
       >
-        <Icon name="bell" size={20} />
+        <Icon name="bell" size={17} strokeWidth={1.5} />
+        <span>Alerts</span>
         {unread > 0 && (
-          <span style={{ position: 'absolute', top: -4, right: -4, background: '#D97757', color: '#FFFFFF', borderRadius: 9999, padding: '2px 6px', fontSize: 12, fontWeight: 800 }}>
+          <span style={{ fontSize: 11.5, fontWeight: 600, color: '#F0B79C', background: 'rgba(217,119,87,0.14)', border: '1px solid rgba(217,119,87,0.32)', borderRadius: 999, padding: '1px 7px' }}>
             {unread}
           </span>
         )}
       </button>
 
       {open && (
-        <div style={{ position: 'absolute', right: 0, marginTop: 8, width: 360, background: '#262624', border: '1px solid #3A3937', borderRadius: 12, boxShadow: '0 10px 30px rgba(0,0,0,0.3)', overflow: 'hidden', zIndex: 1000 }}>
+        <div style={{ position: 'absolute', right: 0, marginTop: 8, width: 360, background: '#262624', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 14, boxShadow: '0 1px 0 rgba(255,255,255,0.06) inset, 0 22px 44px -20px rgba(0,0,0,0.9)', overflow: 'hidden', zIndex: 1000 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderBottom: '1px solid #3A3937' }}>
             <div style={{ color: '#F5F4EE', fontWeight: 700 }}>Notifications</div>
             <button onClick={markAll} style={{ background: 'transparent', border: 'none', color: '#D97757', fontWeight: 700, cursor: 'pointer' }}>Mark all read</button>

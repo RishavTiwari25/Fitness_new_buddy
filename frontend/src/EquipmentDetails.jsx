@@ -266,7 +266,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
         <section style={{ marginBottom: '32px' }}>
           <h2 style={{
             fontSize: '28px',
-            fontWeight: '800',
+            fontWeight: 600, fontFamily: 'var(--font-display)',
             color: '#F5F4EE',
             marginBottom: '16px'
           }}>
@@ -289,7 +289,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
         <section style={{ marginBottom: '32px' }}>
           <h2 style={{
             fontSize: '28px',
-            fontWeight: '800',
+            fontWeight: 600, fontFamily: 'var(--font-display)',
             color: '#F5F4EE',
             marginBottom: '16px'
           }}>
@@ -462,7 +462,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
         <section style={{ marginBottom: '32px' }}>
           <h2 style={{
             fontSize: '28px',
-            fontWeight: '800',
+            fontWeight: 600, fontFamily: 'var(--font-display)',
             color: '#F5F4EE',
             marginBottom: '16px'
           }}>
@@ -498,7 +498,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
         <section style={{ marginBottom: '32px' }}>
           <h2 style={{
             fontSize: '28px',
-            fontWeight: '800',
+            fontWeight: 600, fontFamily: 'var(--font-display)',
             color: '#F5F4EE',
             marginBottom: '16px'
           }}>
@@ -565,7 +565,7 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
         <section style={{ marginBottom: '32px' }}>
           <h2 style={{
             fontSize: '28px',
-            fontWeight: '800',
+            fontWeight: 600, fontFamily: 'var(--font-display)',
             color: '#F5F4EE',
             marginBottom: '16px'
           }}>

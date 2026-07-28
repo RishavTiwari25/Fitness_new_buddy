@@ -72,8 +72,8 @@ export default function MyPayments({ token }) {
         <div className="text-secondary" style={{ marginBottom: 16 }}>No membership plan assigned yet.</div>
       )}
 
-      <div className="card" style={{ padding: 16, marginBottom: 16 }}>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="neu-tile" style={{ padding: 16, marginBottom: 16 }}>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ flex: '1 1 220px' }}>
             <label className="text-secondary" style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>Pay amount</label>
             <input
@@ -89,18 +89,17 @@ export default function MyPayments({ token }) {
           </button>
         </div>
         {msg && (
-          <div
-            style={{
-              marginTop: 10,
-              background: 'rgba(217, 119, 87, 0.12)',
-              color: 'var(--accent-lime)',
-              border: '1px solid var(--accent-lime)',
-              padding: '10px 12px',
-              borderRadius: 12,
-              fontWeight: 600,
-              width: 'fit-content'
-            }}
-          >
+          <div style={{
+            marginTop: 12,
+            background: 'rgba(217, 119, 87, 0.12)',
+            color: '#F0B79C',
+            border: '1px solid rgba(217, 119, 87, 0.3)',
+            padding: '9px 13px',
+            borderRadius: 10,
+            fontSize: 13,
+            fontWeight: 500,
+            width: 'fit-content',
+          }}>
             {msg}
           </div>
         )}
@@ -113,41 +112,45 @@ export default function MyPayments({ token }) {
         )}
 
         {payments.length > 0 && (
-          <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div className="neu-tile" style={{ padding: 0, overflow: 'hidden' }}>
             <div style={{
               display: 'grid',
               gridTemplateColumns: '2fr 1fr 1fr',
-              gap: 0,
-              background: 'var(--bg-card)',
-              borderBottom: '1px solid var(--border-light)',
               padding: '12px 16px',
-              fontSize: 12,
-              color: 'var(--text-secondary)'
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: '#A6A29A',
+              borderBottom: '1px solid var(--hairline)',
             }}>
               <div>Date</div>
               <div>Amount</div>
               <div>Method</div>
             </div>
-            {payments.map(p => (
+            {payments.map((p, i) => (
               <div
-                key={p.id}
+                key={p.id ?? i}
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '2fr 1fr 1fr',
-                  gap: 0,
+                  alignItems: 'center',
                   padding: '14px 16px',
-                  borderBottom: '1px solid var(--border-light)'
+                  fontSize: 14,
+                  borderBottom: i < payments.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
                 }}
               >
-                <div>{p.created_at}</div>
-                <div style={{ fontWeight: 700 }}>₹{p.amount}</div>
+                <div style={{ color: '#A6A29A' }}>{p.created_at}</div>
+                <div className="font-display" style={{ fontSize: 15 }}>₹{p.amount}</div>
                 <div>
                   <span style={{
-                    background: 'var(--bg-secondary)',
-                    border: '1px solid var(--border-color)',
-                    padding: '6px 10px',
-                    borderRadius: 9999,
-                    fontSize: 12
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid var(--hairline)',
+                    padding: '4px 10px',
+                    borderRadius: 999,
+                    fontSize: 12,
+                    color: '#CFCCC4',
+                    textTransform: 'capitalize',
                   }}>{p.method || '—'}</span>
                 </div>
               </div>

@@ -13,7 +13,6 @@ import MyBookingsNew from './MyBookingsNew'
 import Rewards from './Rewards'
 import HomeWorkout from './HomeWorkout'
 import MyPayments from './MyPayments'
-import ContactFooter from './ContactFooter'
 import NotificationsBell from './NotificationsBell'
 import BrowseEquipment from './BrowseEquipment'
 
@@ -330,7 +329,6 @@ export default function Dashboard({ token, onLogout }) {
           {view === 'payments' && payload.role === 'member' && <MyPayments token={token} />}
         </div>
 
-        {view !== 'coach' && <ContactFooter />}
       </main>
     </div>
   )

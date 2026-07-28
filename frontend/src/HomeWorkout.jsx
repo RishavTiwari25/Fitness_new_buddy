@@ -79,7 +79,7 @@ export default function HomeWorkout({ token }) {
               color: '#FFFFFF',
               border: 'none',
               borderRadius: 12,
-              fontWeight: 800,
+              fontWeight: 600, fontFamily: 'var(--font-display)',
               cursor: loading ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s'
             }}
@@ -105,7 +105,7 @@ export default function HomeWorkout({ token }) {
           <ol style={{ marginTop: 8, color: '#D9D5CC', paddingLeft: 20 }}>
             {plan.exercises.map((e, i) => (
               <li key={i} style={{ marginBottom: 8 }}>
-                <span style={{ fontWeight: 800, color: '#F5F4EE' }}>{e.name}</span>
+                <span style={{ fontWeight: 600, fontFamily: 'var(--font-display)', color: '#F5F4EE' }}>{e.name}</span>
                 <span style={{ color: '#A6A29A' }}>: {e.prescription}</span>
               </li>
             ))}

@@ -264,7 +264,7 @@ export default function ManagerDashboard({ token, activeTabProp }) {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#1F1E1D', padding: '24px' }}>
-      <h2 style={{ fontSize: 28, fontWeight: 800, color: '#F5F4EE', marginBottom: 16 }}>Gym Manager</h2>
+      <h2 style={{ fontSize: 28, fontWeight: 600, fontFamily: 'var(--font-display)', color: '#F5F4EE', marginBottom: 16 }}>Gym Manager</h2>
 
       <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
         {/* Left column: Create + Gyms */}
@@ -331,7 +331,7 @@ export default function ManagerDashboard({ token, activeTabProp }) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <div style={{ backgroundColor: '#1F1E1D', border: '1px solid #3A3937', borderRadius: 12, padding: 24, textAlign: 'center' }}>
                       <div style={{ color: '#A6A29A', fontSize: 14, marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>Total Live Users</div>
-                      <div style={{ color: '#D97757', fontSize: 48, fontWeight: 800, lineHeight: 1 }}>{occupancy ?? '0'}</div>
+                      <div style={{ color: '#D97757', fontSize: 48, fontWeight: 600, fontFamily: 'var(--font-display)', lineHeight: 1 }}>{occupancy ?? '0'}</div>
                     </div>
                     <div style={{ border: '1px dashed #3A3937', borderRadius: 12, padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <div style={{ color: '#A6A29A', marginBottom: 6 }}>QR for this gym</div>
@@ -522,7 +522,7 @@ export default function ManagerDashboard({ token, activeTabProp }) {
                 {leaderboard.length === 0 && <div style={{ color: '#666' }}>No members in this gym yet.</div>}
                 {leaderboard.map((m, idx) => (
                   <div key={m.user_id} style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #3A3937', background: idx === 0 ? '#1f2937' : 'transparent', borderRadius: idx === 0 ? 8 : 0 }}>
-                    <div style={{ width: 40, fontSize: 20, fontWeight: 800, color: idx === 0 ? '#D97757' : '#A6A29A' }}>#{idx + 1}</div>
+                    <div style={{ width: 40, fontSize: 20, fontWeight: 600, fontFamily: 'var(--font-display)', color: idx === 0 ? '#D97757' : '#A6A29A' }}>#{idx + 1}</div>
                     <div style={{ flex: 1, fontSize: 16, fontWeight: 600, color: '#F5F4EE' }}>{m.name}</div>
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#D97757' }}><Icon name="flame" size={14} style={{ verticalAlign: '-2px', marginRight: 4 }} />{m.gym_streak} days</div>
                   </div>

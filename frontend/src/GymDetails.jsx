@@ -57,7 +57,7 @@ export default function GymDetails({ token, gymId, onBack, onEnrolled }) {
 
       <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flexWrap: 'wrap' }}>
         <div style={{ flex: 2, minWidth: 300 }}>
-          <h1 style={{ fontSize: 42, fontWeight: 800, color: '#F5F4EE', margin: '0 0 8px 0' }}>{details.name}</h1>
+          <h1 style={{ fontSize: 42, fontWeight: 600, fontFamily: 'var(--font-display)', color: '#F5F4EE', margin: '0 0 8px 0' }}>{details.name}</h1>
           <p style={{ color: '#A6A29A', fontSize: 16, margin: '0 0 24px 0', display: 'flex', alignItems: 'center', gap: 8 }}><Icon name="pin" size={15} color="#D97757" /> {details.location || 'Location not specified'}</p>
           
           <div style={{ backgroundColor: '#262624', border: '1px solid #3A3937', borderRadius: 16, padding: 24, marginBottom: 24 }}>
@@ -114,7 +114,7 @@ export default function GymDetails({ token, gymId, onBack, onEnrolled }) {
                 You are currently enrolled here
               </div>
             ) : (
-              <button onClick={enroll} style={{ background: '#D97757', color: '#FFFFFF', border: 'none', borderRadius: 12, padding: '16px 24px', cursor: 'pointer', fontWeight: 800, fontSize: 18, width: '100%', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(217,119,87,0.2)' }}>
+              <button onClick={enroll} style={{ background: '#D97757', color: '#FFFFFF', border: 'none', borderRadius: 12, padding: '16px 24px', cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--font-display)', fontSize: 18, width: '100%', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(217,119,87,0.2)' }}>
                 Enroll Now
               </button>
             )}

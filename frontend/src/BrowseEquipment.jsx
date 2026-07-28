@@ -218,7 +218,7 @@ export default function BrowseEquipment({ token }) {
       <div style={{ marginBottom: '32px' }}>
         <h2 style={{ 
           fontSize: '32px', 
-          fontWeight: '800', 
+          fontWeight: 600, fontFamily: 'var(--font-display)', 
           color: '#F5F4EE',
           marginBottom: '8px' 
         }}>

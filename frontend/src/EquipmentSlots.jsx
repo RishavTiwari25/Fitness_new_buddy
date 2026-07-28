@@ -438,7 +438,7 @@ export default function EquipmentSlots({ token, equipment, onBooked }) {
               <div>
                 <h3 style={{
                   fontSize: '24px',
-                  fontWeight: '800',
+                  fontWeight: 600, fontFamily: 'var(--font-display)',
                   color: '#D97757',
                   margin: '0 0 4px 0'
                 }}>
