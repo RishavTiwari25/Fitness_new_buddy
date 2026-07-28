@@ -17,6 +17,14 @@ export default function BrowseEquipment({ token }) {
   const [showSort, setShowSort] = useState(false)
   const [difficultyFilter, setDifficultyFilter] = useState('All')
   const [muscleFilter, setMuscleFilter] = useState('All')
+  // AI tools (Feature 2 NL booking + Feature 3 semantic search)
+  const [aiQuery, setAiQuery] = useState('')
+  const [aiSearching, setAiSearching] = useState(false)
+  const [semanticScores, setSemanticScores] = useState(null)
+  const [aiBookText, setAiBookText] = useState('')
+  const [aiBookBusy, setAiBookBusy] = useState(false)
+  const [aiIntent, setAiIntent] = useState(null)
+  const [aiError, setAiError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [selectedEquipment, setSelectedEquipment] = useState(null) // For detail view
 
@@ -68,6 +76,48 @@ export default function BrowseEquipment({ token }) {
 
     setFilteredEquipment(filtered)
   }, [equipment, searchQuery, sortBy, difficultyFilter, muscleFilter])
+
+  // Feature 3: semantic search — embed the query + catalog server-side, rank by similarity
+  async function runSemantic() {
+    const q = aiQuery.trim()
+    if (!q || aiSearching || equipment.length === 0) return
+    setAiSearching(true); setAiError(null)
+    try {
+      const items = equipment.map(eq => ({ id: eq.id, text: `${eq.name}${eq.notes ? ' — ' + eq.notes : ''} (targets ${getEquipmentMeta(eq).muscles})` }))
+      const r = await fetch(`${API_BASE}/api/ai/search`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ query: q, items }),
+      })
+      const j = await r.json()
+      if (!r.ok) throw new Error(j.error || 'Search failed')
+      const map = {}; (j.results || []).forEach(x => { map[x.id] = x.score })
+      setSemanticScores(map)
+    } catch (e) { setAiError(e.message) } finally { setAiSearching(false) }
+  }
+
+  // Feature 2: parse a natural-language booking request into a structured intent
+  async function runBooking() {
+    const t = aiBookText.trim()
+    if (!t || aiBookBusy) return
+    setAiBookBusy(true); setAiError(null); setAiIntent(null)
+    try {
+      const today = new Date().toISOString().slice(0, 10)
+      const r = await fetch(`${API_BASE}/api/ai/parse-booking`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ text: t, equipment: equipment.map(e => e.name), today }),
+      })
+      const j = await r.json()
+      if (!r.ok) throw new Error(j.error || 'Could not parse request')
+      setAiIntent(j.intent)
+    } catch (e) { setAiError(e.message) } finally { setAiBookBusy(false) }
+  }
+
+  function openMatchedEquipment() {
+    const nm = String(aiIntent?.equipment || '').toLowerCase()
+    if (!nm) return
+    const eq = equipment.find(e => e.name.toLowerCase() === nm) || equipment.find(e => e.name.toLowerCase().includes(nm))
+    if (eq) setSelectedEquipment(eq)
+  }
 
   async function loadGyms() {
     try {
@@ -256,6 +306,52 @@ export default function BrowseEquipment({ token }) {
             </option>
           ))}
         </select>
+      </div>
+
+      {/* AI Tools — semantic search (F3) + natural-language booking (F2) */}
+      <div className="card" style={{ padding: 18, marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+          <span className="neu-badge" style={{ width: 34, height: 34, borderRadius: 9 }}><Icon name="robot" size={17} color="#D0FD3E" /></span>
+          <div className="font-display" style={{ color: '#fafafa', fontWeight: 600, fontSize: 15 }}>AI Tools</div>
+        </div>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+          <input
+            value={aiQuery}
+            onChange={e => setAiQuery(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') runSemantic() }}
+            placeholder="Smart search — e.g. “something for my chest” or “low-impact cardio”"
+            style={{ flex: '1 1 280px', padding: '11px 15px', background: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10, fontSize: 14, outline: 'none' }}
+          />
+          <button onClick={runSemantic} disabled={aiSearching || !aiQuery.trim()} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '0 16px', borderRadius: 10, border: 'none', background: aiSearching || !aiQuery.trim() ? '#52525b' : '#D0FD3E', color: '#0a0a0a', fontWeight: 700, fontSize: 13.5, cursor: aiSearching ? 'wait' : 'pointer' }}>
+            <Icon name="search" size={15} /> {aiSearching ? 'Ranking…' : 'Smart search'}
+          </button>
+          {semanticScores && (
+            <button onClick={() => { setSemanticScores(null); setAiQuery('') }} style={{ padding: '0 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>Clear</button>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <input
+            value={aiBookText}
+            onChange={e => setAiBookText(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') runBooking() }}
+            placeholder="Book in plain English — e.g. “book the treadmill tomorrow at 7am”"
+            style={{ flex: '1 1 280px', padding: '11px 15px', background: '#18181b', color: '#fafafa', border: '1px solid #3f3f46', borderRadius: 10, fontSize: 14, outline: 'none' }}
+          />
+          <button onClick={runBooking} disabled={aiBookBusy || !aiBookText.trim()} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '0 16px', borderRadius: 10, border: '1px solid rgba(208,253,62,0.3)', background: 'rgba(208,253,62,0.1)', color: '#D0FD3E', fontWeight: 700, fontSize: 13.5, cursor: aiBookBusy ? 'wait' : 'pointer' }}>
+            <Icon name="calendar" size={15} /> {aiBookBusy ? 'Parsing…' : 'AI book'}
+          </button>
+        </div>
+        {aiError && <div style={{ marginTop: 10, color: '#fca5a5', fontSize: 13 }}>{aiError}</div>}
+        {aiIntent && (
+          <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '10px 14px', borderRadius: 10, background: 'rgba(208,253,62,0.06)', border: '1px solid rgba(208,253,62,0.2)' }}>
+            <span style={{ color: '#e9e9ea', fontSize: 13.5 }}>{aiIntent.summary || 'Parsed your request.'}</span>
+            {aiIntent.equipment && (
+              <button onClick={openMatchedEquipment} style={{ padding: '6px 12px', borderRadius: 9999, border: 'none', background: '#D0FD3E', color: '#0a0a0a', fontWeight: 700, fontSize: 12.5, cursor: 'pointer' }}>
+                Open {aiIntent.equipment} →
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Filter/Search Bar */}
@@ -488,7 +584,7 @@ export default function BrowseEquipment({ token }) {
           gap: '24px',
           marginBottom: '40px'
         }}>
-          {filteredEquipment.map(eq => {
+          {(semanticScores ? [...filteredEquipment].sort((a, b) => (semanticScores[b.id] || 0) - (semanticScores[a.id] || 0)) : filteredEquipment).map(eq => {
             const meta = getEquipmentMeta(eq)
             const isBooked = !!eq.booking_id
             const bookedByMe = isBooked && eq.booking_user_id === user.id
