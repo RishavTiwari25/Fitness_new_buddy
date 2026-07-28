@@ -12,7 +12,10 @@ It combines gym operations, social engagement, and AI-assisted nutrition trackin
 - **Database:** SQLite (default) with MongoDB support in selected routes
 - **Auth:** JWT-based authentication
 - **Media Uploads:** Local uploads with optional Cloudinary
-- **AI Nutrition:** Google Gemini API
+- **AI:** Google Gemini — chat `gemini-2.5-flash`, embeddings `gemini-embedding-001` (powers diet analysis, AI Coach, weekly insights, semantic search, NL booking)
+- **Payments:** Stripe Checkout (hosted) + webhook
+- **Scheduling:** node-cron (weekly AI insights)
+- **UI:** three.js ambient background + Motion, glassmorphism/neumorphism, vector SVG icon set
 
 ## Core Features
 
@@ -23,6 +26,11 @@ It combines gym operations, social engagement, and AI-assisted nutrition trackin
 - AI meal image analysis for calories/macros
 - Daily diet log and streak tracking
 - Rewards and points tracking
+- **AI Coach** — retrieval-augmented chat grounded in your streaks/diet/bookings, with streaming replies
+- **AI Weekly Insights** — scheduled progress report (headline, wins, focus, consistency score)
+- **Semantic equipment search** — natural-language search ranked by embeddings
+- **Natural-language booking** — e.g. "book the treadmill tomorrow at 7am" → structured intent
+- **Stripe** membership payments (hosted Checkout + signed webhook)
 
 ## Project Structure
 
@@ -71,9 +79,13 @@ Frontend runs on Vite default port (usually `http://localhost:5173`).
 - `HOST` (default: `0.0.0.0`)
 - `JWT_SECRET` (required for auth)
 - `DB_FILE` (default local SQLite file)
-- `GOOGLE_API_KEY` (required for AI diet analysis)
+- `GOOGLE_API_KEY` (or `GEMINI_API_KEY`) — **required for all AI features** (diet analysis, AI Coach, insights, semantic search, NL booking)
   - supports **multiple keys** separated by commas for fallback
-- `GOOGLE_GEMINI_MODEL` (optional model override)
+- `GOOGLE_GEMINI_MODEL` (optional, default `gemini-2.5-flash`; embeddings always use `gemini-embedding-001`)
+- `STRIPE_SECRET_KEY` — Stripe payments (test key `sk_test_…`)
+- `STRIPE_WEBHOOK_SECRET` — `whsec_…`; required for the webhook to record payments
+- `STRIPE_CURRENCY` (optional, default `inr`), `PUBLIC_URL` (site origin for Stripe redirects)
+- `WEEKLY_INSIGHTS_CRON` (optional cron, default `0 8 * * 1` = Mon 08:00); `DISABLE_CRON=1` to turn the cron off
 - `UPLOADS_DIR` (optional uploads location)
 - `CLOUDINARY_URL` (optional cloud media storage)
 
@@ -104,6 +116,12 @@ Frontend runs on Vite default port (usually `http://localhost:5173`).
 - `GET /api/diet/logs?date=YYYY-MM-DD`
 - `POST /api/posts`
 - `GET /api/feed`
+- `POST /api/coach/chat` — AI Coach (streaming Server-Sent Events)
+- `POST /api/coach/insights` — weekly progress report (structured JSON)
+- `POST /api/ai/search` — semantic equipment search (embeddings + cosine)
+- `POST /api/ai/parse-booking` — natural-language booking → structured intent
+- `POST /api/payments/stripe/create-checkout-session` — start Stripe Checkout
+- `POST /api/payments/stripe/webhook` — Stripe events (records payment; raw body)
 
 Most protected routes require:
 
@@ -132,13 +150,43 @@ Get-NetTCPConnection -LocalPort 4000 -State Listen |
 - If you hit quota/rate limits, add fallback keys via comma-separated `GOOGLE_API_KEY`
 - If model issues occur, set `GOOGLE_GEMINI_MODEL` explicitly
 
-## Deployment Notes
+## Deploy & Environment Variables
 
-- Frontend can be deployed on Vercel
-- Backend can be deployed on Render
-- In Vercel project settings, set `VITE_API_URL` to your Render backend URL (example: `https://fitness-new-buddy.onrender.com`)
-- In Render backend settings, set `GOOGLE_API_KEY` (or `GEMINI_API_KEY`) for AI diet analysis to work
-- Use environment variables from `.env.example` in deployment dashboards
+Both services are Git-connected, so **pushing to `main` auto-deploys both**:
+
+- **Frontend → Vercel:** https://fitness-new-buddy.vercel.app
+- **Backend → Render:** https://fitness-new-buddy-1.onrender.com
+
+### Required environment variables (set in the deploy dashboards)
+
+**Render (backend) → Environment**
+
+| Variable | Purpose |
+| --- | --- |
+| `JWT_SECRET` | Signing key for auth (use a strong random value) |
+| `GOOGLE_API_KEY` | **All AI features** (diet, AI Coach, insights, semantic search, NL booking). Without it AI endpoints return `503`. |
+| `GOOGLE_GEMINI_MODEL` | Optional; default `gemini-2.5-flash` |
+| `STRIPE_SECRET_KEY` | Enables Stripe Checkout (`sk_test_…` for testing) |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_…`; required so the webhook can record payments |
+| `MONGODB_URI` | Optional; uses SQLite if unset |
+
+> `frontend/src/api.js` targets the Render backend in production automatically; set Vercel's `VITE_API_URL` only if you change backends.
+
+### Stripe webhook (so payments get recorded)
+
+1. **Stripe Dashboard → Developers → Webhooks → Add endpoint**
+   `https://fitness-new-buddy-1.onrender.com/api/payments/stripe/webhook`
+   Event: `checkout.session.completed`
+2. Copy the endpoint's **Signing secret** (`whsec_…`) into Render as `STRIPE_WEBHOOK_SECRET`.
+3. Test with card `4242 4242 4242 4242`, any future expiry + any CVC.
+
+Without the webhook, Checkout still completes and the user sees a success message, but the payment row is only written when Stripe can reach the endpoint above.
+
+### Weekly AI Insights cron
+
+Runs inside the backend process via `node-cron` (default **Monday 08:00**, `WEEKLY_INSIGHTS_CRON`). Each run notifies every member that their weekly report is ready; the full report is generated on demand when they open the AI Coach. Set `DISABLE_CRON=1` to turn it off, or move it to a Render Cron Job for multi-instance deploys.
+
+> **Never commit real keys.** `backend/.env` is git-ignored — put secrets there locally and in the dashboards for production.
 
 ## Security Notes
 
