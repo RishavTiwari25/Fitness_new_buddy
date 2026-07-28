@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { API_BASE } from './api'
+import Icon from './components/Icon'
 
 export default function Diet({ token }) {
   const [file, setFile] = useState(null)
@@ -154,7 +155,7 @@ export default function Diet({ token }) {
                 alignItems: 'center',
                 gap: '10px'
               }}>
-                📸 Upload Meal Photo
+                <Icon name="camera" size={22} color="#D0FD3E" /> Upload Meal Photo
               </h2>
 
               {/* File Input */}
@@ -186,7 +187,7 @@ export default function Diet({ token }) {
                 />
                 {!preview ? (
                   <>
-                    <div style={{ fontSize: '48px', marginBottom: '12px' }}>📤</div>
+                    <div className="neu-badge" style={{ width: 64, height: 64, borderRadius: 18, margin: '0 auto 12px' }}><Icon name="upload" size={30} color="#D0FD3E" /></div>
                     <div style={{
                       fontSize: '16px',
                       fontWeight: '600',
@@ -357,7 +358,7 @@ export default function Diet({ token }) {
                       textAlign: 'center',
                       border: '1px solid #3f3f46'
                     }}>
-                      <div style={{ fontSize: '24px', marginBottom: '6px' }}>💪</div>
+                      <div style={{ marginBottom: '6px' }}><Icon name="dumbbell" size={22} color="#D0FD3E" /></div>
                       <div style={{
                         fontSize: '20px',
                         fontWeight: '700',
@@ -383,7 +384,7 @@ export default function Diet({ token }) {
                       textAlign: 'center',
                       border: '1px solid #3f3f46'
                     }}>
-                      <div style={{ fontSize: '24px', marginBottom: '6px' }}>🌾</div>
+                      <div style={{ marginBottom: '6px' }}><Icon name="bolt" size={22} color="#D0FD3E" /></div>
                       <div style={{
                         fontSize: '20px',
                         fontWeight: '700',
@@ -409,7 +410,7 @@ export default function Diet({ token }) {
                       textAlign: 'center',
                       border: '1px solid #3f3f46'
                     }}>
-                      <div style={{ fontSize: '24px', marginBottom: '6px' }}>🥑</div>
+                      <div style={{ marginBottom: '6px' }}><Icon name="diet" size={22} color="#D0FD3E" /></div>
                       <div style={{
                         fontSize: '20px',
                         fontWeight: '700',
@@ -591,7 +592,7 @@ export default function Diet({ token }) {
                     borderRadius: '16px',
                     border: '1px solid #3f3f46'
                   }}>
-                    <div style={{ fontSize: '48px', marginBottom: '12px' }}>🍽️</div>
+                    <div className="neu-badge" style={{ width: 60, height: 60, borderRadius: 16, margin: '0 auto 12px' }}><Icon name="utensils" size={28} color="#D0FD3E" /></div>
                     <div style={{
                       fontSize: '16px',
                       fontWeight: '600',
@@ -657,9 +658,9 @@ export default function Diet({ token }) {
                           color: '#a1a1aa',
                           fontWeight: '600'
                         }}>
-                          <span>💪 P: {l.protein ?? '—'}g</span>
-                          <span>🌾 C: {l.carbs ?? '—'}g</span>
-                          <span>🥑 F: {l.fat ?? '—'}g</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Icon name="dumbbell" size={13} color="#D0FD3E" /> P: {l.protein ?? '—'}g</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Icon name="bolt" size={13} color="#D0FD3E" /> C: {l.carbs ?? '—'}g</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Icon name="diet" size={13} color="#D0FD3E" /> F: {l.fat ?? '—'}g</span>
                         </div>
                       )}
                     </div>

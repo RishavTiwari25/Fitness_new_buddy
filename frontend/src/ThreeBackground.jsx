@@ -45,7 +45,7 @@ export default function ThreeBackground({ accent = '#D0FD3E' }) {
     const icoGeo = new THREE.IcosahedronGeometry(2.7, 1)
     const wire = new THREE.LineSegments(
       new THREE.WireframeGeometry(icoGeo),
-      new THREE.LineBasicMaterial({ color: accentColor, transparent: true, opacity: 0.28 })
+      new THREE.LineBasicMaterial({ color: accentColor, transparent: true, opacity: 0.14 })
     )
     scene.add(wire)
 
@@ -59,16 +59,18 @@ export default function ThreeBackground({ accent = '#D0FD3E' }) {
     // Glowing core — reads as an energy source, additive so it never muddies
     const core = new THREE.Mesh(
       new THREE.IcosahedronGeometry(0.85, 2),
-      new THREE.MeshBasicMaterial({ color: accentColor, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending })
+      new THREE.MeshBasicMaterial({ color: accentColor, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending })
     )
     scene.add(core)
 
     const group = new THREE.Group()
     group.add(wire, shell, core)
+    // Sit off-centre toward the upper-right so it stays out from behind the main text column
+    group.position.set(3.2, 1.1, -1)
     scene.add(group)
 
     // --- Sparse drifting particle field ----------------------------------
-    const COUNT = 380
+    const COUNT = 240
     const positions = new Float32Array(COUNT * 3)
     const speeds = new Float32Array(COUNT)
     for (let i = 0; i < COUNT; i++) {
@@ -81,7 +83,7 @@ export default function ThreeBackground({ accent = '#D0FD3E' }) {
     pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     const particles = new THREE.Points(
       pGeo,
-      new THREE.PointsMaterial({ color: 0xffffff, size: 0.03, transparent: true, opacity: 0.5, sizeAttenuation: true })
+      new THREE.PointsMaterial({ color: 0xffffff, size: 0.028, transparent: true, opacity: 0.32, sizeAttenuation: true })
     )
     scene.add(particles)
 
@@ -166,7 +168,7 @@ export default function ThreeBackground({ accent = '#D0FD3E' }) {
         inset: 0,
         zIndex: 0,
         pointerEvents: 'none',
-        opacity: 0.9,
+        opacity: 0.55,
       }}
     />
   )

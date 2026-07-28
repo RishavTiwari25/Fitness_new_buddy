@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
+import { motion } from 'motion/react'
 import { API_BASE } from './api'
+import Icon from './components/Icon'
 
 export default function HomeWorkout({ token }) {
   const [level, setLevel] = useState('easy')
@@ -16,13 +18,7 @@ export default function HomeWorkout({ token }) {
   }
 
   const Card = ({ children, style }) => (
-    <div style={{
-      backgroundColor: '#27272a',
-      borderRadius: '20px',
-      border: '1px solid #3f3f46',
-      padding: '24px',
-      ...style
-    }}>{children}</div>
+    <div className="card" style={{ padding: '24px', ...style }}>{children}</div>
   )
 
   const chip = (text, color = '#D0FD3E') => (
@@ -41,14 +37,14 @@ export default function HomeWorkout({ token }) {
   )
 
   return (
-    <div>
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 120, damping: 18, mass: 0.9 }}>
       <Card>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: '#fafafa', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span>🏠</span> Home Workout
+            <div className="font-display" style={{ fontSize: 28, fontWeight: 700, color: '#fafafa', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span className="neu-badge" style={{ width: 44, height: 44 }}><Icon name="dumbbell" size={22} color="#D0FD3E" /></span> Home Workout
             </div>
-            <div style={{ color: '#a1a1aa', marginTop: 6 }}>Can't make it to the gym today? Get a bodyweight-only routine.</div>
+            <div style={{ color: 'rgba(255,255,255,0.55)', marginTop: 6 }}>Can't make it to the gym today? Get a bodyweight-only routine.</div>
           </div>
           <div style={{ height: 32, width: 4, background: '#D0FD3E', borderRadius: 999 }} />
         </div>
@@ -103,8 +99,8 @@ export default function HomeWorkout({ token }) {
       {plan ? (
         <Card style={{ marginTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <div style={{ fontSize: 22, color: '#fafafa', fontWeight: 800 }}>{plan.title} {level && chip(level.toUpperCase())}</div>
-            {chip(`⏱ ${plan.est_time_min} min`)}
+            <div className="font-display" style={{ fontSize: 22, color: '#fafafa', fontWeight: 700 }}>{plan.title} {level && chip(level.toUpperCase())}</div>
+            {chip(<><Icon name="activity" size={12} color="#D0FD3E" /> {plan.est_time_min} min</>)}
           </div>
           <ol style={{ marginTop: 8, color: '#d4d4d8', paddingLeft: 20 }}>
             {plan.exercises.map((e, i) => (
@@ -117,9 +113,9 @@ export default function HomeWorkout({ token }) {
         </Card>
       ) : (
         <Card style={{ marginTop: 16, background: '#1f1f22' }}>
-          <div style={{ color: '#a1a1aa' }}>No plan yet. Pick a difficulty and click “Give me a workout”.</div>
+          <div style={{ color: 'rgba(255,255,255,0.5)' }}>No plan yet. Pick a difficulty and click “Give me a workout”.</div>
         </Card>
       )}
-    </div>
+    </motion.div>
   )
 }
