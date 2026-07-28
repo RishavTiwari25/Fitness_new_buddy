@@ -14,14 +14,31 @@ export default function MyPayments({ token }) {
   }
   useEffect(() => { load() }, [token])
 
-  async function payMock() {
+  // Handle the return from Stripe Checkout (?payment=success|cancelled)
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get('payment')
+    if (p === 'success') { setMsg('Payment successful! Your membership is updated.'); load() }
+    else if (p === 'cancelled') { setMsg('Payment was cancelled.') }
+    if (p) window.history.replaceState({}, '', window.location.pathname)
+  }, [])
+
+  // Redirect to Stripe Checkout for the membership fee.
+  async function payStripe() {
     setMsg('')
     const amt = Number(amount || (billing?.monthly_fee || 0))
-    if (!amt) { setMsg('Enter amount'); return }
-    const order = await fetch(`${API_BASE}/api/payments/mock/create-order`, { method:'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ amount: amt }) })
-    const o = await order.json(); if (!order.ok) { setMsg(o.error || 'Failed to create order'); return }
-    const conf = await fetch(`${API_BASE}/api/payments/mock/confirm`, { method:'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ order_id: o.order_id, amount: amt }) })
-    const c = await conf.json(); if (conf.ok) { setMsg('Payment successful'); load() } else { setMsg(c.error || 'Payment failed') }
+    if (!amt) { setMsg('Enter an amount'); return }
+    try {
+      const r = await fetch(`${API_BASE}/api/payments/stripe/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ amount: amt }),
+      })
+      const j = await r.json()
+      if (!r.ok || !j.url) { setMsg(j.error || 'Could not start checkout'); return }
+      window.location.href = j.url // hosted Stripe Checkout
+    } catch (e) {
+      setMsg('Could not start checkout')
+    }
   }
 
   return (
@@ -67,8 +84,8 @@ export default function MyPayments({ token }) {
               inputMode="numeric"
             />
           </div>
-          <button className="btn-primary rounded-full" onClick={payMock}>
-            Pay (Mock)
+          <button className="btn-primary rounded-full" onClick={payStripe} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Icon name="card" size={16} /> Pay with Stripe
           </button>
         </div>
         {msg && (

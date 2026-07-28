@@ -26,6 +26,7 @@ const managementRouter = require('./routes/management'); // Management endpoints
 const notificationsRouter = require('./routes/notifications'); // Notification system
 const coachRouter = require('./routes/coach'); // AI personal trainer (RAG chat, streaming)
 const aiRouter = require('./routes/ai'); // AI features: semantic search, NL booking, weekly insights
+const stripePayments = require('./routes/payments_stripe'); // Stripe membership payments
 const db = require('./db'); // SQLite database connection
 const mongo = require('./lib/mongo'); // MongoDB connection utilities
 
@@ -38,6 +39,9 @@ const app = express();
 // ===== MIDDLEWARE CONFIGURATION =====
 // Enable CORS for cross-origin requests from frontend
 app.use(cors());
+// Stripe webhook needs the raw request body for signature verification —
+// it MUST be registered before the JSON body parser below.
+app.post('/api/payments/stripe/webhook', express.raw({ type: 'application/json' }), stripePayments.webhookHandler);
 // Parse incoming JSON request bodies
 app.use(express.json());
 
@@ -54,6 +58,7 @@ app.use('/api', managementRouter); // Management and billing
 app.use('/api', notificationsRouter); // Notifications system
 app.use('/api', coachRouter); // AI personal trainer chat (streaming)
 app.use('/api', aiRouter); // AI: semantic search, NL booking, weekly insights
+app.use('/api', stripePayments.router); // Stripe checkout session
 
 // ===== HEALTH CHECK ENDPOINT =====
 // Endpoint to verify that the backend server is running
@@ -145,5 +150,8 @@ const HOST = process.env.HOST || '0.0.0.0';
 // ===== START SERVER =====
 // Start listening on configured host and port
 app.listen(PORT, HOST, () => console.log(`Backend running on http://${HOST}:${PORT}`));
+
+// Start the weekly AI-insights cron (no-op if DISABLE_CRON=1)
+try { require('./lib/weeklyInsightsCron').start(); } catch (e) { console.warn('[cron] not started:', e.message); }
 
 // Comment for development: nodemon watches this file for changes and restarts the server
