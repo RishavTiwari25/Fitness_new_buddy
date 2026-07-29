@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { API_BASE } from './api'
+import { toastError } from './toast'
 import Icon from './components/Icon'
 import GymQRCode from './GymQRCode'
 import Feed from './Feed'
@@ -105,7 +106,7 @@ export default function ManagerDashboard({ token, activeTabProp }) {
         await loadEquipment(data.id)
       }
     } else {
-      alert(data.error || 'Failed')
+      toastError(data.error || 'Failed to create gym')
     }
   }
 
@@ -165,7 +166,7 @@ export default function ManagerDashboard({ token, activeTabProp }) {
 
   async function addEquipment(e) {
     e.preventDefault()
-    if (!selectedGym) return alert('Select a gym first')
+    if (!selectedGym) return toastError('Select a gym first')
     const res = await fetch(`${API_BASE}/api/gyms/${selectedGym}/equipment`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({ name: eqName, notes: eqNotes, quantity: Number(eqQuantity) })
@@ -175,7 +176,7 @@ export default function ManagerDashboard({ token, activeTabProp }) {
       setEquipment(prev => [...prev, data])
       setEqName(''); setEqNotes(''); setEqQuantity(1)
       loadOccupancy(selectedGym)
-    } else alert(data.error || 'Failed')
+    } else toastError(data.error || 'Failed to add equipment')
   }
 
   async function deleteEquipment(id) {
@@ -186,7 +187,7 @@ export default function ManagerDashboard({ token, activeTabProp }) {
       setEquipment(prev => prev.filter(e => e.id !== id))
       loadOccupancy(selectedGym)
     }
-    else alert(data.error || 'Failed')
+    else toastError(data.error || 'Failed to delete equipment')
   }
 
   function startEdit(eq) {
@@ -206,7 +207,7 @@ export default function ManagerDashboard({ token, activeTabProp }) {
       setEquipment(prev => prev.map(p => p.id === data.id ? data : p))
       setEditing(null); setEqName(''); setEqNotes(''); setEqQuantity(1)
       loadOccupancy(selectedGym)
-    } else alert(data.error || 'Failed')
+    } else toastError(data.error || 'Failed to save equipment')
   }
 
   async function loadOccupancy(gymId) {
@@ -215,6 +216,25 @@ export default function ManagerDashboard({ token, activeTabProp }) {
       const res = await fetch(`${API_BASE}/api/gyms/${gymId}/occupancy`, { headers: { Authorization: 'Bearer ' + token } })
       const data = await res.json()
       if (res.ok) setOccupancy(data.count)
+    } catch (_) {}
+  }
+
+  // Standalone refreshers used after membership/booking mutations.
+  async function loadMemberships(gymId) {
+    if (!gymId) return
+    try {
+      const r = await fetch(`${API_BASE}/api/manager/memberships?gymId=${gymId}`, { headers: { Authorization: 'Bearer ' + token } })
+      const j = await r.json()
+      if (r.ok) setMemberships(j)
+    } catch (_) {}
+  }
+
+  async function loadBookings(gymId) {
+    if (!gymId) return
+    try {
+      const r = await fetch(`${API_BASE}/api/gyms/${gymId}/bookings`, { headers: { Authorization: 'Bearer ' + token } })
+      const j = await r.json()
+      if (r.ok) setBookings(j)
     } catch (_) {}
   }
 
@@ -425,7 +445,7 @@ export default function ManagerDashboard({ token, activeTabProp }) {
                           if (res.ok) {
                             loadBookings(selectedGym)
                           } else {
-                            alert(data.error || 'Failed to release')
+                            toastError(data.error || 'Failed to release')
                           }
                         }} style={{ background: '#3A3937', color: '#F5F4EE', border: 'none', borderRadius: 9999, padding: '8px 12px', cursor: 'pointer' }}>Force release</button>
                       </div>
@@ -521,7 +541,7 @@ export default function ManagerDashboard({ token, activeTabProp }) {
               <div style={{ marginTop: 16 }}>
                 {leaderboard.length === 0 && <div style={{ color: '#666' }}>No members in this gym yet.</div>}
                 {leaderboard.map((m, idx) => (
-                  <div key={m.user_id} style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #3A3937', background: idx === 0 ? '#1f2937' : 'transparent', borderRadius: idx === 0 ? 8 : 0 }}>
+                  <div key={m.user_id} style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #3A3937', background: idx === 0 ? 'rgba(217,119,87,0.12)' : 'transparent', borderRadius: idx === 0 ? 8 : 0 }}>
                     <div style={{ width: 40, fontSize: 20, fontWeight: 600, fontFamily: 'var(--font-display)', color: idx === 0 ? '#D97757' : '#A6A29A' }}>#{idx + 1}</div>
                     <div style={{ flex: 1, fontSize: 16, fontWeight: 600, color: '#F5F4EE' }}>{m.name}</div>
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#D97757' }}><Icon name="flame" size={14} style={{ verticalAlign: '-2px', marginRight: 4 }} />{m.gym_streak} days</div>

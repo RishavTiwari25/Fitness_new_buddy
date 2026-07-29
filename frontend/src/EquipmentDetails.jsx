@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { API_BASE } from './api'
+import { toastSuccess, toastError } from './toast'
 import Icon from './components/Icon'
 import EquipmentSlots from './EquipmentSlots'
 
@@ -141,14 +142,14 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
           headers: { Authorization: 'Bearer ' + token }
         })
         if (res.ok) {
-          alert('Booking released successfully!')
+          toastSuccess('Booking released successfully!')
           if (onBooked) onBooked()
         } else {
           const data = await res.json()
-          alert(data.error || 'Failed to release booking')
+          toastError(data.error || 'Failed to release booking')
         }
       } catch (err) {
-        alert('Failed to release booking')
+        toastError('Failed to release booking')
       }
     } else if (!isBooked) {
       // Try to book (requires being checked in)
@@ -159,13 +160,13 @@ export default function EquipmentDetails({ equipment, token, onBack, onBooked })
         })
         const data = await res.json()
         if (res.ok) {
-          alert('Equipment booked successfully!')
+          toastSuccess('Equipment booked successfully!')
           if (onBooked) onBooked()
         } else {
-          alert(data.error || 'Failed to book equipment')
+          toastError(data.error || 'Failed to book equipment')
         }
       } catch (err) {
-        alert('Failed to book equipment')
+        toastError('Failed to book equipment')
       }
     }
   }

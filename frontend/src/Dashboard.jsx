@@ -15,6 +15,7 @@ import HomeWorkout from './HomeWorkout'
 import MyPayments from './MyPayments'
 import NotificationsBell from './NotificationsBell'
 import BrowseEquipment from './BrowseEquipment'
+import { Toaster } from './toast'
 
 const ACCENT = '#D97757'
 const SPRING = { type: 'spring', stiffness: 120, damping: 18, mass: 0.9 }
@@ -162,6 +163,7 @@ export default function Dashboard({ token, onLogout }) {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <Toaster />
       {/* ── Sidebar (mock: 246px, #211F1E, sectioned) ─────────────────── */}
       <aside style={{
         width: 246, flex: '0 0 246px', borderRight: '1px solid var(--hairline)', padding: '26px 16px 22px',
