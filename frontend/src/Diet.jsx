@@ -73,7 +73,7 @@ export default function Diet({ token }) {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#09090b',
+      backgroundColor: 'var(--bg-primary)',
       padding: '32px 24px'
     }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
@@ -267,8 +267,9 @@ export default function Diet({ token }) {
                 <div style={{
                   marginTop: '16px',
                   padding: '12px 16px',
-                  backgroundColor: status === 'Saved!' ? '#065f46' : '#991b1b',
-                  color: status === 'Saved!' ? '#d1fae5' : '#fee2e2',
+                  backgroundColor: status === 'Saved!' ? 'rgba(217,119,87,0.12)' : 'rgba(239,68,68,0.12)',
+                  color: status === 'Saved!' ? '#F0B79C' : '#fca5a5',
+                  border: status === 'Saved!' ? '1px solid rgba(217,119,87,0.4)' : '1px solid rgba(239,68,68,0.35)',
                   borderRadius: '12px',
                   fontSize: '14px',
                   fontWeight: '600',
@@ -301,10 +302,9 @@ export default function Diet({ token }) {
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '24px'
+                    justifyContent: 'center'
                   }}>
-                    AI
+                    <Icon name="sparkles" size={24} color="#FFFFFF" />
                   </div>
                   <h3 style={{
                     fontSize: '20px',
@@ -499,7 +499,7 @@ export default function Diet({ token }) {
                       e.target.style.transform = 'translateY(0)'
                     }}
                   >
-                    ✓ Confirm & Save
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}><Icon name="check" size={16} color="#FFFFFF" /> Confirm &amp; Save</span>
                   </button>
                   <button
                     onClick={() => setAnalysis(null)}
@@ -522,7 +522,7 @@ export default function Diet({ token }) {
                       e.target.style.backgroundColor = '#3A3937'
                     }}
                   >
-                    ✗ Discard
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}><Icon name="close" size={16} color="#F5F4EE" /> Discard</span>
                   </button>
                 </div>
               </div>

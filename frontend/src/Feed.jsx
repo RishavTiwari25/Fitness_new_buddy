@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { API_BASE } from './api'
+import { avatarSrc } from './avatar'
 import Icon from './components/Icon'
 
 export default function Feed({ token }) {
@@ -131,9 +132,9 @@ export default function Feed({ token }) {
                   onMouseEnter={(e) => e.currentTarget.style.borderColor = '#4C4A46'}
                   onMouseLeave={(e) => e.currentTarget.style.borderColor = '#3A3937'}
                 >
-                  <img 
-                    src={m.avatar_url ? (m.avatar_url.startsWith('http') ? m.avatar_url : `${API_BASE}${m.avatar_url.startsWith('/') ? '' : '/'}${m.avatar_url}`) : 'https://via.placeholder.com/40'} 
-                    alt="" 
+                  <img
+                    src={avatarSrc(m.avatar_url)}
+                    alt=""
                     style={{
                       width: '40px',
                       height: '40px',
@@ -210,9 +211,9 @@ export default function Feed({ token }) {
                   gap: '12px',
                   padding: '20px 24px'
                 }}>
-                  <img 
-                    src={p.author_avatar ? (p.author_avatar.startsWith('http') ? p.author_avatar : `${API_BASE}${p.author_avatar.startsWith('/') ? '' : '/'}${p.author_avatar}`) : 'https://via.placeholder.com/48'} 
-                    alt="" 
+                  <img
+                    src={avatarSrc(p.author_avatar)}
+                    alt=""
                     style={{
                       width: '48px',
                       height: '48px',
@@ -482,8 +483,9 @@ export default function Feed({ token }) {
               <div style={{
                 marginTop: '12px',
                 padding: '10px 14px',
-                backgroundColor: msg.includes('✓') ? '#d1fae5' : '#fee2e2',
-                color: msg.includes('✓') ? '#065f46' : '#991b1b',
+                backgroundColor: msg.includes('✓') ? 'rgba(217,119,87,0.12)' : 'rgba(239,68,68,0.12)',
+                color: msg.includes('✓') ? '#F0B79C' : '#fca5a5',
+                border: msg.includes('✓') ? '1px solid rgba(217,119,87,0.4)' : '1px solid rgba(239,68,68,0.35)',
                 borderRadius: '8px',
                 fontSize: '13px',
                 fontWeight: '600',

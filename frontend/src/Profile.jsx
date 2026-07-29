@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { API_BASE } from './api'
+import { avatarSrc } from './avatar'
 import Icon from './components/Icon'
 
 const roleBadge = { display: 'inline-flex', alignItems: 'center', gap: 6 }
@@ -59,6 +60,14 @@ export default function Profile({ token, profile, onUpdate }) {
   const followingRes = await fetch(`${API_BASE}/api/me/following`, { headers: { Authorization: 'Bearer ' + token } })
         const followingData = await followingRes.json()
   if (followingRes.ok) setFollowing(prev => ({ ...prev, count: followingData.length, list: followingData }))
+      } catch (e) {
+        console.error('Failed to load profile data:', e)
+      }
+    }
+    loadData()
+  }, [token])
+
+  // Social actions (defined at component scope so the Remove/Unfollow buttons can reach them)
   async function refreshSocial() {
     try {
       const fr = await fetch(`${API_BASE}/api/me/followers`, { headers: { Authorization: 'Bearer ' + token } })
@@ -78,12 +87,6 @@ export default function Profile({ token, profile, onUpdate }) {
     await fetch(`${API_BASE}/api/unfollow/${userId}`, { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
     refreshSocial()
   }
-      } catch (e) {
-        console.error('Failed to load profile data:', e)
-      }
-    }
-    loadData()
-  }, [token])
 
   async function save(e) {
     e.preventDefault();
@@ -122,8 +125,10 @@ export default function Profile({ token, profile, onUpdate }) {
     }
   }
 
-  // Calculate "rating" for trainers (mock based on followers)
-  const trainerRating = isTrainer ? Math.min(5, Math.floor((followers.count / 10) * 5) + 3.5).toFixed(1) : null
+  // Trainer rating derived from follower count — smooth 3.5 → 5.0, stable across renders.
+  const trainerRating = isTrainer ? Math.min(5, 3.5 + followers.count * 0.05).toFixed(1) : null
+  // Deterministic "years experience" so it doesn't re-roll on every render (no data source for it).
+  const experienceYears = 2 + ((parseInt(user.id, 10) || 0) % 8)
 
   return (
     <div style={{ 
@@ -146,9 +151,9 @@ export default function Profile({ token, profile, onUpdate }) {
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          <img 
-            src={avatarUrl ? (avatarUrl.startsWith('http') ? avatarUrl : `${API_BASE}${avatarUrl.startsWith('/') ? '' : '/'}${avatarUrl}`) : 'https://via.placeholder.com/160'} 
-            alt="avatar" 
+          <img
+            src={avatarSrc(avatarUrl)}
+            alt="avatar"
             style={{
               width: '160px',
               height: '160px',
@@ -179,7 +184,7 @@ export default function Profile({ token, profile, onUpdate }) {
           onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
           >
-            <span style={{ display: 'inline-flex' }}><Icon name="camera" size={18} color="#0a0a0a" /></span>
+            <span style={{ display: 'inline-flex' }}><Icon name="camera" size={18} color="#FFFFFF" /></span>
             <input type="file" accept="image/*" style={{ display: 'none' }} onChange={uploadAvatar} />
           </label>
         </div>
@@ -272,12 +277,12 @@ export default function Profile({ token, profile, onUpdate }) {
         <div style={{
           padding: '12px 16px',
           marginBottom: '16px',
-          backgroundColor: msg.includes('✓') ? '#d1fae5' : '#fee2e2',
-          color: msg.includes('✓') ? '#065f46' : '#991b1b',
+          backgroundColor: msg.includes('✓') ? 'rgba(217,119,87,0.12)' : 'rgba(239,68,68,0.12)',
+          color: msg.includes('✓') ? '#F0B79C' : '#fca5a5',
           borderRadius: '12px',
           fontSize: '14px',
           fontWeight: '600',
-          border: msg.includes('✓') ? '1px solid #a7f3d0' : '1px solid #fecaca',
+          border: msg.includes('✓') ? '1px solid rgba(217,119,87,0.4)' : '1px solid rgba(239,68,68,0.35)',
           textAlign: 'center'
         }}>
           {msg}
@@ -633,8 +638,8 @@ export default function Profile({ token, profile, onUpdate }) {
             {followers.open && (
               <div style={{ textAlign: 'left', marginTop: 12, maxHeight: 220, overflow: 'auto', display: 'grid', gap: 8 }}>
                 {followers.list.map(u => (
-                  <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#0f0f10', border: '1px solid #3A3937', borderRadius: 12, padding: 10 }}>
-                    <img src={u.avatar_url ? (u.avatar_url.startsWith('http') ? u.avatar_url : `${API_BASE}${u.avatar_url.startsWith('/') ? '' : '/'}${u.avatar_url}`) : 'https://via.placeholder.com/32'} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                  <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--tile)', border: '1px solid var(--hairline)', borderRadius: 12, padding: 10 }}>
+                    <img src={avatarSrc(u.avatar_url)} alt="" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
                     <div style={{ flex: 1, color: '#F5F4EE', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name || `User #${u.id}`}</div>
                     <button onClick={() => removeFollower(u.id)} className="btn-secondary rounded-full" style={{ padding: '6px 10px' }}>Remove</button>
                   </div>
@@ -673,8 +678,8 @@ export default function Profile({ token, profile, onUpdate }) {
             {following.open && (
               <div style={{ textAlign: 'left', marginTop: 12, maxHeight: 220, overflow: 'auto', display: 'grid', gap: 8 }}>
                 {following.list.map(u => (
-                  <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#0f0f10', border: '1px solid #3A3937', borderRadius: 12, padding: 10 }}>
-                    <img src={u.avatar_url ? (u.avatar_url.startsWith('http') ? u.avatar_url : `${API_BASE}${u.avatar_url.startsWith('/') ? '' : '/'}${u.avatar_url}`) : 'https://via.placeholder.com/32'} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                  <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--tile)', border: '1px solid var(--hairline)', borderRadius: 12, padding: 10 }}>
+                    <img src={avatarSrc(u.avatar_url)} alt="" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
                     <div style={{ flex: 1, color: '#F5F4EE', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name || `User #${u.id}`}</div>
                     <button onClick={() => unfollowUser(u.id)} className="btn-secondary rounded-full" style={{ padding: '6px 10px' }}>Unfollow</button>
                   </div>
@@ -700,7 +705,7 @@ export default function Profile({ token, profile, onUpdate }) {
                 color: '#fbbf24',
                 marginBottom: '4px'
               }}>
-                {Math.floor(Math.random() * 5) + 2}+
+                {experienceYears}+
               </div>
               <div style={{
                 fontSize: '13px',

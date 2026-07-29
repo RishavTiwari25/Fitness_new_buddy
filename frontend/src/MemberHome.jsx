@@ -159,7 +159,7 @@ export default function MemberHome({ token, defaultGymId }) {
   }
 
   return (
-    <div style={{ backgroundColor: '#09090b', minHeight: '100vh', padding: '24px' }}>
+    <div style={{ backgroundColor: 'var(--bg-primary)', minHeight: '100vh', padding: '24px' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -184,7 +184,7 @@ export default function MemberHome({ token, defaultGymId }) {
 
         {/* Status */}
         {status && (
-          <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 12, backgroundColor: status.toLowerCase().includes('fail') || status.toLowerCase().includes('error') ? '#991b1b' : '#064e3b', color: '#e5e7eb', fontWeight: 700, display: 'inline-block' }}>
+          <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 12, backgroundColor: status.toLowerCase().includes('fail') || status.toLowerCase().includes('error') ? 'rgba(239,68,68,0.12)' : 'rgba(217,119,87,0.12)', color: status.toLowerCase().includes('fail') || status.toLowerCase().includes('error') ? '#fca5a5' : '#F0B79C', border: status.toLowerCase().includes('fail') || status.toLowerCase().includes('error') ? '1px solid rgba(239,68,68,0.35)' : '1px solid rgba(217,119,87,0.4)', fontWeight: 700, display: 'inline-block' }}>
             {status}
           </div>
         )}
